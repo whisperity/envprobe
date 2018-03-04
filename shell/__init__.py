@@ -17,14 +17,9 @@ class Shell(metaclass=ABCMeta):
     """
 
     def __init__(self):
-        pass
-
-    @property
-    def shell_type(self):
-        """
-        Returns the current shell's type in a textual format.
-        """
-        return SHELL_CLASSES_TO_TYPES.get(type(self), "Unknown?")
+        self._shell_pid = None
+        self._envprobe_location = None
+        self._control_file = os.devnull
 
     @staticmethod
     def for_shell(shell_type):
@@ -41,21 +36,26 @@ class Shell(metaclass=ABCMeta):
         return None
 
     @property
-    @abstractmethod
+    def shell_type(self):
+        """
+        Returns the current shell's type in a textual format.
+        """
+        return SHELL_CLASSES_TO_TYPES.get(type(self), "Unknown?")
+
+    @property
     def shell_pid(self):
         """
         Returns the process ID of the shell that the user is currently
         using.
         """
-        pass
+        return self._shell_pid
 
     @property
-    @abstractmethod
     def envprobe_location(self):
         """
         Returns the absolute location where envprobe is installed.
         """
-        pass
+        return self._envprobe_location
 
     @abstractmethod
     def is_envprobe_capable(self):
@@ -81,6 +81,31 @@ class Shell(metaclass=ABCMeta):
         the environment does not allow envprobe to be set up.
         """
         pass
+
+    @abstractmethod
+    def _prepare_setting_env_var(self, env_var):
+        """
+        This method specifies how a particular Shell can execute a command
+        which sets the given `env_var`'s value to be what the user intended
+        in their shell.
+        """
+        pass
+
+    def set_env_var(self, env_var):
+        """
+        This method writes the given `env_var`'s value to a special temporary
+        file that is executed by the hooked Shell. The user's shell SHOULD,
+        but maybe not immediately, reflect the change in the environment
+        ordered by this method.
+        """
+
+        # This method SHOULD always assume that the temporary file's state is
+        # unknown. Usually, the shell parses and destroys commands in the
+        # temporary file at every prompt reading.
+        with open(self._control_file, 'a') as control:
+            control.write('\n')
+            control.write(self._prepare_setting_env_var(env_var))
+            control.write('\n')
 
 
 # Expose every shell known in this module.

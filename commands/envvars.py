@@ -50,6 +50,13 @@ def transform_subcommand_shortcut(argv):
             command = argv[1]
             should_translate = True
 
+    if len(argv) == 2 and '=' in command:
+        # If the user says "envprobe VAR=VAL", understand it as "envprobe
+        # VAR= VAL" which will be translated into a setter action.
+        parts = command.split('=')
+        variable_name, value = parts[0], parts[1]
+        argv = [argv[0], 'set', variable_name, value]
+
     if not should_translate and \
             any([command.startswith(c) or command.endswith(c)
                  for c in __SHORTCUT_CHARS]):
@@ -68,7 +75,8 @@ def transform_subcommand_shortcut(argv):
         variable_name = command[1:]
     elif command[-1] in __SHORTCUT_CHARS:
         if command[-1] == '+':
-            # Only "add" is a position-capable action.
+            # Only "add" is a position-capable action, in which case the '+'
+            # at the end mean suffix, and at the beginning means prefix.
             action = [__SHORTCUT_CHARS[command[-1]], '--position', '-1']
         else:
             action = [__SHORTCUT_CHARS[command[-1]]]
@@ -87,11 +95,8 @@ def __create_environment_variable(key):
     # TODO: Improve this heuristic, introduce a way for the user to configure.
     if 'PATH' in key:
         # Consider the variable a PATH-like variable.
-        print(key + " contains 'PATH', considering it a POSIX path "
-              "variable...")
         return PathLikeEnvVar(key, os.environ.get(key, ""))
     else:
-        print("Considering " + key + " as a string variable...")
         return StringEnvVar(key, os.environ.get(key, ""))
 
 
@@ -107,10 +112,8 @@ def __add(args):
                                   "applicable to array-like environmental "
                                   "variables.")
 
-    print(env_var.name + " += " + args.VALUE + " at position " +
-          str(args.position))
     env_var.insert_at(args.position, args.VALUE)
-    print(env_var.name + "=" + env_var.to_raw_var())
+    get_current_shell().set_env_var(env_var)
 
 
 def __remove(args):
@@ -120,17 +123,14 @@ def __remove(args):
                                   "applicable to array-like environmental "
                                   "variables.")
 
-    print(env_var.name + " -= " + args.VALUE)
     env_var.remove_value(args.VALUE)
-    print(env_var.name + "=" + env_var.to_raw_var())
+    get_current_shell().set_env_var(env_var)
 
 
 def __set(args):
-    print("SET")
     env_var = __create_environment_variable(args.VARIABLE)
-    print(env_var.name + " := " + args.VALUE)
     env_var.value = args.VALUE
-    print(env_var.name + "=" + env_var.to_raw_var())
+    get_current_shell().set_env_var(env_var)
 
 
 def __create_add_subcommand(main_parser):

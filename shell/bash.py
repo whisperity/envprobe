@@ -3,6 +3,7 @@ Module for supporting the Bash shell.
 """
 
 import os
+import tempfile
 
 from . import Shell, register_type
 
@@ -14,18 +15,25 @@ class BashShell(Shell):
 
     def __init__(self):
         super().__init__()
+        self._shell_pid = os.environ.get('ENVPROBE_SHELL_PID', None)
 
-    @property
-    def shell_pid(self):
-        return os.environ.get('ENVPROBE_SHELL_PID', None)
-
-    @property
-    def envprobe_location(self):
         location = os.environ.get('ENVPROBE_LOCATION', None)
         if location:
             location = os.path.abspath(os.path.expanduser(location))
+        self._envprobe_location = location
 
-        return location
+        self._control_file = os.environ.get('ENVPROBE_CONTROL_FILE', None)
+        if not self._control_file and self.is_envprobe_capable():
+            # Generate a temporary file that will be used by the Bash shell
+            # at every prompt read which *actually* sets the environment as
+            # per the user's request.
+            tempf = tempfile.NamedTemporaryFile(
+                'w',
+                prefix='.envprobe.' + self.shell_pid + '-',
+                suffix='.sh',
+                delete=False)
+            self._control_file = tempf.name
+            tempf.close()
 
     def is_envprobe_capable(self):
         return self.shell_pid and self.envprobe_location
@@ -42,6 +50,7 @@ class BashShell(Shell):
 if [[ ! "$PROMPT_COMMAND" =~ "__envprobe" ]];
 then
   export ENVPROBE_SHELL_TYPE="{TYPE}";
+  export ENVPROBE_CONTROL_FILE="{CONTROL_FILE}";
 
   envprobe()
   {{
@@ -51,19 +60,29 @@ then
   __envprobe()
   {{
     local original_retcode="$?";
-    # echo "$(envprobe --help)";
+    if [[ -f "{CONTROL_FILE}" ]];
+    then
+      eval `cat "{CONTROL_FILE}"`;
+      rm "{CONTROL_FILE}";
+    fi
     return $original_retcode;
   }};
 
   echo "Envprobe loaded successfully. :)";
   PROMPT_COMMAND="__envprobe;$PROMPT_COMMAND";
 fi
-""".format(PID=pid, LOCATION=location, TYPE=self.shell_type)
+""".format(PID=pid,
+           LOCATION=location,
+           CONTROL_FILE=self._control_file,
+           TYPE=self.shell_type)
 
     def get_shell_hook_error(self):
         return """
 echo "Environment variables for ENVPROBE are missing. Refusing to load..." >&2;
 """
+
+    def _prepare_setting_env_var(self, env_var):
+        return 'export {0}={1};'.format(env_var.name, env_var.to_raw_var())
 
 
 register_type('bash', BashShell)
