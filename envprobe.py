@@ -33,7 +33,7 @@ def __main():
     """
 
     # Check if the user is running a Shell currently or not.
-    epilogue=None
+    epilogue = None
     if len(sys.argv) == 1 or \
             (len(sys.argv) == 2 and sys.argv[1] in ['-h', '--help']):
         shell_type = os.environ.get('ENVPROBE_SHELL_TYPE')

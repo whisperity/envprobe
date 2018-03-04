@@ -79,6 +79,7 @@ class Shell(metaclass=ABCMeta):
         Returns a string that is evaluated inside the shell directly in case
         the environment does not allow envprobe to be set up.
         """
+        pass
 
 
 # Expose every shell known in this module.
