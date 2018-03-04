@@ -120,7 +120,22 @@ class ArrayEnvVar(EnvVar):
         """
         if self._check_if_element_valid(elem):
             elem = self._transform_element_set(elem)
-            self._value.insert(idx, elem)
+            if idx >= 0:
+                self._value.insert(idx, elem)
+            elif idx < -1:
+                # We cannot use list::insert here, because l[-1] = "a" is not
+                # equal to list.insert(-1, "a"). The latter one actually
+                # modifies the second-to-last element of the list, after
+                # moving the last element to the right.
+
+                # So instead, insert at the element right after the insertion
+                # position, this way [1, 2].insert_at(-2, "a") will result in
+                # [1, "a", -2]. This corresponds to the command-line help
+                # "the element will be inserted AT the position given,
+                # shifting every element AFTER the new one to the right".
+                self._value.insert(idx + 1, elem)
+            else:
+                self._value.append(elem)
 
     def remove_value(self, elem):
         """
