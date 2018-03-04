@@ -45,8 +45,8 @@ can see your active shells.
 ```bash
 export ENVPROBE_LOCATION=~/envprobe;
 export ENVPROBE_SHELL_PID=$$;
-eval "$(${ENVPROBE_LOCATION}/envprobe.py shell bash)"
-alias ep='envprobe'
+eval "$(${ENVPROBE_LOCATION}/envprobe.py shell bash)";
+alias ep='envprobe';
 ```
 
 If you are using any other extensions in your shell (such as `byobu-shell` or
