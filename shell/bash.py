@@ -4,7 +4,7 @@ Module for supporting the Bash shell.
 
 import os
 
-from . import Shell, SHELL_CLASSES_TO_TYPES, SHELL_TYPES_TO_CLASSES
+from . import Shell, register_type
 
 
 class BashShell(Shell):
@@ -66,6 +66,4 @@ echo "Environment variables for ENVPROBE are missing. Refusing to load..." >&2;
 """
 
 
-# Register the Bash shell into the shell library's list of shells.
-SHELL_CLASSES_TO_TYPES[BashShell] = "bash"
-SHELL_TYPES_TO_CLASSES["bash"] = BashShell
+register_type('bash', BashShell)
