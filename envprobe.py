@@ -11,7 +11,7 @@ import sys
 
 from commands import shell as shell_command
 from commands import envvars as envvars_commands
-from shell import Shell
+import shell
 
 
 def __main():
@@ -23,8 +23,8 @@ def __main():
     epilogue = None
     if len(sys.argv) == 1 or \
             (len(sys.argv) == 2 and sys.argv[1] in ['-h', '--help']):
-        shell_type = os.environ.get('ENVPROBE_SHELL_TYPE')
-        if not shell_type:
+        current_shell = shell.get_current_shell()
+        if current_shell is None:
             epilogue = "You are currently using `envprobe` in a shell that " \
                        "does not have it enabled. Please refer to the "      \
                        "README on how to enable envprobe."
@@ -33,27 +33,24 @@ def __main():
                 print("To see what commands `envprobe` can do, specify "
                       "'--help'.",
                       file=sys.stderr)
+        elif current_shell is False:
+            epilogue = "You are currently using an unknown shell, but " \
+                       "your environment claims envprobe is enabled. " \
+                       "Stop hacking your variables! :)"
         else:
-            current_shell = Shell.get_current_shell(shell_type)
-            if current_shell:
-                epilogue = "You are currently using a '{0}' shell, " \
-                           "and envprobe is enabled!" \
-                    .format(current_shell.shell_type)
+            epilogue = "You are currently using a '{0}' shell, and envprobe " \
+                       "is enabled!".format(current_shell.shell_type)
 
-                if int(os.environ.get('_ENVPROBE', 0)) != 1:
-                    # If the user is not running the command through an alias,
-                    # present an error. We don't want users to randomly run
-                    # envprobe if it is enabled and set up.
-                    print("You are in an environment where `envprobe` is "
-                          "enabled, but you used the command '{0}' to run "
-                          "envprobe, instead of `envprobe`."
-                          .format(sys.argv[0]),
-                          file=sys.stderr)
-                    sys.exit(2)
-            else:
-                epilogue = "You are currently using an unknown shell, but " \
-                           "your environment claims envprobe is enabled. "  \
-                           "Stop hacking your variables! :)"
+            if int(os.environ.get('_ENVPROBE', 0)) != 1:
+                # If the user is not running the command through an alias,
+                # present an error. We don't want users to randomly run
+                # envprobe if it is enabled and set up.
+                print("You are in an environment where `envprobe` is "
+                      "enabled, but you used the command '{0}' to run "
+                      "envprobe, instead of `envprobe`."
+                      .format(sys.argv[0]),
+                      file=sys.stderr)
+                sys.exit(2)
 
     parser = argparse.ArgumentParser(
         prog='envprobe',
@@ -70,7 +67,13 @@ def __main():
     argv = envvars_commands.transform_subcommand_shortcut(sys.argv)
     args = parser.parse_args(argv[1:])
     if 'func' in args:
-        args.func(args)
+        try:
+            args.func(args)
+        except Exception as e:
+            print("Cannot execute the specified action:")
+            print(str(e))
+            import traceback
+            traceback.print_exc()
     else:
         print(epilogue)
 

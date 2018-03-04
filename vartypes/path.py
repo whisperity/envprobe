@@ -19,8 +19,10 @@ class PathLikeEnvVar(array.ColonSeparatedArrayEnvVar):
 
     def _transform_element_set(self, elem):
         elem = super()._transform_element_set(elem)
-        elem = os.path.expanduser(elem)
-        elem = os.path.abspath(elem)
+
+        if elem:
+            elem = os.path.expanduser(elem)
+            elem = os.path.abspath(elem)
 
         return elem
 

@@ -1,7 +1,7 @@
-from . import EnvVarType, register_type
+from . import EnvVar, register_type
 
 
-class StringEnvVar(EnvVarType):
+class StringEnvVar(EnvVar):
     """
     The most basic environmental variable type which is a raw string
     contained in a variable.

@@ -9,7 +9,7 @@ ENVTYPE_CLASSES_TO_NAMES = {}
 ENVTYPE_NAMES_TO_CLASSES = {}
 
 
-class EnvVarType(metaclass=ABCMeta):
+class EnvVar(metaclass=ABCMeta):
     """
     The base class for an environmental variable. Provides the interface for
     understanding what an environmental variable is.

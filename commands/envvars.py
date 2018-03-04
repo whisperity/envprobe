@@ -3,6 +3,12 @@ Handle the operations that query or alter the values of environmental
 variables.
 """
 
+import os
+
+from shell import get_current_shell
+from vartypes.array import ArrayEnvVar
+from vartypes.string import StringEnvVar
+from vartypes.path import PathLikeEnvVar
 
 __SHORTCUT_CHARS = {'+': "add",
                     '-': "remove",
@@ -21,9 +27,9 @@ def transform_subcommand_shortcut(argv):
     :function:`sys.argv`) with some common expansions for ease of use.
     """
 
-    if len(argv) < 2:
+    if len(argv) < 2 or (len(argv) == 2 and argv[1] in ['-h', '--help']):
         # Don't do anything if the argument vector does not contain at least
-        # one subcommand.
+        # one subcommand, or if the user is asking for help.
         return argv
 
     should_translate = False
@@ -72,20 +78,59 @@ def transform_subcommand_shortcut(argv):
     return argv
 
 
+def __create_environment_variable(key):
+    """
+    Create an :type:`vartypes.EnvVar` instance for the given environment
+    variable `key`.
+    """
+
+    # TODO: Improve this heuristic, introduce a way for the user to configure.
+    if 'PATH' in key:
+        # Consider the variable a PATH-like variable.
+        print(key + " contains 'PATH', considering it a POSIX path "
+              "variable...")
+        return PathLikeEnvVar(key, os.environ.get(key, ""))
+    else:
+        print("Considering " + key + " as a string variable...")
+        return StringEnvVar(key, os.environ.get(key, ""))
+
+
 def __get(args):
-    print("GET")
+    env_var = __create_environment_variable(args.VARIABLE)
+    print(env_var.name + "=" + env_var.to_raw_var())
 
 
 def __add(args):
-    print("ADD")
+    env_var = __create_environment_variable(args.VARIABLE)
+    if not isinstance(env_var, ArrayEnvVar):
+        raise NotImplementedError("'add' and 'remove' operations are only "
+                                  "applicable to array-like environmental "
+                                  "variables.")
+
+    print(env_var.name + " += " + args.VALUE + " at position " +
+          str(args.position))
+    env_var.insert_at(args.position, args.VALUE)
+    print(env_var.name + "=" + env_var.to_raw_var())
 
 
 def __remove(args):
-    print("REMOVE")
+    env_var = __create_environment_variable(args.VARIABLE)
+    if not isinstance(env_var, ArrayEnvVar):
+        raise NotImplementedError("'add' and 'remove' operations are only "
+                                  "applicable to array-like environmental "
+                                  "variables.")
+
+    print(env_var.name + " -= " + args.VALUE)
+    env_var.remove_value(args.VALUE)
+    print(env_var.name + "=" + env_var.to_raw_var())
 
 
 def __set(args):
     print("SET")
+    env_var = __create_environment_variable(args.VARIABLE)
+    print(env_var.name + " := " + args.VALUE)
+    env_var.value = args.VALUE
+    print(env_var.name + "=" + env_var.to_raw_var())
 
 
 def __create_add_subcommand(main_parser):
@@ -115,6 +160,7 @@ def __create_add_subcommand(main_parser):
         '--position',
         type=int,
         required=False,
+        default=0,
         help="The position in the environmental variable where the value "
              "should be added at. This is either a positive index from the "
              "beginning of the list, or a negative index which is an element "
@@ -191,6 +237,11 @@ def __create_set_subcommand(main_parser):
 
 
 def create_subcommand_parser(main_parser):
+    if not get_current_shell():
+        return
+
+    # Only expose these commands of this module if the user is running
+    # envprobe in a known valid shell.
     __create_get_subcommand(main_parser)
     __create_set_subcommand(main_parser)
     __create_add_subcommand(main_parser)

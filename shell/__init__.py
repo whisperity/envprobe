@@ -4,6 +4,7 @@ shell operations.
 """
 
 from abc import ABCMeta, abstractmethod
+import os
 
 
 SHELL_CLASSES_TO_TYPES = {}
@@ -26,9 +27,9 @@ class Shell(metaclass=ABCMeta):
         return SHELL_CLASSES_TO_TYPES.get(type(self), "Unknown?")
 
     @staticmethod
-    def get_current_shell(shell_type):
+    def for_shell(shell_type):
         """
-        Creates a Shell instance based on the current environment, if possible.
+        Creates a Shell instance based on the given `shell_type`, if possible.
         This is approximately the inverse of the :func:`shell_type`: property.
 
         Returns none if the given `shell_type` is unknown.
@@ -93,3 +94,21 @@ def register_type(kind, clazz):
     """
     SHELL_CLASSES_TO_TYPES[clazz] = kind
     SHELL_TYPES_TO_CLASSES[kind] = clazz
+
+
+def get_current_shell():
+    """
+    Creates a Shell instance based on the current environment, if possible.
+
+    Returns False if the current shell type is unknown or None if the user
+    does not have envprobe enabled.
+    """
+    shell_type = os.environ.get('ENVPROBE_SHELL_TYPE')
+    if not shell_type:
+        return None
+
+    shell = Shell.for_shell(shell_type)
+    if not shell:
+        return False
+
+    return shell

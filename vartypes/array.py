@@ -2,10 +2,10 @@
 Module which contains the classes for array-like environmental variables.
 """
 
-from . import EnvVarType, register_type
+from . import EnvVar, register_type
 
 
-class ArrayEnvVar(EnvVarType):
+class ArrayEnvVar(EnvVar):
     """
     Represents an environmental variable which
     """
@@ -130,7 +130,7 @@ class ArrayEnvVar(EnvVarType):
             self._value.remove(elem)
 
     def to_raw_var(self):
-        return self.separator.join(self._value)
+        return self.separator.join(self._value).strip(self.separator)
 
 
 class ColonSeparatedArrayEnvVar(ArrayEnvVar):
