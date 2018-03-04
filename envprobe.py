@@ -4,27 +4,14 @@
 Main entry point for the Envprobe tool. This module handles the parsing of
 command-line arguments and dispatching the user's request to the submodules.
 """
+
 import argparse
 import os
 import sys
 
 from commands import shell as shell_command
+from commands import envvars as envvars_commands
 from shell import Shell
-from shell.bash import BashShell
-
-
-def __shell(args):
-    """
-    Entry point for handling generation of shell hooks.
-    """
-
-    if args.SHELL == 'bash':
-        shell = BashShell()
-
-        if shell.is_envprobe_capable():
-            print(shell.get_shell_hook())
-        else:
-            print(shell.get_shell_hook_error())
 
 
 def __main():
@@ -77,9 +64,11 @@ def __main():
     )
     subparsers = parser.add_subparsers(title="available commands")
 
-    shell_command.create_subcommand_parser(subparsers, __shell)
+    envvars_commands.create_subcommand_parser(subparsers)
+    shell_command.create_subcommand_parser(subparsers)
 
-    args = parser.parse_args()
+    argv = envvars_commands.transform_subcommand_shortcut(sys.argv)
+    args = parser.parse_args(argv[1:])
     if 'func' in args:
         args.func(args)
     else:
