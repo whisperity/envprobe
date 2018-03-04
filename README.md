@@ -60,3 +60,78 @@ After envprobe is installed, you can use it in the shell with the `envprobe`
 command. **You should NOT alter `PATH` or use the absolute
 `~/envprobe/envprobe.py` path to access `envprobe`.** The hook executed by
 the lines above should take care of enabling `envprobe` for you.
+
+Usage for environment variables
+-------------------------------
+
+### Querying and setting environment variables
+
+Envprobe uses the actions `get` and `set` to access environment variables.
+After a variable is set, your shell will load its value at the next prompt
+print.
+
+To query your `EDITOR`:
+
+    ep get EDITOR
+
+To set `EDITOR` to something else:
+
+    ep set EDITOR your-favourite-editor
+
+The shortcut characters `?` and `=` can be used instead of `get` and `set`
+like this:
+
+    ep ?EDITOR
+    ep EDITOR=your-favourite-editor
+
+The special character can appear either as the first and as the last letter
+of the command. If you are fancy of Haskell and prefix syntax, you can say
+something like this below. The "prefix" and "suffix" forms are equivalent.
+
+    ep =EDITOR your-favourite-editor
+    ep = EDITOR your-favourite-editor
+    ep EDITOR?
+    ep EDITOR ?
+
+### Extending and removing from "array-like" environment variables (e.g. `PATH`)
+
+Traditionally, extending `PATH` with your current working directory required
+a lengthy sequence: `export PATH="$(pwd):${PATH}"`. Envprobe provides support
+for "array-like" environmental variables via the `add` and `remove` command,
+which insert or remove an element from the array. The environment variable is
+automatically reformatted to include all the elements that were not modified.
+
+Currently, variables whose name include the substring `PATH` are considered
+as array variables. (This is expected to change to be more configurable as
+`envprobe`'s development furthers.)
+
+To remove `/usr/bin` from your `PATH`, say either the long or the short form:
+
+    ep remove PATH /usr/bin
+    ep -PATH /usr/bin
+
+To add your current directory to `CMAKE_PREFIX_PATH`:
+
+    ep add CMAKE_PREFIX_PATH `pwd`
+    ep +CMAKE_PREFIX_PATH `pwd`
+
+`add` also supports suffixing the array with the argument, i.e. adding it as
+the last element. **Be careful, `+VAR` and `VAR+` are *NOT* equivalent
+commands.**
+
+    ep add --position -1 CMAKE_PREFIX_PATH `pwd`
+    ep CMAKE_PREFIX_PATH+ `pwd`
+
+You can insert the command-line argument to anywhere in the array with giving
+a `--position`.
+
+Of course, directly overwriting an environment variable is also supported. In
+this case, the value given to `set` must be the proper string of the array:
+
+    ep set PATH /home/username:/usr/bin
+    ep PATH=/home/username:/usr/bin
+
+Usage for saving environment configurations
+-------------------------------------------
+
+> Coming soon...
