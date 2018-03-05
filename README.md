@@ -97,7 +97,7 @@ something like this below. The "prefix" and "suffix" forms are equivalent.
 
 Traditionally, extending `PATH` with your current working directory required
 a lengthy sequence: `export PATH="$(pwd):${PATH}"`. Envprobe provides support
-for "array-like" environmental variables via the `add` and `remove` command,
+for "array-like" environment variables via the `add` and `remove` command,
 which insert or remove an element from the array. The environment variable is
 automatically reformatted to include all the elements that were not modified.
 
@@ -115,6 +115,8 @@ To add your current directory to `CMAKE_PREFIX_PATH`:
     ep add CMAKE_PREFIX_PATH `pwd`
     ep +CMAKE_PREFIX_PATH `pwd`
 
+#### Adding values at a certain position
+
 `add` also supports suffixing the array with the argument, i.e. adding it as
 the last element. **Be careful, `+VAR` and `VAR+` are *NOT* equivalent
 commands.**
@@ -124,6 +126,20 @@ commands.**
 
 You can insert the command-line argument to anywhere in the array with giving
 a `--position`.
+
+#### Adding and removing multiple values
+
+`add` and `remove` take multiple values, which will be added to or removed
+from the environment variable. In case of `add`, if a position (e.g.
+`--position 1` or `+VARIABLE` is used), the arguments are added in the order
+they are specified:
+
+    $ echo $PATH
+    > /usr/bin
+
+    $ ep +PATH /one /two   # Or: ep add --position 1 PATH /one /two
+    $ echo $PATH
+    > /one:/two:/usr/bin
 
 Of course, directly overwriting an environment variable is also supported. In
 this case, the value given to `set` must be the proper string of the array:

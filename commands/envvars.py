@@ -112,7 +112,10 @@ def __add(args):
                                   "applicable to array-like environmental "
                                   "variables.")
 
-    env_var.insert_at(args.position, args.VALUE)
+    for val in args.VALUE:
+        env_var.insert_at(args.position, val)
+        # Insert the arguments in the order they were specified.
+        args.position += 1
     get_current_shell().set_env_var(env_var)
 
 
@@ -123,7 +126,8 @@ def __remove(args):
                                   "applicable to array-like environmental "
                                   "variables.")
 
-    env_var.remove_value(args.VALUE)
+    for val in args.VALUE:
+        env_var.remove_value(val)
     get_current_shell().set_env_var(env_var)
 
 
@@ -141,7 +145,7 @@ def __create_add_subcommand(main_parser):
                     "position. This command should only be used for "
                     "array-like variables that can contain multiple values, "
                     "such as PATH.",
-        help="Add a value to an array-like environmental variable."
+        help="Add values to an array-like environmental variable."
     )
 
     parser.add_argument(
@@ -153,7 +157,9 @@ def __create_add_subcommand(main_parser):
     parser.add_argument(
         'VALUE',
         type=str,
-        help="""The value to be added, e.g. "/usr/bin"."""
+        nargs='+',
+        help="""The values to be added, e.g. "/usr/bin". Values are added """
+             """in the order specified."""
     )
 
     parser.add_argument(
@@ -180,7 +186,7 @@ def __create_remove_subcommand(main_parser):
         description="Remove a value from an environmental variable. This "
                     "command should only be used for array-like variables "
                     "that can contain multiple values, such as PATH.",
-        help="Remove a value from an array-like environmental variable."
+        help="Remove values from an array-like environmental variable."
     )
 
     parser.add_argument(
@@ -192,7 +198,8 @@ def __create_remove_subcommand(main_parser):
     parser.add_argument(
         'VALUE',
         type=str,
-        help="""The value to be removed, e.g. "/usr/bin"."""
+        nargs='+',
+        help="""The values to be removed, e.g. "/usr/bin"."""
     )
 
     parser.set_defaults(func=__remove)

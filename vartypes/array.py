@@ -101,8 +101,8 @@ class ArrayEnvVar(EnvVar):
         Subscript setter operator that sets the given `idx`th element to
         `value`. The index must be an integer.
         """
+        elem = self._transform_element_set(elem)
         if self._check_if_element_valid(elem):
-            elem = self._transform_element_set(elem)
             self._value[idx] = elem
 
     def __delitem__(self, idx):
@@ -118,8 +118,8 @@ class ArrayEnvVar(EnvVar):
         The elements to the right (having a larger index) will be shifted by
         one to make place for the new element.
         """
+        elem = self._transform_element_set(elem)
         if self._check_if_element_valid(elem):
-            elem = self._transform_element_set(elem)
             if idx >= 0:
                 self._value.insert(idx, elem)
             elif idx < -1:
@@ -141,6 +141,7 @@ class ArrayEnvVar(EnvVar):
         """
         Removes ALL occurrence the given element from the array.
         """
+        elem = self._transform_element_set(elem)
         for _ in range(0, self._value.count(elem)):
             self._value.remove(elem)
 
