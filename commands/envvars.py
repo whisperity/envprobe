@@ -153,8 +153,10 @@ def __create_add_subcommand(main_parser):
         description="Add a value to an environmental variable at a given "
                     "position. This command should only be used for "
                     "array-like variables that can contain multiple values, "
-                    "such as PATH.",
-        help="Add values to an array-like environmental variable."
+                    "such as PATH. Alternatively, this command can be used "
+                    "as `envprobe +VARIABLE value1 value2 ...`.",
+        help="{+VARIABLE VALUE} Add values to an array-like environmental "
+             "variable."
     )
 
     parser.add_argument(
@@ -194,8 +196,11 @@ def __create_remove_subcommand(main_parser):
         name='remove',
         description="Remove a value from an environmental variable. This "
                     "command should only be used for array-like variables "
-                    "that can contain multiple values, such as PATH.",
-        help="Remove values from an array-like environmental variable."
+                    "that can contain multiple values, such as PATH. "
+                    "Alternatively, this command can be used as `envprobe "
+                    "-VARIABLE value1 value2 ...`.",
+        help="{-VARIABLE VALUE} Remove values from an array-like "
+             "environmental variable."
     )
 
     parser.add_argument(
@@ -217,8 +222,10 @@ def __create_remove_subcommand(main_parser):
 def __create_get_subcommand(main_parser):
     parser = main_parser.add_parser(
         name='get',
-        description="Print the value of an environmental variable.",
-        help="Print the value of an environmental variable."
+        description="Print the value of an environmental variable. "
+                    "Alternatively, this command can be used as `envprobe "
+                    "?VARIABLE`.",
+        help="{?VARIABLE} Print the value of an environmental variable."
     )
 
     parser.add_argument(
@@ -233,8 +240,11 @@ def __create_get_subcommand(main_parser):
 def __create_set_subcommand(main_parser):
     parser = main_parser.add_parser(
         name='set',
-        description="Set the environmental variable to a given value.",
-        help="Set the environmental variable to a given value."
+        description="Set the environmental variable to a given value. "
+                    "Alternatively, this command can be used as `envprobe "
+                    "VARIABLE=VALUE` or `envprobe ! VARIABLE VALUE`.",
+        help="{VARIABLE=VALUE} Set the environmental variable to a given "
+             "value."
     )
 
     parser.add_argument(
