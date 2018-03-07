@@ -82,6 +82,11 @@ def transform_subcommand_shortcut(argv):
             action = [__SHORTCUT_CHARS[command[-1]]]
         variable_name = command[:-1]
 
+    if len(argv) == 4 and argv[2] == variable_name:
+        # If the users enter 'ep VAR=""' the variable name would get
+        # duplicated below, so we change it to the entered empty string.
+        argv = argv[:2] + ['']
+
     argv = [argv[0]] + action + [variable_name] + argv[2:]
     return argv
 
@@ -114,8 +119,12 @@ def __add(args):
 
     for val in args.VALUE:
         env_var.insert_at(args.position, val)
-        # Insert the arguments in the order they were specified.
-        args.position += 1
+        if args.position >= 0:
+            # If the arguments are appended with a positive index, we insert
+            # the values in order. If the arguments are inserted at a negative
+            # index, the position must not be modified, because the arguments
+            # get shifted with the insert.
+            args.position += 1
     get_current_shell().set_env_var(env_var)
 
 

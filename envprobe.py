@@ -65,12 +65,12 @@ def __main():
     shell_command.create_subcommand_parser(subparsers)
 
     argv = envvars_commands.transform_subcommand_shortcut(sys.argv)
-    args = parser.parse_args(argv[1:])
+    args = parser.parse_args(argv[1:])  # Cut the shell command's name.
     if 'func' in args:
         try:
             args.func(args)
         except Exception as e:
-            print("Cannot execute the specified action:")
+            print("Cannot execute the specified action.")
             print(str(e))
             import traceback
             traceback.print_exc()
