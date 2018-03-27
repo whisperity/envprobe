@@ -2,12 +2,16 @@
 Handle the operations concerning hooking Envprobe into a shell.
 """
 
+from configuration import global_config
 from shell.bash import BashShell
 
 
 def create_subcommand_parser(main_parser):
     parser = main_parser.add_parser(
         name='shell',
+        description="This command generates a shell executable code snippet "
+                    "that can be used to register envprobe's hooks into the "
+                    "shell's environment.",
         help="Generate the necessary hooks to register envprobe into a "
              "shell's environment."
     )
@@ -22,6 +26,7 @@ def create_subcommand_parser(main_parser):
     )
 
     parser.set_defaults(func=__main)
+    global_config.REGISTERED_COMMANDS.append('shell')
 
 
 def __main(args):

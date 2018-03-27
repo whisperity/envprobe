@@ -84,6 +84,11 @@ like this:
     ep ?EDITOR
     ep EDITOR=your-favourite-editor
 
+To query the value of an environment variable, you can also use the shortest
+form in which you only give the variable's name:
+
+    ep PATH
+
 The special character can appear either as the first and as the last letter
 of the command. If you are fancy of Haskell and prefix syntax, you can say
 something like this below. The "prefix" and "suffix" forms are equivalent.

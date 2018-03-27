@@ -5,11 +5,13 @@ variables.
 
 import os
 
+from configuration import global_config
 from shell import get_current_shell
 from vartypes.array import ArrayEnvVar
 from vartypes.string import StringEnvVar
 from vartypes.path import PathLikeEnvVar
 
+# Map certain shortcut characters to different actual commands.
 __SHORTCUT_CHARS = {'+': "add",
                     '-': "remove",
                     '?': "get",
@@ -64,6 +66,11 @@ def transform_subcommand_shortcut(argv):
         # might have entered the shortcut as originally intended:
         # "envprobe +PATH /foo/bar".
         should_translate = True
+
+    if len(argv) == 2 and argv[1] not in global_config.REGISTERED_COMMANDS:
+        # Shortcut `envprobe PATH` to "envprobe get PATH", if a seemingly
+        # valid variable name is given.
+        argv = [argv[0], 'get', argv[1]]
 
     # Expand the letters into their actual command counterparts.
     if not should_translate:
@@ -188,6 +195,7 @@ def __create_add_subcommand(main_parser):
     )
 
     parser.set_defaults(func=__add)
+    global_config.REGISTERED_COMMANDS.append('add')
 
 
 def __create_remove_subcommand(main_parser):
@@ -217,6 +225,7 @@ def __create_remove_subcommand(main_parser):
     )
 
     parser.set_defaults(func=__remove)
+    global_config.REGISTERED_COMMANDS.append('remove')
 
 
 def __create_get_subcommand(main_parser):
@@ -235,6 +244,7 @@ def __create_get_subcommand(main_parser):
     )
 
     parser.set_defaults(func=__get)
+    global_config.REGISTERED_COMMANDS.append('get')
 
 
 def __create_set_subcommand(main_parser):
@@ -260,6 +270,7 @@ def __create_set_subcommand(main_parser):
     )
 
     parser.set_defaults(func=__set)
+    global_config.REGISTERED_COMMANDS.append('set')
 
 
 def create_subcommand_parser(main_parser):
