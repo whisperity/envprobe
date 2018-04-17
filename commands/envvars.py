@@ -36,6 +36,7 @@ def transform_subcommand_shortcut(argv):
 
     should_translate = False
     command = argv[1]
+
     if command in __SHORTCUT_CHARS:
         # Sometimes, users might enter "envprobe + PATH /foo/bar" instead of
         # "envprobe +PATH /foo/bar" which is the "expected" usage. Fix up these
@@ -66,11 +67,12 @@ def transform_subcommand_shortcut(argv):
         # might have entered the shortcut as originally intended:
         # "envprobe +PATH /foo/bar".
         should_translate = True
-
-    if len(argv) == 2 and argv[1] not in global_config.REGISTERED_COMMANDS:
+    elif len(argv) == 2 and command not in global_config.REGISTERED_COMMANDS \
+            and not any([command.startswith(c) or command.endswith(c)
+                         for c in __SHORTCUT_CHARS]):
         # Shortcut `envprobe PATH` to "envprobe get PATH", if a seemingly
         # valid variable name is given.
-        argv = [argv[0], 'get', argv[1]]
+        argv = [argv[0], 'get', command]
 
     # Expand the letters into their actual command counterparts.
     if not should_translate:
