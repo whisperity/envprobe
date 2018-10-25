@@ -16,7 +16,10 @@ __SHORTCUT_CHARS = {'+': "add",
                     '?': "get",
                     '!': "set",
                     '=': "set",
-                    '%': "undefine"
+                    '^': "undefine",
+                    '{': "load",  # < would be interpreted by shell. :(
+                    '}': "save",  # > would be interpreted by shell. :(
+                    '%': "diff",
                     }
 
 
@@ -290,7 +293,7 @@ def __create_undefine_subcommand(main_parser):
         name='undefine',
         description="Unsets the given environment variable, undefining its "
                     "value.",
-        help="{%%VARIABLE} Undefine an environmental variable."
+        help="{^VARIABLE} Undefine an environmental variable."
     )
 
     parser.add_argument(

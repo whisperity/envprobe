@@ -1,6 +1,11 @@
 import os
 
 
+__all__ = ['get_configuration_folder',
+           'global_config',
+           'locking_configuration_json']
+
+
 def get_configuration_folder():
     """
     Retrieves the folder where the user's persistent configuration files

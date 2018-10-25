@@ -342,7 +342,7 @@ def __create_diff_subcommand(main_parser):
         description="Shows the difference between the previously "
                     "saved/loaded state and the current environment of the "
                     "shell.",
-        help="Show difference of shell vs. previous save/load."
+        help="{%%} Show difference of shell vs. previous save/load."
     )
 
     parser.add_argument('variable',
@@ -389,7 +389,7 @@ def __create_load_subcommand(main_parser):
         description="Load the previously saved differences of environment "
                     "variables from a named save, and apply them to the "
                     "current shell.",
-        help="Load differences from a named save and apply them."
+        help="{{NAME} Load differences from a named save and apply them."
     )
 
     parser.add_argument('name',
@@ -430,7 +430,7 @@ def __create_save_subcommand(main_parser):
                     "the specified save already exists, changes for a "
                     "particular variable is overwritten in the save. (To "
                     "completely overwrite a save, 'delete' it first.)",
-        help="Save changes in the environment into a named save."
+        help="{}NAME} Save changes in the environment into a named save."
     )
 
     parser.add_argument('name',
