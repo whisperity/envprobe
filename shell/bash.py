@@ -36,6 +36,9 @@ class BashShell(Shell):
             self._control_file = tempf.name
             tempf.close()
 
+        # Register where the shell's state is saved.
+        self._state_file = self._control_file.replace('.sh', '.pickle')
+
     def is_envprobe_capable(self):
         return self.shell_pid and self.envprobe_location
 

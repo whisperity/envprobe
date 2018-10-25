@@ -3,6 +3,8 @@ This module contains the support code that translates envprobe operations to
 shell operations.
 """
 
+# TODO: Refactor the subcommands to a better layout, support dynamic loading.
+
 from abc import ABCMeta, abstractmethod
 import os
 
@@ -20,6 +22,7 @@ class Shell(metaclass=ABCMeta):
         self._shell_pid = None
         self._envprobe_location = None
         self._control_file = os.devnull
+        self._state_file = os.devnull
 
     @staticmethod
     def for_shell(shell_type):
@@ -56,6 +59,14 @@ class Shell(metaclass=ABCMeta):
         Returns the absolute location where envprobe is installed.
         """
         return self._envprobe_location
+
+    @property
+    def state_file(self):
+        """
+        Returns the path of the file which is used to save the "known" state
+        of the shell.
+        """
+        return self._state_file
 
     @abstractmethod
     def is_envprobe_capable(self):

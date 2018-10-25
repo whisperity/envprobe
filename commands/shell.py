@@ -4,6 +4,7 @@ Handle the operations concerning hooking Envprobe into a shell.
 
 from configuration import global_config
 from shell.bash import BashShell
+from state import environment
 
 
 def create_subcommand_parser(main_parser):
@@ -39,5 +40,10 @@ def __main(args):
 
         if shell.is_envprobe_capable():
             print(shell.get_shell_hook())
+
+            # Create the initial environment and make sure its snapshot is
+            # saved.
+            state = environment.Environment(shell)
+            state.save()
         else:
             print(shell.get_shell_hook_error())

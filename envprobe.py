@@ -9,8 +9,9 @@ import argparse
 import os
 import sys
 
+from commands import envvars as envvars_command
+from commands import state as state_command
 from commands import shell as shell_command
-from commands import envvars as envvars_commands
 import shell
 
 
@@ -61,10 +62,11 @@ def __main():
     )
     subparsers = parser.add_subparsers(title="available commands")
 
-    envvars_commands.create_subcommand_parser(subparsers)
+    envvars_command.create_subcommand_parser(subparsers)
     shell_command.create_subcommand_parser(subparsers)
+    state_command.create_subcommand_parser(subparsers)
 
-    argv = envvars_commands.transform_subcommand_shortcut(sys.argv)
+    argv = envvars_command.transform_subcommand_shortcut(sys.argv)
     args = parser.parse_args(argv[1:])  # Cut the shell command's name.
     if 'func' in args:
         try:
@@ -78,6 +80,6 @@ def __main():
         print(epilogue)
 
 
-# Define an entry point so that the tool is usable with "./envprobe.py"
+# Define an entry point so that the tool is usable by calling "./envprobe.py".
 if __name__ == "__main__":
     __main()
