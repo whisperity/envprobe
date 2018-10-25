@@ -48,8 +48,11 @@ class ArrayEnvVar(EnvVar):
         if isinstance(new_value, list):
             self._value = [self._transform_element_set(e) for e in new_value]
         elif isinstance(new_value, str):
-            self._value = [self._transform_element_set(e)
-                           for e in new_value.split(self.separator)]
+            if not new_value:
+                self._value = []
+            else:
+                self._value = [self._transform_element_set(e)
+                               for e in new_value.split(self.separator)]
         else:
             raise ValueError("Cannot set value of ArrayEnvVar to a non-list, "
                              "non-string parameter.")
@@ -179,9 +182,9 @@ class ArrayEnvVar(EnvVar):
         if old == new:
             return ret
 
-        added = list(filter(lambda e: e not in old, new))
-        removed = list(filter(lambda e: e not in new, old))
-        kept = list(filter(lambda e: e in old and e in new,
+        added = list(filter(lambda e: e not in old and e != '', new))
+        removed = list(filter(lambda e: e not in new and e != '', old))
+        kept = list(filter(lambda e: e in old and e in new and e != '',
                            __deduplicate_list_keep_order(old + new)))
 
         for add in added:

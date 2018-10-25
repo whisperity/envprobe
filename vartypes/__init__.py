@@ -68,7 +68,7 @@ class EnvVar(metaclass=ABCMeta):
 
 
 # Expose the known type of environmental variables from the module.
-__all__ = ['string', 'numeric', 'array']
+__all__ = ['string', 'numeric', 'array', 'path']
 
 
 def register_type(kind, clazz):

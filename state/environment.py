@@ -1,5 +1,5 @@
 """
-Handles managing the saved state of a shell environment.
+Handles managing the state of a shell environment.
 """
 import copy
 import os
@@ -34,12 +34,35 @@ class VariableDifference():
         self.differences = difference_actions['diff'] \
             if difference_actions else []
 
-    def dict(self):
-        return {"type": self.type.name,
-                "variable": self.variable,
-                "old": self.old_value,
-                "new": self.new_value,
-                "diffs": self.differences}
+    def is_simple_change(self):
+        """
+        :return: If the specified difference action list contains a simple
+        change. A simple change is either a single addition or delete, or a
+        single change from a value to another, if no other values exist on
+        either side of the diff.
+        """
+        return len(self.differences) == 1 or \
+            (len(self.differences) == 2 and
+             self.differences[0][0] == '+' and
+             self.differences[1][0] == '-' and
+             self.differences[0][1] == self.new_value and
+             self.differences[1][1] == self.old_value)
+
+    def is_new(self):
+        """
+        :return: If the current change set a variable from an unset state to
+        a set state.
+        """
+        return len(self.differences) == 1 \
+            and not self.old_value
+
+    def is_unset(self):
+        """
+        :return: If the current change unsets a variable from a previously
+        defined state.
+        """
+        return len(self.differences) == 1 \
+            and not self.new_value
 
 
 class Environment():
@@ -112,7 +135,7 @@ class Environment():
             old = create_environment_variable(key, self.saved_env)
             new = create_environment_variable(key, self.current_env)
 
-            if not old or not new:
+            if old is None or new is None:
                 # If the old or new environment variable doesn't have a
                 # value property, it cannot or should not be serialised,
                 # thus we ignore it.
@@ -120,7 +143,7 @@ class Environment():
 
             if old.value != new.value:
                 diff[key] = VariableDifference(
-                    diff_type, key, old.value, new.value,
+                    diff_type, key, old.to_raw_var(), new.to_raw_var(),
                     type(old).get_difference(old, new))
 
         def __handle_keys(type, iterable):

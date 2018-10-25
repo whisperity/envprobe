@@ -101,7 +101,7 @@ def transform_subcommand_shortcut(argv):
 
 def __get(args):
     env_var = create_environment_variable(args.VARIABLE)
-    if not env_var:
+    if env_var is None:
         raise ValueError("This environment variable cannot or should not "
                          "be managed.")
     print(env_var.name + "=" + env_var.to_raw_var())
@@ -109,7 +109,7 @@ def __get(args):
 
 def __add(args):
     env_var = create_environment_variable(args.VARIABLE)
-    if not env_var:
+    if env_var is None:
         raise ValueError("This environment variable cannot or should not "
                          "be managed.")
     if not isinstance(env_var, ArrayEnvVar):
@@ -130,7 +130,7 @@ def __add(args):
 
 def __remove(args):
     env_var = create_environment_variable(args.VARIABLE)
-    if not env_var:
+    if env_var is None:
         raise ValueError("This environment variable cannot or should not "
                          "be managed.")
     if not isinstance(env_var, ArrayEnvVar):
@@ -145,7 +145,7 @@ def __remove(args):
 
 def __set(args):
     env_var = create_environment_variable(args.VARIABLE)
-    if not env_var:
+    if env_var is None:
         raise ValueError("This environment variable cannot or should not "
                          "be managed.")
     env_var.value = args.VALUE
