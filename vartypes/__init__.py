@@ -54,10 +54,6 @@ class EnvVar(metaclass=ABCMeta):
         Generate an iterable of difference "actions" that can describe how
         the value of :param:`old_variable` can be transformed into
         :param:`new_variable`.
-
-        The internal representation of the returned value is
-        implementation-defined, but is guaranteed to be usable with
-        :func:`apply_difference`.
         """
         if type(old_variable) != type(new_variable):
             raise TypeError("Only variables of the same type can be "
