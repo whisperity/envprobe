@@ -153,6 +153,8 @@ this case, the value given to `set` must be the proper string of the array:
     ep set PATH /home/username:/usr/bin
     ep PATH=/home/username:/usr/bin
 
+> TODO: Document the `unset` command.
+
 Usage for saving environment configurations
 -------------------------------------------
 

@@ -133,7 +133,8 @@ class Save():
                                   "read-only save.")
         if key in self._state['variables']:
             del self._state['variables'][key]
-        self._state['unset'].append(key)
+        if key not in self._state['unset']:
+            self._state['unset'].append(key)
 
     def __len__(self):
         """

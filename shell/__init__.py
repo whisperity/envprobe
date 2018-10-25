@@ -97,17 +97,25 @@ class Shell(metaclass=ABCMeta):
     def _prepare_setting_env_var(self, env_var):
         """
         This method specifies how a particular Shell can execute a command
-        which sets the given `env_var`'s value to be what the user intended
-        in their shell.
+        which sets the given :param:`env_var`'s value to be what the user
+        intended in their shell.
+        """
+        pass
+
+    @abstractmethod
+    def _prepare_undefining_env_var(self, env_var):
+        """
+        This method specifies how a particular Shell can execute a command
+        which undefines the given :param:`env_var`.
         """
         pass
 
     def set_env_var(self, env_var):
         """
-        This method writes the given `env_var`'s value to a special temporary
-        file that is executed by the hooked Shell. The user's shell SHOULD,
-        but maybe not immediately, reflect the change in the environment
-        ordered by this method.
+        This method writes the given :param:`env_var`'s value to a special
+        temporary file that is executed by the hooked Shell. The user's
+        shell SHOULD, but maybe not immediately, reflect the change in the
+        environment ordered by this method.
         """
 
         # This method SHOULD always assume that the temporary file's state is
@@ -116,6 +124,17 @@ class Shell(metaclass=ABCMeta):
         with open(self._control_file, 'a') as control:
             control.write('\n')
             control.write(self._prepare_setting_env_var(env_var))
+            control.write('\n')
+
+    def undefine_env_var(self, env_var):
+        """
+        This method writes the given :param:`env_var`'s name into the control
+        file that is executed by the current shell with the notion that the
+        variable should be undefined, no matter what value it had.
+        """
+        with open(self._control_file, 'a') as control:
+            control.write('\n')
+            control.write(self._prepare_undefining_env_var(env_var))
             control.write('\n')
 
 

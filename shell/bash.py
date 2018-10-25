@@ -89,5 +89,8 @@ echo "Environment variables for ENVPROBE are missing. Refusing to load..." >&2;
     def _prepare_setting_env_var(self, env_var):
         return 'export {0}={1};'.format(env_var.name, env_var.to_raw_var())
 
+    def _prepare_undefining_env_var(self, env_var):
+        return 'unset {0};'.format(env_var.name)
+
 
 register_type('bash', BashShell)

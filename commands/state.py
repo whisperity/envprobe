@@ -118,31 +118,35 @@ def __load(args):
 
                 if not args.patch or bool_prompt():
                     env.apply_change(variable_saved, remove=True)
-                    # TODO: Unset in the shell!
+                    shell.undefine_env_var(variable_shell)
 
                 continue
 
             # Read the change from the save and apply it to the variable.
             value = save[variable_name]
+            current_value = variable_shell.value
             if not isinstance(value, dict):
                 # Single variable changes contain the NEW value in the save.
+                # For the sake of user communication here, regard a list
+                # containing a single string as a single string.
                 if isinstance(value, list) and len(value) == 1:
-                    # For the sake of user communication here, regard a list
-                    # containing a single string as a single string.
                     value = value[0]
+                if isinstance(current_value, list) and \
+                        len(current_value) == 1:
+                    current_value = current_value[0]
 
                 if args.patch:
                     if variable_name not in env.current_env:
                         print("New variable \"%s\" will be set to value: "
                               "'%s'." % (variable_name, value))
-                    elif value == variable_shell.value:
+                    elif value == current_value:
                         # Don't change something that already has the new
                         # value.
                         continue
                     else:
                         print("Variable \"%s\" will be changed to value: "
                               "'%s' (previous value was: '%s')"
-                              % (variable_name, value, variable_shell.value))
+                              % (variable_name, value, current_value))
 
                 if not args.patch or bool_prompt():
                     variable_saved.value = value
@@ -158,7 +162,7 @@ def __load(args):
                                     "array!")
 
                 for add in value['add']:
-                    if add in variable_shell.value:
+                    if add in current_value:
                         # Ignore adding something that is already there.
                         continue
 
@@ -173,7 +177,7 @@ def __load(args):
                         shell.set_env_var(variable_shell)
 
                 for remove in value['remove']:
-                    if remove not in variable_shell.value:
+                    if remove not in current_value:
                         # Ignore removing something that is not there.
                         continue
 

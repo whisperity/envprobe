@@ -15,7 +15,8 @@ __SHORTCUT_CHARS = {'+': "add",
                     '-': "remove",
                     '?': "get",
                     '!': "set",
-                    '=': "set"
+                    '=': "set",
+                    '%': "undefine"
                     }
 
 
@@ -152,6 +153,14 @@ def __set(args):
     get_current_shell().set_env_var(env_var)
 
 
+def __undefine(args):
+    env_var = create_environment_variable(args.VARIABLE)
+    if env_var is None:
+        raise ValueError("This environment variable cannot or should not "
+                         "be managed.")
+    get_current_shell().undefine_env_var(env_var)
+
+
 def __create_add_subcommand(main_parser):
     parser = main_parser.add_parser(
         name='add',
@@ -271,6 +280,24 @@ def __create_set_subcommand(main_parser):
     global_config.REGISTERED_COMMANDS.append('set')
 
 
+def __create_undefine_subcommand(main_parser):
+    parser = main_parser.add_parser(
+        name='undefine',
+        description="Unsets the given environment variable, undefining its "
+                    "value.",
+        help="{%%VARIABLE} Undefine an environmental variable."
+    )
+
+    parser.add_argument(
+        'VARIABLE',
+        type=str,
+        help="The variable to undefine, e.g. EDITOR."
+    )
+
+    parser.set_defaults(func=__undefine)
+    global_config.REGISTERED_COMMANDS.append('undefine')
+
+
 def create_subcommand_parser(main_parser):
     if not get_current_shell():
         return
@@ -281,3 +308,4 @@ def create_subcommand_parser(main_parser):
     __create_set_subcommand(main_parser)
     __create_add_subcommand(main_parser)
     __create_remove_subcommand(main_parser)
+    __create_undefine_subcommand(main_parser)
