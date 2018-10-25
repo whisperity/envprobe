@@ -98,6 +98,8 @@ def __load(args):
                   "being modified by another process!" % args.name,
                   file=sys.stderr)
             return
+        if len(save) == 0:
+            print("The save '%s' does not exist!" % args.name)
 
         for variable_name in save:
             if args.variable and variable_name not in args.variable:
@@ -115,11 +117,11 @@ def __load(args):
                                                          env.current_env)
 
             if save[variable_name] == Save.UNSET:
-                if args.patch:
+                if args.patch or args.dry_run:
                     print("Variable \"%s\" will be unset (from value: '%s')"
                           % (variable_name, variable_shell.value))
 
-                if not args.patch or bool_prompt():
+                if not args.dry_run and (not args.patch or bool_prompt()):
                     env.apply_change(variable_saved, remove=True)
                     shell.undefine_env_var(variable_shell)
 
@@ -138,7 +140,7 @@ def __load(args):
                         len(current_value) == 1:
                     current_value = current_value[0]
 
-                if args.patch:
+                if args.patch or args.dry_run:
                     if variable_name not in env.current_env:
                         print("New variable \"%s\" will be set to value: "
                               "'%s'." % (variable_name, value))
@@ -151,7 +153,7 @@ def __load(args):
                               "'%s' (previous value was: '%s')"
                               % (variable_name, value, current_value))
 
-                if not args.patch or bool_prompt():
+                if not args.dry_run and (not args.patch or bool_prompt()):
                     variable_saved.value = value
                     variable_shell.value = value
                     env.apply_change(variable_saved)
@@ -164,18 +166,21 @@ def __load(args):
                                     "change to a variable which is not an "
                                     "array!")
 
+                insert_idx = 0
                 for add in value['add']:
                     if add in current_value:
                         # Ignore adding something that is already there.
                         continue
 
-                    if args.patch:
+                    if args.patch or args.dry_run:
                         print("In variable \"%s\", the value (component) "
                               "'%s' will be added."
                               % (variable_name, add))
-                    if not args.patch or bool_prompt():
-                        variable_saved.insert_at(0, add)
-                        variable_shell.insert_at(0, add)
+                    if not args.dry_run and (not args.patch or bool_prompt()):
+                        variable_saved.insert_at(insert_idx, add)
+                        variable_shell.insert_at(insert_idx, add)
+                        insert_idx += 1
+
                         env.apply_change(variable_saved)
                         shell.set_env_var(variable_shell)
 
@@ -184,11 +189,11 @@ def __load(args):
                         # Ignore removing something that is not there.
                         continue
 
-                    if args.patch:
+                    if args.patch or args.dry_run:
                         print("In variable \"%s\", the value (component) "
                               "'%s' will be removed."
                               % (variable_name, remove))
-                    if not args.patch or bool_prompt():
+                    if not args.dry_run and (not args.patch or bool_prompt()):
                         variable_saved.remove_value(remove)
                         variable_shell.remove_value(remove)
                         env.apply_change(variable_saved)
@@ -398,7 +403,16 @@ def __create_load_subcommand(main_parser):
                         help="Load only the difference for the specified "
                              "variable(s).")
 
-    parser.add_argument('-p', '--patch',
+    mgroup = parser.add_mutually_exclusive_group()
+
+    mgroup.add_argument('-n', '--dry-run',
+                        action='store_true',
+                        required=False,
+                        help="Show the differences that would be loaded, "
+                             "but don't actually change the environment. "
+                             "This is useful for inspecting saved states.")
+
+    mgroup.add_argument('-p', '--patch',
                         action='store_true',
                         required=False,
                         help="Interactively choose changes instead of "

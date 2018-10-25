@@ -27,6 +27,11 @@ class Save():
         Initialize a save with the given :param:`name`. The constructor makes
         sure the save's backend file works and is accessible.
         """
+        self._empty = True
+        self._read_only = read_only
+        self._state = {'variables': dict(),
+                       'unset': []}
+
         save_folder = get_save_folder()
         if not os.path.isdir(save_folder):
             os.makedirs(save_folder, 0o0700)
@@ -38,10 +43,12 @@ class Save():
                 pass
             os.chmod(self._save_file, 0o0600)
 
-        self._read_only = read_only
-
-        self._state = {'variables': dict(),
-                       'unset': []}
+    def __del__(self):
+        # In case the save's file was only initialised and locked because
+        # the user attempted to create the save but never actually modified
+        # anything, an empty file would be left behind. Remove it.
+        if self._empty:
+            os.unlink(self._save_file)
 
     def _close(self):
         if self._handle:
@@ -58,8 +65,9 @@ class Save():
             raise PermissionError("Cannot delete a read-only save.")
 
         self._close()
-        self._state = None
         self._read_only = True
+        self._state = None
+        self._empty = None
 
         os.unlink(self._save_file)
 
@@ -94,6 +102,7 @@ class Save():
         d = dict()
         try:
             d = json.load(self._handle)
+            self._empty = False
         except json.JSONDecodeError:
             # If the JSON file is bogus (e.g. it was created just in
             # `__init__`), ignore it and run with the default state.
@@ -145,6 +154,7 @@ class Save():
         self._state['variables'][key] = difference
         if key in self._state['unset']:
             self._state['unset'].remove(key)
+        self._empty = False
 
     def __delitem__(self, key):
         """
@@ -158,9 +168,10 @@ class Save():
             del self._state['variables'][key]
         if key not in self._state['unset']:
             self._state['unset'].append(key)
+        self._empty = False
 
     def __len__(self):
         """
         :return: The number of elements that have modifications in the save.
         """
-        return len(self._state['variables'])
+        return len(self._state['variables']) + len(self._state['unset'])
