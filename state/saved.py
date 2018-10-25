@@ -8,6 +8,10 @@ import os
 from configuration import get_configuration_folder
 
 
+def get_save_folder():
+    return os.path.join(get_configuration_folder(), 'saves')
+
+
 class Save():
     """
     Represents a single named, saved state, which is a collection of
@@ -23,7 +27,7 @@ class Save():
         Initialize a save with the given :param:`name`. The constructor makes
         sure the save's backend file works and is accessible.
         """
-        save_folder = os.path.join(get_configuration_folder(), 'saves')
+        save_folder = get_save_folder()
         if not os.path.isdir(save_folder):
             os.makedirs(save_folder, 0o0700)
 
@@ -38,6 +42,26 @@ class Save():
 
         self._state = {'variables': dict(),
                        'unset': []}
+
+    def _close(self):
+        if self._handle:
+            fcntl.flock(self._handle.fileno(), fcntl.LOCK_UN)
+            self._handle.close()
+
+            self._handle = None
+
+    def delete_file(self):
+        """
+        Delete the current save's file from the disk.
+        """
+        if self._read_only:
+            raise PermissionError("Cannot delete a read-only save.")
+
+        self._close()
+        self._state = None
+        self._read_only = True
+
+        os.unlink(self._save_file)
 
     def __enter__(self):
         """
@@ -63,8 +87,7 @@ class Save():
         does NOT write the changes (if any) to the disk, for that use
         :func:`flush()`.
         """
-        fcntl.flock(self._handle.fileno(), fcntl.LOCK_UN)
-        self._handle.close()
+        self._close()
 
     def _load_state(self):
         self._handle.seek(0)

@@ -169,3 +169,7 @@ Usage for saving environment configurations
 ### Loading (applying) a saved difference
 
 > To be documented...
+
+### Deleting saved differences
+
+> To be documented...

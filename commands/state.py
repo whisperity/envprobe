@@ -2,12 +2,13 @@
 Handles the operations related to the saving and loading the user's saved
 environments.
 """
+import os
 import sys
 
 from configuration import global_config
 from shell import get_current_shell
 from state import create_environment_variable, environment
-from state.saved import Save
+from state.saved import get_save_folder, Save
 from vartypes.array import ArrayEnvVar
 
 
@@ -74,6 +75,12 @@ def __diff(args):
             print()
 
 
+def __list(args):
+    for _, _, files in os.walk(get_save_folder()):
+        for file in sorted(files):
+            print(" - %s" % file.replace('.json', ''))
+
+
 def __load(args):
     def bool_prompt():
         response = False
@@ -106,10 +113,6 @@ def __load(args):
             # never "saved" into the state file or a save.)
             variable_shell = create_environment_variable(variable_name,
                                                          env.current_env)
-
-            # For the purpose of this function call, regard lists of single
-            # strings as if it was a single string.
-            #if isinstance(variable_saved.value, list)
 
             if save[variable_name] == Save.UNSET:
                 if args.patch:
@@ -317,6 +320,17 @@ def __save(args):
         env.flush()
 
 
+def __delete(args):
+    with Save(args.name, read_only=False) as save:
+        if save is None:
+            print("Error! The save '%s' cannot be opened, perhaps it is "
+                  "being modified by another process!" % args.name,
+                  file=sys.stderr)
+            return
+
+        save.delete_file()
+
+
 def __create_diff_subcommand(main_parser):
     parser = main_parser.add_parser(
         name='diff',
@@ -351,6 +365,17 @@ def __create_diff_subcommand(main_parser):
     parser.set_defaults(func=__diff,
                         type="normal")
     global_config.REGISTERED_COMMANDS.append('diff')
+
+
+def __create_list_subcommand(main_parser):
+    parser = main_parser.add_parser(
+        name='list',
+        description="List the names of saved differences.",
+        help="List the names of saved differences."
+    )
+
+    parser.set_defaults(func=__list)
+    global_config.REGISTERED_COMMANDS.append('list')
 
 
 def __create_load_subcommand(main_parser):
@@ -415,12 +440,30 @@ def __create_save_subcommand(main_parser):
     global_config.REGISTERED_COMMANDS.append('save')
 
 
-def create_subcommand_parser(main_parser):
-    if not get_current_shell():
-        return
+def __create_delete_subcommand(main_parser):
+    parser = main_parser.add_parser(
+        name='delete',
+        description="Delete a previously saved difference of environment "
+                    "variables, a named save.",
+        help="Delete a named save."
+    )
 
-    # Only expose these commands of this module if the user is running
-    # envprobe in a known valid shell.
-    __create_load_subcommand(main_parser)
-    __create_diff_subcommand(main_parser)
-    __create_save_subcommand(main_parser)
+    parser.add_argument('name',
+                        metavar='NAME',
+                        help="The name of the save which is to be deleted.")
+
+    parser.set_defaults(func=__delete)
+    global_config.REGISTERED_COMMANDS.append('delete')
+
+
+def create_subcommand_parser(main_parser):
+    __create_list_subcommand(main_parser)
+
+    if get_current_shell():
+        # Only expose these commands of this module if the user is running
+        # envprobe in a known valid shell.
+        __create_load_subcommand(main_parser)
+        __create_diff_subcommand(main_parser)
+        __create_save_subcommand(main_parser)
+
+    __create_delete_subcommand(main_parser)
