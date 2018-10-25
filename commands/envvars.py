@@ -7,6 +7,7 @@ import os
 
 from configuration import global_config
 from shell import get_current_shell
+from state import create_environment_variable
 from vartypes.array import ArrayEnvVar
 from vartypes.string import StringEnvVar
 from vartypes.path import PathLikeEnvVar
@@ -100,27 +101,19 @@ def transform_subcommand_shortcut(argv):
     return argv
 
 
-def __create_environment_variable(key):
-    """
-    Create an :type:`vartypes.EnvVar` instance for the given environment
-    variable `key`.
-    """
-
-    # TODO: Improve this heuristic, introduce a way for the user to configure.
-    if 'PATH' in key:
-        # Consider the variable a PATH-like variable.
-        return PathLikeEnvVar(key, os.environ.get(key, ""))
-    else:
-        return StringEnvVar(key, os.environ.get(key, ""))
-
-
 def __get(args):
-    env_var = __create_environment_variable(args.VARIABLE)
+    env_var = create_environment_variable(args.VARIABLE)
+    if not env_var:
+        raise ValueError("This environment variable cannot or should not "
+                         "be managed.")
     print(env_var.name + "=" + env_var.to_raw_var())
 
 
 def __add(args):
-    env_var = __create_environment_variable(args.VARIABLE)
+    env_var = create_environment_variable(args.VARIABLE)
+    if not env_var:
+        raise ValueError("This environment variable cannot or should not "
+                         "be managed.")
     if not isinstance(env_var, ArrayEnvVar):
         raise NotImplementedError("'add' and 'remove' operations are only "
                                   "applicable to array-like environmental "
@@ -138,7 +131,10 @@ def __add(args):
 
 
 def __remove(args):
-    env_var = __create_environment_variable(args.VARIABLE)
+    env_var = create_environment_variable(args.VARIABLE)
+    if not env_var:
+        raise ValueError("This environment variable cannot or should not "
+                         "be managed.")
     if not isinstance(env_var, ArrayEnvVar):
         raise NotImplementedError("'add' and 'remove' operations are only "
                                   "applicable to array-like environmental "
@@ -150,13 +146,15 @@ def __remove(args):
 
 
 def __set(args):
-    env_var = __create_environment_variable(args.VARIABLE)
+    env_var = create_environment_variable(args.VARIABLE)
+    if not env_var:
+        raise ValueError("This environment variable cannot or should not "
+                         "be managed.")
     env_var.value = args.VALUE
     get_current_shell().set_env_var(env_var)
 
 
 def __create_add_subcommand(main_parser):
-
     parser = main_parser.add_parser(
         name='add',
         description="Add a value to an environmental variable at a given "

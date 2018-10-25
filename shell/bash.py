@@ -26,7 +26,8 @@ class BashShell(Shell):
         if not self._control_file and self.is_envprobe_capable():
             # Generate a temporary file that will be used by the Bash shell
             # at every prompt read which *actually* sets the environment as
-            # per the user's request.
+            # per the user's request. (This is the real "hack" that makes
+            # envprobe useful!)
             tempf = tempfile.NamedTemporaryFile(
                 'w',
                 prefix='.envprobe.' + self.shell_pid + '-',
