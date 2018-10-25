@@ -40,6 +40,32 @@ class EnvVar(metaclass=ABCMeta):
         """
         pass
 
+    @property
+    @abstractmethod
+    def value(self):
+        """
+        Retrieve the value of the environment variable as stored in Python.
+        """
+        pass
+
+    @classmethod
+    def get_difference(cls, old_variable, new_variable):
+        """
+        Generate an iterable of difference "actions" that can describe how
+        the value of :param:`old_variable` can be transformed into
+        :param:`new_variable`.
+
+        The internal representation of the returned value is
+        implementation-defined, but is guaranteed to be usable with
+        :func:`apply_difference`.
+        """
+        if type(old_variable) != type(new_variable):
+            raise TypeError("Only variables of the same type can be "
+                            "differentiated.")
+
+        return {'type': type(old_variable).__name__,
+                'diff': []}
+
 
 # Expose the known type of environmental variables from the module.
 __all__ = ['string', 'numeric', 'array']

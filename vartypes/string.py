@@ -32,5 +32,22 @@ class StringEnvVar(EnvVar):
     def to_raw_var(self):
         return self.value
 
+    @classmethod
+    def get_difference(cls, old_variable, new_variable):
+        if type(old_variable) != type(new_variable):
+            raise TypeError("Only variables of the same type can be "
+                            "differentiated.")
+
+        ret = {'type': type(old_variable).__name__,
+               'diff': []}
+        if old_variable.value == new_variable.value:
+            return ret
+
+        if new_variable.value != '':
+            ret['diff'].append(('+', new_variable.value))
+        if old_variable.value != '':
+            ret['diff'].append(('-', old_variable.value))
+        return ret
+
 
 register_type(StringEnvVar, 'string')

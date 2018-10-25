@@ -7,7 +7,10 @@ from . import EnvVar, register_type
 
 class ArrayEnvVar(EnvVar):
     """
-    Represents an environmental variable which
+    Represents an environmental variable which contains an array of values.
+    In shells, such variables are often separated by a pre-defined separator
+    character (:variable:`self._separator`). See subclasses of this class for
+    what kinds of separations are available.
     """
 
     def __init__(self, name, env_string, separator):
@@ -112,6 +115,12 @@ class ArrayEnvVar(EnvVar):
         """
         del self._value[idx]
 
+    def __len__(self):
+        """
+        :return: The length of the array.
+        """
+        return len(self._value)
+
     def insert_at(self, idx, elem):
         """
         Insert a new value into the array at the position specified by `idx`.
@@ -147,6 +156,42 @@ class ArrayEnvVar(EnvVar):
 
     def to_raw_var(self):
         return self.separator.join(self._value).strip(self.separator)
+
+    @classmethod
+    def get_difference(cls, old_variable, new_variable):
+        if type(old_variable) != type(new_variable):
+            raise TypeError("Only variables of the same type can be "
+                            "differentiated.")
+
+        ret = {'type': type(old_variable).__name__,
+               'diff': []}
+
+        # The difference "actions" of arrays is a comparison of elements
+        # from old to new.
+
+        def __deduplicate_list_keep_order(list):
+            seen = set()
+            return [x for x in list
+                    if not (x in seen or seen.add(x))]
+
+        old = __deduplicate_list_keep_order(old_variable.value)
+        new = __deduplicate_list_keep_order(new_variable.value)
+        if old == new:
+            return ret
+
+        added = list(filter(lambda e: e not in old, new))
+        removed = list(filter(lambda e: e not in new, old))
+        kept = list(filter(lambda e: e in old and e in new,
+                           __deduplicate_list_keep_order(old + new)))
+
+        for add in added:
+            ret['diff'].append(('+', add))
+        for remove in removed:
+            ret['diff'].append(('-', remove))
+        for keep in kept:
+            ret['diff'].append((' ', keep))
+
+        return ret
 
 
 class ColonSeparatedArrayEnvVar(ArrayEnvVar):

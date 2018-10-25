@@ -21,7 +21,8 @@ class VariableDifference():
     Indicates a difference in a variable's value.
     """
     def __init__(self, type, variable_name,
-                 old_value=None, new_value=None):
+                 old_value=None, new_value=None,
+                 difference_actions=None):
         if not isinstance(type, VariableDifferenceType):
             raise ValueError("'type' must be the enum type "
                              "'VariableDifferenceType'.")
@@ -30,12 +31,15 @@ class VariableDifference():
         self.variable = variable_name
         self.old_value = old_value
         self.new_value = new_value
+        self.differences = difference_actions['diff'] \
+            if difference_actions else []
 
     def dict(self):
         return {"type": self.type.name,
                 "variable": self.variable,
                 "old": self.old_value,
-                "new": self.new_value}
+                "new": self.new_value,
+                "diffs": self.differences}
 
 
 class Environment():
@@ -104,19 +108,20 @@ class Environment():
         """
         diff = dict()
 
-        def __create_difference(type, key):
+        def __create_difference(diff_type, key):
             old = create_environment_variable(key, self.saved_env)
             new = create_environment_variable(key, self.current_env)
 
-            if not (hasattr(old, 'value') and hasattr(new, 'value')):
+            if not old or not new:
                 # If the old or new environment variable doesn't have a
                 # value property, it cannot or should not be serialised,
                 # thus we ignore it.
                 return
 
             if old.value != new.value:
-                diff[key] = VariableDifference(type, key,
-                                               old.value, new.value)
+                diff[key] = VariableDifference(
+                    diff_type, key, old.value, new.value,
+                    type(old).get_difference(old, new))
 
         def __handle_keys(type, iterable):
             for key in iter(iterable):

@@ -156,4 +156,6 @@ this case, the value given to `set` must be the proper string of the array:
 Usage for saving environment configurations
 -------------------------------------------
 
-> Coming soon...
+### Showing difference
+
+> To be documented...

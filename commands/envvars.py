@@ -9,8 +9,6 @@ from configuration import global_config
 from shell import get_current_shell
 from state import create_environment_variable
 from vartypes.array import ArrayEnvVar
-from vartypes.string import StringEnvVar
-from vartypes.path import PathLikeEnvVar
 
 # Map certain shortcut characters to different actual commands.
 __SHORTCUT_CHARS = {'+': "add",
