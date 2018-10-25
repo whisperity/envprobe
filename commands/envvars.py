@@ -107,6 +107,11 @@ def __get(args):
                          "be managed.")
     print(env_var.name + "=" + env_var.to_raw_var())
 
+    if isinstance(env_var, ArrayEnvVar):
+        print(env_var.name + ":")
+        for val in env_var.value:
+            print("  " + val)
+
 
 def __add(args):
     env_var = create_environment_variable(args.VARIABLE)
