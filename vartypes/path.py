@@ -12,16 +12,15 @@ class PathLikeEnvVar(array.ColonSeparatedArrayEnvVar):
 
     This class provides the extra functionality above
     :type:`ColonSeparatedArrayEnvVar` in automatically converting relative
-    references, such as "~/foo/bar/../lib/c" into absolute paths. This is
-    done by calling :func:`os.path.abspath`, so symbolic links are NOT
-    resolved.
+    references, such as "~/foo/bar/../lib/c" into absolute paths. This does
+    not resolve symbolic links or expand variables, only removes unnecessary
+    references, and prefixes the working directory.
     """
 
     def _transform_element_set(self, elem):
         elem = super()._transform_element_set(elem)
 
         if elem:
-            elem = os.path.expanduser(elem)
             elem = os.path.abspath(elem)
 
         return elem
