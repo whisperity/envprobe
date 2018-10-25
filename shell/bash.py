@@ -22,23 +22,15 @@ class BashShell(Shell):
             location = os.path.abspath(os.path.expanduser(location))
         self._envprobe_location = location
 
-        self._control_file = os.environ.get('ENVPROBE_CONTROL_FILE', None)
-        if not self._control_file and self.is_envprobe_capable():
+        self._configuration_folder = os.environ.get('ENVPROBE_CONFIG', None)
+        if not self._configuration_folder and self.is_envprobe_capable():
             # Generate a temporary file that will be used by the Bash shell
             # at every prompt read which *actually* sets the environment as
             # per the user's request. (This is the real "hack" that makes
             # envprobe useful!)
-            tempf = tempfile.NamedTemporaryFile(
-                'w',
-                prefix='.envprobe.' + self.shell_pid + '-',
-                suffix='.sh',
-                delete=False)
-            self._control_file = tempf.name
-            tempf.close()
-
-        # Register where the shell's state is saved.
-        if self._control_file:
-            self._state_file = self._control_file.replace('.sh', '.pickle')
+            tempd = tempfile.mkdtemp(
+                prefix='.envprobe.' + self.shell_pid + '-', )
+            self._configuration_folder = tempd
 
     def is_envprobe_capable(self):
         return self.shell_pid and self.envprobe_location
@@ -55,7 +47,7 @@ class BashShell(Shell):
 if [[ ! "$PROMPT_COMMAND" =~ "__envprobe" ]];
 then
   export ENVPROBE_SHELL_TYPE="{TYPE}";
-  export ENVPROBE_CONTROL_FILE="{CONTROL_FILE}";
+  export ENVPROBE_CONFIG="{CONFIG}";
 
   envprobe()
   {{
@@ -78,7 +70,8 @@ then
 fi
 """.format(PID=pid,
            LOCATION=location,
-           CONTROL_FILE=self._control_file,
+           CONFIG=self._configuration_folder,
+           CONTROL_FILE=self.control_file,
            TYPE=self.shell_type)
 
     def get_shell_hook_error(self):

@@ -12,6 +12,7 @@ import sys
 from commands import envvars as envvars_command
 from commands import state as state_command
 from commands import shell as shell_command
+from commands import tracking as tracking_command
 import shell
 
 
@@ -21,10 +22,10 @@ def __main():
     """
 
     # Check if the user is running a Shell currently or not.
+    current_shell = shell.get_current_shell()
     epilogue = None
     if len(sys.argv) == 1 or \
             (len(sys.argv) == 2 and sys.argv[1] in ['-h', '--help']):
-        current_shell = shell.get_current_shell()
         if current_shell is None:
             epilogue = "You are currently using `envprobe` in a shell that " \
                        "does not have it enabled. Please refer to the "      \
@@ -67,6 +68,7 @@ def __main():
     shell_command.create_subcommand_parser(subparsers)
     envvars_command.create_subcommand_parser(subparsers)
     state_command.create_subcommand_parser(subparsers)
+    tracking_command.create_subcommand_parser(subparsers)
 
     argv = envvars_command.transform_subcommand_shortcut(sys.argv)
     args = parser.parse_args(argv[1:])  # Cut the shell command's name.

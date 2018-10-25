@@ -6,6 +6,7 @@ import os
 import sys
 
 from configuration import global_config
+from configuration.tracked_variables import TrackingOverlay
 from shell import get_current_shell
 from state import create_environment_variable, environment
 from state.saved import get_save_folder, Save
@@ -14,12 +15,15 @@ from vartypes.array import ArrayEnvVar
 
 def __diff(args):
     TYPES = environment.VariableDifferenceType
-
-    env = environment.Environment(get_current_shell())
+    shell = get_current_shell()
+    tracking = TrackingOverlay(shell)
+    env = environment.Environment(shell)
     diffs = env.diff()
 
     for variable_name in sorted(list(diffs.keys())):
         if args.variable and variable_name not in args.variable:
+            continue
+        if not args.variable and not tracking.is_tracked(variable_name):
             continue
 
         change = diffs[variable_name]
@@ -90,6 +94,7 @@ def __load(args):
         return response
 
     shell = get_current_shell()
+    tracking = TrackingOverlay(shell)
     env = environment.Environment(shell)
 
     with Save(args.name, read_only=True) as save:
@@ -103,6 +108,8 @@ def __load(args):
 
         for variable_name in save:
             if args.variable and variable_name not in args.variable:
+                continue
+            if not args.variable and not tracking.is_tracked(variable_name):
                 continue
 
             # The 'saved' variable is used to update the environment's
@@ -212,9 +219,9 @@ def __save(args):
             response = True
         return response
 
-    TYPES = environment.VariableDifferenceType
-
-    env = environment.Environment(get_current_shell())
+    shell = get_current_shell()
+    tracking = TrackingOverlay(shell)
+    env = environment.Environment(shell)
     diffs = env.diff()
 
     with Save(args.name, read_only=False) as save:
@@ -226,6 +233,8 @@ def __save(args):
 
         for variable_name in sorted(list(diffs.keys())):
             if args.variable and variable_name not in args.variable:
+                continue
+            if not args.variable and not tracking.is_tracked(variable_name):
                 continue
 
             change = diffs[variable_name]

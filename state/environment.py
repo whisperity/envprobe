@@ -104,6 +104,7 @@ class Environment():
 
         with open(self._shell.state_file, 'wb') as f:
             pickle.dump(self._current_env, f)
+        os.chmod(self._shell.state_file, 0o0600)
 
         self._saved_env = dict(copy.deepcopy(self._current_env))
 

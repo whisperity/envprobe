@@ -21,8 +21,7 @@ class Shell(metaclass=ABCMeta):
     def __init__(self):
         self._shell_pid = None
         self._envprobe_location = None
-        self._control_file = os.devnull
-        self._state_file = os.devnull
+        self._configuration_folder = None
 
     @staticmethod
     def for_shell(shell_type):
@@ -61,12 +60,28 @@ class Shell(metaclass=ABCMeta):
         return self._envprobe_location
 
     @property
+    def configuration_folder(self):
+        """
+        :return: The directory where the :type:`Shell` instance's controlling
+        data is kept. This is in all cases a temporary directory used by the
+        hooks.
+        """
+        return self._configuration_folder
+
+    @property
+    def control_file(self):
+        """
+        Returns the location of the shell hook's control file.
+        """
+        return os.path.join(self._configuration_folder, 'control.sh')
+
+    @property
     def state_file(self):
         """
         Returns the path of the file which is used to save the "known" state
         of the shell.
         """
-        return self._state_file
+        return os.path.join(self._configuration_folder, 'state.pickle')
 
     @abstractmethod
     def is_envprobe_capable(self):
@@ -121,7 +136,7 @@ class Shell(metaclass=ABCMeta):
         # This method SHOULD always assume that the temporary file's state is
         # unknown. Usually, the shell parses and destroys commands in the
         # temporary file at every prompt reading.
-        with open(self._control_file, 'a') as control:
+        with open(self.control_file, 'a') as control:
             control.write('\n')
             control.write(self._prepare_setting_env_var(env_var))
             control.write('\n')
@@ -132,7 +147,7 @@ class Shell(metaclass=ABCMeta):
         file that is executed by the current shell with the notion that the
         variable should be undefined, no matter what value it had.
         """
-        with open(self._control_file, 'a') as control:
+        with open(self.control_file, 'a') as control:
             control.write('\n')
             control.write(self._prepare_undefining_env_var(env_var))
             control.write('\n')

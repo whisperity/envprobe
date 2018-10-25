@@ -90,7 +90,6 @@ class LockingConfigurationJSON():
 
     def load(self):
         self._handle.seek(0)
-        d = dict()
         try:
             d = json.load(self._handle)
             self._state.update(d)
