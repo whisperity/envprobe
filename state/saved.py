@@ -15,6 +15,9 @@ class Save():
     This class is expected to be used as a context.
     """
 
+    # Unset is a special value that indicates that a variable is to be unset.
+    UNSET = object()
+
     def __init__(self, name, read_only=False):
         """
         Initialize a save with the given :param:`name`. The constructor makes
@@ -31,7 +34,7 @@ class Save():
                 pass
             os.chmod(self._save_file, 0o0600)
 
-        self.read_only = read_only
+        self._read_only = read_only
 
         self._state = {'variables': dict(),
                        'unset': []}
@@ -41,9 +44,10 @@ class Save():
         Enter access mode with the save file. This method will open, lock and
         keep the file handle.
         """
-        self._handle = open(self._save_file, 'r+')
+        self._handle = open(self._save_file,
+                            'r' if self._read_only else 'r+')
 
-        lock_mode = fcntl.LOCK_SH if self.read_only else fcntl.LOCK_EX
+        lock_mode = fcntl.LOCK_SH if self._read_only else fcntl.LOCK_EX
         lock_mode = lock_mode ^ fcntl.LOCK_NB
         try:
             fcntl.flock(self._handle.fileno(), lock_mode)
@@ -77,6 +81,9 @@ class Save():
         """
         Actually write the current :type:`Save` onto the disk.
         """
+        if self._read_only:
+            raise PermissionError("Cannot change the components of a "
+                                  "read-only save.")
         try:
             self._handle.seek(0)
             self._handle.truncate(0)
@@ -86,12 +93,22 @@ class Save():
         except TypeError:
             raise
 
+    def __iter__(self):
+        """
+        Retrieve a generator over the variable names that contain a change
+        directive in the current save.
+        """
+        for key in self._state['variables'].keys():
+            yield key
+        for key in self._state['unset']:
+            yield key
+
     def __getitem__(self, key):
         """
         Retrieve the difference for the variable :param:`key7.
         """
         if key in self._state['unset']:
-            self._state['unset'].remove(key)
+            return Save.UNSET
         return self._state['variables'].get(key, None)
 
     def __setitem__(self, key, difference):
@@ -99,6 +116,9 @@ class Save():
         Set the value of variable :param:`key` to the given
         :param:`difference`.
         """
+        if self._read_only:
+            raise PermissionError("Cannot change the components of a "
+                                  "read-only save.")
         self._state['variables'][key] = difference
         if key in self._state['unset']:
             self._state['unset'].remove(key)
@@ -108,6 +128,9 @@ class Save():
         Mark the given :param:`key` as a variable that is to be deleted
         when the save is applied.
         """
+        if self._read_only:
+            raise PermissionError("Cannot change the components of a "
+                                  "read-only save.")
         if key in self._state['variables']:
             del self._state['variables'][key]
         self._state['unset'].append(key)

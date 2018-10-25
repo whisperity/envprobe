@@ -78,6 +78,22 @@ class Environment():
         if self._shell.is_envprobe_capable():
             self.load()
 
+    def load(self):
+        """
+        Load the registered current shell's environment into the
+        :variable:`saved_env`. This does not affect the
+        :variable:`current_env`.
+        """
+        if not self._shell.is_envprobe_capable():
+            return
+
+        try:
+            with open(self._shell.state_file, 'rb') as f:
+                self._saved_env = pickle.load(f)
+        except OSError:
+            # If the file cannot be opened, just skip behaviour.
+            pass
+
     def save(self):
         """
         Save the current environment stored in the local instance to the
@@ -91,26 +107,27 @@ class Environment():
 
         self._saved_env = dict(copy.deepcopy(self._current_env))
 
-    def load(self):
+    def flush(self):
         """
-        Load the registered current shell's environment into the "saved_env"
-        variable. This does not affect the "current_env".
+        Overwrite the shell's state file with the changes applied to
+        :variable:`saved_env`.
         """
         if not self._shell.is_envprobe_capable():
             return
 
-        try:
-            with open(self._shell.state_file, 'rb') as f:
-                self._saved_env = pickle.load(f)
-        except OSError:
-            # If the file cannot be opened, just skip behaviour.
-            pass
+        with open(self._shell.state_file, 'wb') as f:
+            pickle.dump(self._saved_env, f)
 
     @property
     def saved_env(self):
         """
         Obtain the environment that was applicable to the shell when the last
-        save() was called.
+        modification (such as :func:`save()` or :func:`apply_change()` was
+        called).
+
+        This property represents a known state of the environment, which was
+        either inherited at the start of the shell, or changed via saved
+        states.
         """
         return self._saved_env
 
@@ -118,13 +135,28 @@ class Environment():
     def current_env(self):
         """
         Obtain the environment which is currently applicable in the shell.
+
+        This represents the "dirty" state which is always read directly from
+        the shell, and can be changed not only by envprobe, but naive shell
+        commands and instructions, etc.
         """
         return self._current_env
 
+    def apply_change(self, variable, remove=False):
+        """
+        Changes the variable in the :variable:`saved_env` to the
+        :param:`variable`.
+        """
+        if not remove:
+            self._saved_env[variable.name] = variable.to_raw_var()
+        else:
+            if variable.name in self._saved_env:
+                del self._saved_env[variable.name]
+
     def diff(self):
         """
-        Calculate and get the difference between saved_env() and
-        current_env().
+        Calculate and get the difference between :variable:`saved_env` and
+        :variable:`current_env`.
 
         :return: A dict containing the :type:`state.VariableDifference` for
         each variable that has been changed.
@@ -143,7 +175,7 @@ class Environment():
 
             if old.value != new.value:
                 diff[key] = VariableDifference(
-                    diff_type, key, old.to_raw_var(), new.to_raw_var(),
+                    diff_type, key, old.value, new.value,
                     type(old).get_difference(old, new))
 
         def __handle_keys(type, iterable):

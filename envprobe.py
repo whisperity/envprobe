@@ -36,7 +36,7 @@ def __main():
                       file=sys.stderr)
         elif current_shell is False:
             epilogue = "You are currently using an unknown shell, but " \
-                       "your environment claims envprobe is enabled. " \
+                       "your environment claims envprobe is enabled. "  \
                        "Stop hacking your variables! :)"
         else:
             epilogue = "You are currently using a '{0}' shell, and envprobe " \
@@ -62,8 +62,10 @@ def __main():
     )
     subparsers = parser.add_subparsers(title="available commands")
 
-    envvars_command.create_subcommand_parser(subparsers)
+    # The ordering of the commands here specifies in which order they are
+    # shown on the output!
     shell_command.create_subcommand_parser(subparsers)
+    envvars_command.create_subcommand_parser(subparsers)
     state_command.create_subcommand_parser(subparsers)
 
     argv = envvars_command.transform_subcommand_shortcut(sys.argv)

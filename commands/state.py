@@ -6,8 +6,9 @@ import sys
 
 from configuration import global_config
 from shell import get_current_shell
-from state import environment
+from state import create_environment_variable, environment
 from state.saved import Save
+from vartypes.array import ArrayEnvVar
 
 
 def __diff(args):
@@ -73,6 +74,124 @@ def __diff(args):
             print()
 
 
+def __load(args):
+    def bool_prompt():
+        response = False
+        user_input = input("Apply this change? (y/N) ").lower()
+        if user_input == 'y' or user_input == 'yes':
+            response = True
+        return response
+
+    shell = get_current_shell()
+    env = environment.Environment(shell)
+
+    with Save(args.name, read_only=True) as save:
+        if save is None:
+            print("Error! The save '%s' cannot be opened, perhaps it is "
+                  "being modified by another process!" % args.name,
+                  file=sys.stderr)
+            return
+
+        for variable_name in save:
+            if args.variable and variable_name not in args.variable:
+                continue
+
+            # The 'saved' variable is used to update the environment's
+            # "saved" state so the loaded change won't be a difference.
+            variable_saved = create_environment_variable(variable_name,
+                                                         env.saved_env)
+            # The 'shell' variable is used to update the actual value the
+            # user experiences in the shell. (This distinction is used
+            # because there might be changes in the current shell which were
+            # never "saved" into the state file or a save.)
+            variable_shell = create_environment_variable(variable_name,
+                                                         env.current_env)
+
+            # For the purpose of this function call, regard lists of single
+            # strings as if it was a single string.
+            #if isinstance(variable_saved.value, list)
+
+            if save[variable_name] == Save.UNSET:
+                if args.patch:
+                    print("Variable \"%s\" will be unset (from value: '%s')"
+                          % (variable_name, variable_shell.value))
+
+                if not args.patch or bool_prompt():
+                    env.apply_change(variable_saved, remove=True)
+                    # TODO: Unset in the shell!
+
+                continue
+
+            # Read the change from the save and apply it to the variable.
+            value = save[variable_name]
+            if not isinstance(value, dict):
+                # Single variable changes contain the NEW value in the save.
+                if isinstance(value, list) and len(value) == 1:
+                    # For the sake of user communication here, regard a list
+                    # containing a single string as a single string.
+                    value = value[0]
+
+                if args.patch:
+                    if variable_name not in env.current_env:
+                        print("New variable \"%s\" will be set to value: "
+                              "'%s'." % (variable_name, value))
+                    elif value == variable_shell.value:
+                        # Don't change something that already has the new
+                        # value.
+                        continue
+                    else:
+                        print("Variable \"%s\" will be changed to value: "
+                              "'%s' (previous value was: '%s')"
+                              % (variable_name, value, variable_shell.value))
+
+                if not args.patch or bool_prompt():
+                    variable_saved.value = value
+                    variable_shell.value = value
+                    env.apply_change(variable_saved)
+                    shell.set_env_var(variable_shell)
+            else:
+                # Complex changes are represented in a dict.
+                if not isinstance(variable_saved, ArrayEnvVar) or \
+                        not isinstance(variable_saved, ArrayEnvVar):
+                    raise TypeError("Cannot apply a complex add/remove "
+                                    "change to a variable which is not an "
+                                    "array!")
+
+                for add in value['add']:
+                    if add in variable_shell.value:
+                        # Ignore adding something that is already there.
+                        continue
+
+                    if args.patch:
+                        print("In variable \"%s\", the value (component) "
+                              "'%s' will be added."
+                              % (variable_name, add))
+                    if not args.patch or bool_prompt():
+                        variable_saved.insert_at(0, add)
+                        variable_shell.insert_at(0, add)
+                        env.apply_change(variable_saved)
+                        shell.set_env_var(variable_shell)
+
+                for remove in value['remove']:
+                    if remove not in variable_shell.value:
+                        # Ignore removing something that is not there.
+                        continue
+
+                    if args.patch:
+                        print("In variable \"%s\", the value (component) "
+                              "'%s' will be removed."
+                              % (variable_name, remove))
+                    if not args.patch or bool_prompt():
+                        variable_saved.remove_value(remove)
+                        variable_shell.remove_value(remove)
+                        env.apply_change(variable_saved)
+                        shell.set_env_var(variable_shell)
+
+    # After loading, the user's "known" environment has changed, so it has
+    # to be flushed.
+    env.flush()
+
+
 def __save(args):
     def bool_prompt():
         response = False
@@ -100,6 +219,9 @@ def __save(args):
             change = diffs[variable_name]
             diff = change.differences
 
+            variable_saved = create_environment_variable(variable_name,
+                                                         env.saved_env)
+
             # First, transform the change to something that can later be
             # applied.
             if change.is_new():
@@ -111,6 +233,8 @@ def __save(args):
 
                 if not args.patch or bool_prompt():
                     save[variable_name] = change.new_value
+                    variable_saved.value = change.new_value
+                    env.apply_change(variable_saved)
             elif change.is_unset():
                 # If a variable was removed from the environment, it
                 # usually doesn't matter what its value was, only the fact
@@ -121,20 +245,29 @@ def __save(args):
 
                 if not args.patch or bool_prompt():
                     del save[variable_name]
+                    env.apply_change(variable_saved, remove=True)
             elif change.is_simple_change():
                 # If the change was a simple change that changed a
                 # variable from something to something we are still only
                 # interested in the new value. (This is environment
                 # variables, not Git!)
                 if args.patch:
-                    print("Variable \"%s\" changed to value: '%s', "
+                    print("Variable \"%s\" changed to value: '%s' "
                           "(previous value was: '%s')"
                           % (variable_name,
                              change.new_value, change.old_value))
 
                 if not args.patch or bool_prompt():
                     save[variable_name] = change.new_value
+                    variable_saved.value = change.new_value
+                    env.apply_change(variable_saved)
             else:
+                if not isinstance(variable_saved, ArrayEnvVar) or \
+                        not isinstance(variable_saved, ArrayEnvVar):
+                    raise TypeError("Cannot apply a complex add/remove "
+                                    "change to a variable which is not an "
+                                    "array!")
+
                 # For complex changes, such as removal and addition of
                 # multiple PATHs, both differences must be saved. This
                 # ensures that if a user's particular save depends on
@@ -165,7 +298,19 @@ def __save(args):
                     if not args.patch or bool_prompt():
                         save[variable_name][key].append(value)
 
+                        if key == 'add':
+                            variable_saved.insert_at(0, value)
+                        elif key == 'remove':
+                            variable_saved.remove_value(value)
+                        env.apply_change(variable_saved)
+
+        # Write the named state save file to the disk.
         save.flush()
+
+        # Write the changed current environment's now saved changes to the
+        # shell's known state, so changes saved here are no longer shown as
+        # diffs.
+        env.flush()
 
 
 def __create_diff_subcommand(main_parser):
@@ -204,6 +349,36 @@ def __create_diff_subcommand(main_parser):
     global_config.REGISTERED_COMMANDS.append('diff')
 
 
+def __create_load_subcommand(main_parser):
+    parser = main_parser.add_parser(
+        name='load',
+        description="Load the previously saved differences of environment "
+                    "variables from a named save, and apply them to the "
+                    "current shell.",
+        help="Load differences from a named save and apply them."
+    )
+
+    parser.add_argument('name',
+                        metavar='NAME',
+                        help="The name of the save where difference was "
+                             "saved.")
+
+    parser.add_argument('variable',
+                        metavar='VARIABLE',
+                        nargs='*',
+                        help="Load only the difference for the specified "
+                             "variable(s).")
+
+    parser.add_argument('-p', '--patch',
+                        action='store_true',
+                        required=False,
+                        help="Interactively choose changes instead of "
+                             "automatically applying the full difference.")
+
+    parser.set_defaults(func=__load)
+    global_config.REGISTERED_COMMANDS.append('load')
+
+
 def __create_save_subcommand(main_parser):
     parser = main_parser.add_parser(
         name='save',
@@ -230,7 +405,7 @@ def __create_save_subcommand(main_parser):
                         action='store_true',
                         required=False,
                         help="Interactively choose changes instead of "
-                             "automatically accepting the full difference.")
+                             "automatically saving the full difference.")
 
     parser.set_defaults(func=__save)
     global_config.REGISTERED_COMMANDS.append('save')
@@ -242,5 +417,6 @@ def create_subcommand_parser(main_parser):
 
     # Only expose these commands of this module if the user is running
     # envprobe in a known valid shell.
+    __create_load_subcommand(main_parser)
     __create_diff_subcommand(main_parser)
     __create_save_subcommand(main_parser)

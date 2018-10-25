@@ -163,3 +163,7 @@ Usage for saving environment configurations
 ### Saving difference
 
 > To be documented...
+
+### Loading (applying) a saved difference
+
+> To be documented...
