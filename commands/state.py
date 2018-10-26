@@ -12,6 +12,7 @@ from state import create_environment_variable, environment
 from state.saved import get_save_folder, Save
 from vartypes.array import ArrayEnvVar
 
+
 def __clean_variable_list(var_list):
     """
     Helper method to clean a list of variable names from user input. Keeps

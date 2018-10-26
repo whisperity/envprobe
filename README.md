@@ -61,11 +61,12 @@ Add the following lines to your `~/.bashrc` file, generally at the very end
 of it. These lines help hooking `envprobe` into your running shells.
 
 ```bash
-unset  ENVPROBE_CONTROL_FILE
+unset  ENVPROBE_CONFIG
 export ENVPROBE_LOCATION=~/envprobe
 export ENVPROBE_SHELL_PID=$$
-eval   "$(${ENVPROBE_LOCATION}/envprobe.py shell bash)"
+eval   "$(${ENVPROBE_LOCATION}/envprobe-config.py shell bash)"
 alias  ep='envprobe'
+alias  epc='envprobe-config'
 ```
 
 If you are using any other extensions in your shell (such as `byobu-shell` or

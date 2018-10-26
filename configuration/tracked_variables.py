@@ -1,5 +1,6 @@
 """
-
+Handles managing the user's own ("global") and the current shell's ("local")
+preference on what variables' value change should be tracked by Envprobe.
 """
 import os
 

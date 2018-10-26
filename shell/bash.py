@@ -54,6 +54,11 @@ then
     _ENVPROBE=1 "{LOCATION}/envprobe.py" "$@";
   }};
 
+  envprobe-config()
+  {{
+    _ENVPROBE=1 "{LOCATION}/envprobe-config.py" "$@";
+  }};
+
   __envprobe()
   {{
     local original_retcode="$?";

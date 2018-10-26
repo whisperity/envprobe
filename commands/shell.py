@@ -3,6 +3,7 @@ Handle the operations concerning hooking Envprobe into a shell.
 """
 
 from configuration import global_config
+from shell import SHELL_TYPES_TO_CLASSES
 from shell.bash import BashShell
 from state import environment
 
@@ -11,17 +12,16 @@ def create_subcommand_parser(main_parser):
     parser = main_parser.add_parser(
         name='shell',
         description="This command generates a shell executable code snippet "
-                    "that can be used to register envprobe's hooks into the "
+                    "that can be used to register Envprobe's hooks into the "
                     "shell's environment.",
-        help="Generate the necessary hooks to register envprobe into a "
+        help="Generate the necessary hooks to register Envprobe into a "
              "shell's environment."
     )
 
     parser.add_argument(
         'SHELL',
         type=str,
-        default='bash',
-        choices=['bash'],
+        choices=list(SHELL_TYPES_TO_CLASSES.keys()),
         help="The name of the shell system for which the hook code is "
              "generated."
     )
