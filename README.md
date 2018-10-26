@@ -364,8 +364,8 @@ A saved difference can be deleted with the `delete` command:
 
 
 
-Advanced: Configuring types of variables
-----------------------------------------
+Advanced: Configuring type of variables
+---------------------------------------
 
 Conventionally shells store every environment variable as a string, and only
 when needed try to interpret them as numbers, arrays, etc. However, to provide
@@ -426,6 +426,32 @@ the `get` command:
       Very fancy variable
     Source: local
 
+
+
+Advanced: Obtaining variable types and descriptions from the community
+----------------------------------------------------------------------
+
+> **Note:** This is the **only** part in Envprobe which communicates with
+> a remote server. No personal data is transmitted &mdash; at least directly
+> by Envprobe &mdash;. The network transaction only downloads a single file
+> *from GitHub* to fetch the knowledge-base.
+
+A sister project for *Envprobe* exists, with the title
+[*Envprobe: Descriptions*](http://github.com/whisperity/envprobe-descriptions)
+. This project is aimed at collecting knowledge about environment variables,
+which includes their proper type and description, usage.
+
+Envprobe supports automatically fetching the knowledge base and store it for
+your user. This database is used to get *type* and *description* metadata
+for environment variables &mdash; unless you locally override these details.
+
+To update the download of the description database, execute:
+
+    epc update-community
+
+*Note:* Depending on the size of the knowledgebase and the available Internet
+connection, the download could take up some time, and also use data. To
+conserve your resources, we advise *NOT* to update on metered connections!
 
 
 Advanced: Tracking and ignoring variables

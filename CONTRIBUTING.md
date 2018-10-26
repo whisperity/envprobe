@@ -1,9 +1,11 @@
 Contribution guidelines
 =======================
 
+
 Python style
 ------------
-We use [pycodestyle](https://pypi.python.org/pypi/pycodestyle/) to
+
+We use [pycodestyle](http://pypi.python.org/pypi/pycodestyle/) to
 automatically check our coding style.
 
 In addition to the general rules of `pycodestyle`, please keep the following
@@ -12,7 +14,9 @@ rules while writing your code:
   * Comments must be whole sentences, beginning with a capital letter and
     ending with a closing `.`.
 
+
 ### Order of `import` commands
+
 Order your `import` commands according to as follows:
 
   1. **System-wide** imports come first and foremost, e.g.
