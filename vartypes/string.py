@@ -12,7 +12,7 @@ class StringEnvVar(EnvVar):
         self.value = env_string
 
     @staticmethod
-    def description():
+    def type_description():
         return "The most basic environment variable which contains the " \
                "value as a string."
 

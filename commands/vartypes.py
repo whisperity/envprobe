@@ -3,27 +3,30 @@ Handles user-facing operations related to tweaking the type of variables.
 """
 import argparse
 
+import community_descriptions
 from configuration import global_config
-from configuration.variable_types import VariableTypeMap
 from vartypes import ENVTYPE_NAMES_TO_CLASSES
 from vartypes import *  # Force importing of all possible variable types.
 
 
 def __set_type(args):
-    with VariableTypeMap() as type_map:
-        if args.delete and args.VARIABLE in type_map:
-            del type_map[args.VARIABLE]
-        else:
-            type_map[args.VARIABLE] = args.type
+    descr = community_descriptions.get_description(args.VARIABLE)
+    descr['type'] = args.type if not args.delete else None
+    community_descriptions.save_description(args.VARIABLE, descr)
 
-        type_map.flush()
+
+def __set_description(args):
+    descr = community_descriptions.get_description(args.VARIABLE)
+    descr['description'] = ' '.join(args.DESCRIPTION) \
+        if args.DESCRIPTION else None
+    community_descriptions.save_description(args.VARIABLE, descr)
 
 
 def __create_set_type_subcommand(main_parser):
     epilogue = "The following variable type classes are known to Envprobe:\n"
     for key in sorted(ENVTYPE_NAMES_TO_CLASSES.keys()):
         clazz = ENVTYPE_NAMES_TO_CLASSES[key]
-        epilogue += " * %s:  %s\n" % (key, clazz.description())
+        epilogue += " * %s:  %s\n" % (key, clazz.type_description())
 
     epilogue += "\nSetting the type to 'ignored' will make Envprobe "       \
                 "prohibit access of the variable. (Note: this is not the "  \
@@ -70,7 +73,31 @@ def __create_set_type_subcommand(main_parser):
     global_config.REGISTERED_COMMANDS.append('set-type')
 
 
+def __create_set_description_subcommand(main_parser):
+    parser = main_parser.add_parser(
+        name='set-description',
+        description="A variable's description can help to understand its "
+                    "use. This command can be used to set a local (on your "
+                    "user) description for the given VARIABLE.",
+        help="Change the local description of a variable."
+    )
+
+    parser.add_argument(
+        'VARIABLE',
+        type=str,
+        help="The variable name to change the configuration for, e.g. PATH."
+    )
+
+    parser.add_argument('DESCRIPTION',
+                        nargs='*',
+                        help="The description to set.")
+
+    parser.set_defaults(func=__set_description)
+    global_config.REGISTERED_COMMANDS.append('set-description')
+
+
 def create_subcommand_parser(main_parser):
     # Only expose these commands of this module if the user is running
     # envprobe in a known valid shell.
     __create_set_type_subcommand(main_parser)
+    __create_set_description_subcommand(main_parser)

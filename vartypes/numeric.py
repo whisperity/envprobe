@@ -12,7 +12,7 @@ class NumericEnvVar(EnvVar):
         self.value = env_string
 
     @staticmethod
-    def description():
+    def type_description():
         return "Transforms the value into an integer or floating-point number."
 
     @property

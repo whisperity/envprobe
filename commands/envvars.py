@@ -3,11 +3,11 @@ Handle the operations that query or alter the values of environmental
 variables.
 """
 
-import os
-
+import community_descriptions
 from configuration import global_config
 from shell import get_current_shell
 from state import create_environment_variable
+from vartypes import ENVTYPE_CLASSES_TO_NAMES
 from vartypes.array import ArrayEnvVar
 
 # Map certain shortcut characters to different actual commands.
@@ -117,6 +117,20 @@ def __get(args):
         else:
             for val in env_var.value:
                 print("  " + val)
+
+    if args.info:
+        print()
+        print("Type: '%s'" % ENVTYPE_CLASSES_TO_NAMES[type(env_var)])
+        descr = community_descriptions.get_description(args.VARIABLE)
+
+        description = descr.get('description', None)
+        if description:
+            print("Description:")
+            print("  " + description)
+
+        source = descr.get('source', None)
+        if source:
+            print("Source: %s" % source)
 
 
 def __add(args):
@@ -260,6 +274,10 @@ def __create_get_subcommand(main_parser):
         type=str,
         help="The variable to alter, e.g. EDITOR."
     )
+
+    parser.add_argument('-i', '--info', '-d', '--details',
+                        action='store_true',
+                        help="Show additional information for the variable.")
 
     parser.set_defaults(func=__get)
     global_config.REGISTERED_COMMANDS.append('get')

@@ -407,6 +407,27 @@ revert `MY_VARIABLE` back to the default heuristic.
 
 
 
+Advanced: Describing variables
+------------------------------
+
+Apart from specifying their type, you can also specify a *description* to
+save what a variable describes.
+
+    epc set-description MY_VARIABLE "Very fancy variable"
+
+The description for a variable can be retrieved by specifying `--info` for
+the `get` command:
+
+    $ ep get MY_VARIABLE --info
+    MY_VARIABLE=fancy
+
+    Type: 'string'
+    Description:
+      Very fancy variable
+    Source: local
+
+
+
 Advanced: Tracking and ignoring variables
 -----------------------------------------
 

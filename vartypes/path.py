@@ -26,7 +26,7 @@ class PathLikeEnvVar(array.ColonSeparatedArrayEnvVar):
         return elem
 
     @staticmethod
-    def description():
+    def type_description():
         return "A list of files and folders separated by ; This type "        \
                "offers additional benefits in knowing that path entries can " \
                "be normalised and shortened."

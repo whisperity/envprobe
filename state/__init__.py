@@ -1,9 +1,6 @@
-"""
-
-"""
 import os
 
-from configuration import variable_types
+import community_descriptions
 from vartypes import ENVTYPE_NAMES_TO_CLASSES
 from vartypes.numeric import NumericEnvVar
 from vartypes.path import PathLikeEnvVar
@@ -30,14 +27,13 @@ def create_environment_variable(key, env=None):
     clazz = None
 
     # The user's preference overrides other heuristics.
-    with variable_types.VariableTypeMap(read_only=True) as type_map:
-        if key in type_map:
-            if type_map[key] == 'ignored':
-                # If the user explicitly ignored the variable, don't allow
-                # access
-                return None
-
-            clazz = ENVTYPE_NAMES_TO_CLASSES[type_map[key]]
+    descr = community_descriptions.get_description(key)
+    vtype = descr.get('type', None)
+    if vtype:
+        if vtype == 'ignored':
+            # If the user explicitly ignored the variable, don't allow access.
+            return None
+        clazz = ENVTYPE_NAMES_TO_CLASSES[vtype]
 
     if clazz is None:
         if 'PATH' in key:
