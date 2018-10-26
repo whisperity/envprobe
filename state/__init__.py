@@ -32,6 +32,11 @@ def create_environment_variable(key, env=None):
     # The user's preference overrides other heuristics.
     with variable_types.VariableTypeMap(read_only=True) as type_map:
         if key in type_map:
+            if type_map[key] == 'ignored':
+                # If the user explicitly ignored the variable, don't allow
+                # access
+                return None
+
             clazz = ENVTYPE_NAMES_TO_CLASSES[type_map[key]]
 
     if clazz is None:

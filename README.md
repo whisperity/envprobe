@@ -381,6 +381,15 @@ the list of types that are loaded into the current running Envprobe instance.)
    or `;`.
  * `path`: A special `:`-separated array which contains files or folder
    directives.
+ * `ignored`: Remove the variable from Envprobe's allowed and managed
+   variables.
+
+*Note:* Setting a variable's *type* to `ignored` is not the same as
+*"tracking ignoring"* a variable. "Tracking ignore" means that changes of the
+variable is not visible to the `diff`, `save`, `load`, ... commands, but
+the variable can still be managed locally, in an ad-hoc fashion. A variable
+with `ignored` type will result in Envprobe rejecting every access (`get`,
+`set`) on that variable.
 
 Envprobe contains built-in heuristics to figure out the type of a variable, but
 in case you know your environment better, you can specify Envprobe not to stand

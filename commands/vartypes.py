@@ -25,7 +25,13 @@ def __create_set_type_subcommand(main_parser):
         clazz = ENVTYPE_NAMES_TO_CLASSES[key]
         epilogue += " * %s:  %s\n" % (key, clazz.description())
 
-    epilogue += "\nIf you think specifying the type of a variable could "     \
+    epilogue += "\nSetting the type to 'ignored' will make Envprobe "       \
+                "prohibit access of the variable. (Note: this is not the "  \
+                "same as \"track ignoring\" the variable. The latter only " \
+                "disables the variable in the save/load command, the "      \
+                "'ignored' type disables the get/set too!)"
+
+    epilogue += "\n\nIf you think specifying the type of a variable could "   \
                 "benefit other users,\nplease submit us an issue on GitHub: " \
                 "http://github.com/whisperity/envprobe"
 
@@ -51,7 +57,8 @@ def __create_set_type_subcommand(main_parser):
 
     mgroup.add_argument('-t', '--type',
                         type=str,
-                        choices=sorted(ENVTYPE_NAMES_TO_CLASSES.keys()),
+                        choices=sorted(ENVTYPE_NAMES_TO_CLASSES.keys()) +
+                        ['ignored'],
                         help="Set the variable to the given new type.")
 
     mgroup.add_argument('-d', '--delete',
