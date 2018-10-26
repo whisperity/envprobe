@@ -52,6 +52,9 @@ def create_environment_variable(key, env=None):
 
                     # If successful, a numeric type could be used.
                     clazz = NumericEnvVar
+                else:
+                    # If there is no value, fall back to the bare string type.
+                    clazz = StringEnvVar
             except (TypeError, ValueError):
                 # If all else fails, a string env var could always work.
                 clazz = StringEnvVar
