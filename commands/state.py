@@ -12,6 +12,13 @@ from state import create_environment_variable, environment
 from state.saved import get_save_folder, Save
 from vartypes.array import ArrayEnvVar
 
+def __clean_variable_list(var_list):
+    """
+    Helper method to clean a list of variable names from user input. Keeps
+    only useful (non-empty) elements of the list.
+    """
+    return list(filter(lambda x: x, var_list))
+
 
 def __diff(args):
     TYPES = environment.VariableDifferenceType
@@ -19,11 +26,12 @@ def __diff(args):
     tracking = TrackingOverlay(shell)
     env = environment.Environment(shell)
     diffs = env.diff()
+    var_names = __clean_variable_list(args.variable)
 
     for variable_name in sorted(list(diffs.keys())):
-        if args.variable and variable_name not in args.variable:
+        if var_names and variable_name not in var_names:
             continue
-        if not args.variable and not tracking.is_tracked(variable_name):
+        if not var_names and not tracking.is_tracked(variable_name):
             continue
 
         change = diffs[variable_name]
@@ -96,6 +104,7 @@ def __load(args):
     shell = get_current_shell()
     tracking = TrackingOverlay(shell)
     env = environment.Environment(shell)
+    var_names = __clean_variable_list(args.variable)
 
     with Save(args.name, read_only=True) as save:
         if save is None:
@@ -107,9 +116,9 @@ def __load(args):
             print("The save '%s' does not exist!" % args.name)
 
         for variable_name in save:
-            if args.variable and variable_name not in args.variable:
+            if var_names and variable_name not in var_names:
                 continue
-            if not args.variable and not tracking.is_tracked(variable_name):
+            if not var_names and not tracking.is_tracked(variable_name):
                 continue
 
             # The 'saved' variable is used to update the environment's
@@ -223,6 +232,7 @@ def __save(args):
     tracking = TrackingOverlay(shell)
     env = environment.Environment(shell)
     diffs = env.diff()
+    var_names = __clean_variable_list(args.variable)
 
     with Save(args.name, read_only=False) as save:
         if save is None:
@@ -232,9 +242,9 @@ def __save(args):
             return
 
         for variable_name in sorted(list(diffs.keys())):
-            if args.variable and variable_name not in args.variable:
+            if var_names and variable_name not in var_names:
                 continue
-            if not args.variable and not tracking.is_tracked(variable_name):
+            if not var_names and not tracking.is_tracked(variable_name):
                 continue
 
             change = diffs[variable_name]
