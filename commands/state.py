@@ -55,7 +55,7 @@ def __diff(args):
                 # If the difference is exactly a single change from a
                 # value to another, just show the change.
                 print("      from: %s\n        to: %s"
-                      % (diff[0][1], diff[1][1]))
+                      % (diff[1][1], diff[0][1]))
             else:
                 for action, value in diff:
                     if action == ' ':
