@@ -236,7 +236,7 @@ like how traditionally one would give it to `export`.
 
 To make a variable undefined, use the `undefine` (`^`) command:
 
-    ep unset BUILD_ID
+    ep undefine BUILD_ID
     ep ^BUILD_ID
 
 
@@ -390,12 +390,53 @@ in your way, with the `epc set-type` command:
 
 The above example sets the type &mdash; this is your user's configuration
 saved locally &mdash; of `MY_VARIABLE` to `path`. In your shells, your
-configuration overrides the built-in heuristics, and the variable will always be
-considered what you specified.
+configuration overrides the built-in heuristics, and the variable will always
+be considered what you specified.
 
 To delete a preference, use `-d`: `epc set-type MY_VARIABLE -d`. This will
 revert `MY_VARIABLE` back to the default heuristic.
 
+
+
+Advanced: Tracking and ignoring variables
+-----------------------------------------
+
+By default, Envprobe tracks the change to every variable (except a very few
+very special ones which are deliberately hidden!). There might be a case this
+is not the expected behaviour for a workflow. In this case, the `epc track`
+command can be used to fine-tune which variables should be tracked and ignored.
+
+    epc track VARIABLE         # Will set VARIABLE to be tracked.
+    epc track -i VARIABLE      # Will set VARIABLE to be ignored.
+
+If a variable is *tracked*, changes to this variable will be shown in `diff`,
+can be `save`d and `load`ed. If a variable is *ignored*, no change related to
+it is managed by Envprobe, and in case a saved state's `load` wants to change
+such a variable, it will be left without change.
+
+~~~
+$ epc track --ignore PATH
+$ ep +PATH /foo
+$ ep diff
+(empty)
+~~~
+
+If the `--global` option is specified, the change in the tracking of a variable
+will be saved for your entire user, not just the current shell.
+
+If a variable is not explicitly *tracked* nor *ignored*, the default tracking
+dictates what will happen. This default can be changed with the
+`epc default-tracking` command.
+
+    epc default-tracking --disable
+
+~~~
+$ epc track MY_VAR
+$ ep MY_VAR="foo"
+$ ep diff
++ Added:    MY_VAR
+     value: foo
+~~~
 
 
 Extreme: Resetting or hacking *Envprobe*
