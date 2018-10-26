@@ -112,8 +112,11 @@ def __get(args):
 
     if isinstance(env_var, ArrayEnvVar):
         print(env_var.name + ":")
-        for val in env_var.value:
-            print("  " + val)
+        if len(env_var.value) == 0:
+            print("  (empty)")
+        else:
+            for val in env_var.value:
+                print("  " + val)
 
 
 def __add(args):

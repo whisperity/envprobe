@@ -22,6 +22,11 @@ class ArrayEnvVar(EnvVar):
         self._separator = separator
         self.value = env_string
 
+    @staticmethod
+    def description():
+        return "An array of string variables, separated by a well-defined " \
+               "separator character."
+
     @property
     def separator(self):
         return self._separator
@@ -206,6 +211,10 @@ class ColonSeparatedArrayEnvVar(ArrayEnvVar):
     def __init__(self, name, env_string):
         super().__init__(name, env_string, ':')
 
+    @staticmethod
+    def description():
+        return "A list of string variables in an array, separated by :"
+
 
 class SemicolonSeparatedArrayEnvVar(ArrayEnvVar):
     """
@@ -215,6 +224,10 @@ class SemicolonSeparatedArrayEnvVar(ArrayEnvVar):
 
     def __init__(self, name, env_string):
         super().__init__(name, env_string, ';')
+
+    @staticmethod
+    def description():
+        return "A list of string variables in an array, separated by ;"
 
 
 register_type('colon-separated', ColonSeparatedArrayEnvVar)

@@ -4,7 +4,8 @@ import os
 __all__ = ['get_configuration_folder',
            'global_config',
            'locking_configuration_json',
-           'tracked_variables']
+           'tracked_variables',
+           'variable_types']
 
 
 def get_configuration_folder():

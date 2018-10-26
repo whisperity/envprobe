@@ -10,8 +10,9 @@ import argparse
 import sys
 
 from commands import get_common_epilogue_or_die
-from commands import tracking as tracking_command
 from commands import shell as shell_command
+from commands import tracking as tracking_command
+from commands import vartypes as vartypes_command
 from shell import *  # Keep this import, this registers the known shells.
 
 
@@ -32,6 +33,7 @@ def __main():
     # shown on the output!
     shell_command.create_subcommand_parser(subparsers)
     tracking_command.create_subcommand_parser(subparsers)
+    vartypes_command.create_subcommand_parser(subparsers)
 
     args = parser.parse_args(sys.argv[1:])  # Cut the shell command's name.
     if 'func' in args:

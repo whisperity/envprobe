@@ -361,3 +361,58 @@ The list of saved differences available to your user can be listed with
 A saved difference can be deleted with the `delete` command:
 
     ep delete my_env
+
+
+
+Advanced: Configuring types of variables
+----------------------------------------
+
+Conventionally shells store every environment variable as a string, and only
+when needed try to interpret them as numbers, arrays, etc. However, to provide
+a marginally safer experience, Envprobe defines its own types and uses them
+when the user accesses a variable.
+
+These types are as follows. (Please see the help at `epc set-type --help` for
+the list of types that are loaded into the current running Envprobe instance.)
+
+ * `string`: This is the basic type, the variable is represented as a string.
+ * `number`: Either integer or floating-point numbers.
+ * `colon-separated` and `semi-separated`: Array of strings, separated by `:`
+   or `;`.
+ * `path`: A special `:`-separated array which contains files or folder
+   directives.
+
+Envprobe contains built-in heuristics to figure out the type of a variable, but
+in case you know your environment better, you can specify Envprobe not to stand
+in your way, with the `epc set-type` command:
+
+    epc set-type MY_VARIABLE -t path
+
+The above example sets the type &mdash; this is your user's configuration
+saved locally &mdash; of `MY_VARIABLE` to `path`. In your shells, your
+configuration overrides the built-in heuristics, and the variable will always be
+considered what you specified.
+
+To delete a preference, use `-d`: `epc set-type MY_VARIABLE -d`. This will
+revert `MY_VARIABLE` back to the default heuristic.
+
+
+
+Extreme: Resetting or hacking *Envprobe*
+----------------------------------------
+
+We share the philosophy of small individual commands and easily readable
+configuration files in this project. Your local configuration is saved under
+`~/.local/share/envprobe` in the form of JSON files. Adventurous and power
+users are welcome to tinker their configuration through these files, but be
+advised that we cannot provide any help in case a mess-up happens.
+
+To make Envprobe *completely **and irrevocably** forget* all configuration,
+along with **all your saved states!**, simply delete the aforementioned folder,
+and then restart your Terminal.
+
+**Warning!** Data and configuration specific to a running shell session is
+saved to a temporary folder and might include binary files and files with
+ephemeral lifespan. These files are not meant to be altered manually apart
+from development or debugging purposes. Altering these files can make your
+running shell irrevocably broken!

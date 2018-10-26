@@ -32,6 +32,10 @@ class EnvVar(metaclass=ABCMeta):
         """
         return self._name
 
+    @staticmethod
+    def description():
+        return "(Abstract base class for environment variables.)"
+
     @abstractmethod
     def to_raw_var(self):
         """

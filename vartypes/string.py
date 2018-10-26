@@ -11,6 +11,11 @@ class StringEnvVar(EnvVar):
         super().__init__(name, env_string)
         self.value = env_string
 
+    @staticmethod
+    def description():
+        return "The most basic environment variable which contains the " \
+               "value as a string."
+
     @property
     def value(self):
         """
@@ -50,4 +55,4 @@ class StringEnvVar(EnvVar):
         return ret
 
 
-register_type(StringEnvVar, 'string')
+register_type('string', StringEnvVar)

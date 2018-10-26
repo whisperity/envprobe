@@ -11,6 +11,10 @@ class NumericEnvVar(EnvVar):
         super().__init__(name, env_string)
         self.value = env_string
 
+    @staticmethod
+    def description():
+        return "Transforms the value into an integer or floating-point number."
+
     @property
     def value(self):
         """
