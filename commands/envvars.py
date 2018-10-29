@@ -99,7 +99,12 @@ def transform_subcommand_shortcut(argv):
         # duplicated below, so we change it to the entered empty string.
         argv = argv[:2] + ['']
 
-    argv = [argv[0]] + action + [variable_name] + argv[2:]
+    old_argv_tail = argv[2:]
+    argv = [argv[0]] + action
+    if variable_name:
+        argv.append(variable_name)
+    for e in filter(lambda x: x, old_argv_tail):
+        argv.append(e)
     return argv
 
 
