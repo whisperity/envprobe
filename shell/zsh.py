@@ -1,14 +1,14 @@
 """
-Module for supporting the Bash shell.
+Module for supporting the Zsh shell.
 """
 
 from . import register_type
 from .bash_like import BashLikeShell
 
 
-class BashShell(BashLikeShell):
+class ZshShell(BashLikeShell):
     """
-    Shell implementation for the Bash shell.
+    Shell implementation for the Zsh shell.
     """
 
     def __init__(self):
@@ -18,12 +18,12 @@ class BashShell(BashLikeShell):
         pid = self.shell_pid
         location = self.envprobe_location
 
-        # Return a Bash shell script that is loaded by the user's shell.
+        # Return a Zsh shell script that is loaded by the user's shell.
         # This will call back to envprobe every time the user gets a prompt,
         # letting us execute the environment variable configuration when
         # needed.
         return """
-if [[ ! "$PROMPT_COMMAND" =~ "__envprobe" ]];
+if [[ "${{precmd_functions[(r)__envprobe]}}" = "" ]];
 then
   export ENVPROBE_SHELL_TYPE="{TYPE}";
   export ENVPROBE_CONFIG="{CONFIG}";
@@ -50,7 +50,7 @@ then
   }};
 
   echo "Envprobe loaded successfully. :)";
-  PROMPT_COMMAND="__envprobe;$PROMPT_COMMAND";
+  precmd_functions+=__envprobe;
 fi
 """.format(PID=pid,
            LOCATION=location,
@@ -59,4 +59,4 @@ fi
            TYPE=self.shell_type)
 
 
-register_type('bash', BashShell)
+register_type('zsh', ZshShell)

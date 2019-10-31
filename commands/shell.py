@@ -5,6 +5,7 @@ Handle the operations concerning hooking Envprobe into a shell.
 from configuration import global_config
 from shell import SHELL_TYPES_TO_CLASSES
 from shell.bash import BashShell
+from shell.zsh import ZshShell
 from state import environment
 
 
@@ -37,6 +38,19 @@ def __main(args):
 
     if args.SHELL == 'bash':
         shell = BashShell()
+
+        if shell.is_envprobe_capable():
+            print(shell.get_shell_hook())
+
+            # Create the initial environment and make sure its snapshot is
+            # saved.
+            state = environment.Environment(shell)
+            state.save()
+        else:
+            print(shell.get_shell_hook_error())
+
+    if args.SHELL == 'zsh':
+        shell = ZshShell()
 
         if shell.is_envprobe_capable():
             print(shell.get_shell_hook())

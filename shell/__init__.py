@@ -154,7 +154,7 @@ class Shell(metaclass=ABCMeta):
 
 
 # Expose every shell known in this module.
-__all__ = ['bash']
+__all__ = ['bash', 'zsh']
 
 
 def register_type(kind, clazz):

@@ -38,7 +38,7 @@ How to Install?
 ### Dependencies
 
 Currently, the main target supported by *`envprobe`* is Ubuntu 16.04 LTS,
-using the Bash shell.
+using the Bash-like shells, namely Bash and Zsh.
 
 You'll need Python 3 installed on your system. The version available in the
 package manager should be good enough.
@@ -57,6 +57,9 @@ your system. For convenience, we'll use `~/envprobe` as location:
 
 ### Installation
 
+
+#### Bash
+
 Add the following lines to your `~/.bashrc` file, generally at the very end
 of it. These lines help hooking `envprobe` into your running shells.
 
@@ -68,6 +71,22 @@ eval   "$(${ENVPROBE_LOCATION}/envprobe-config.py shell bash)"
 alias  ep='envprobe'
 alias  epc='envprobe-config'
 ```
+
+#### Zsh
+
+Add the following lines to your `~/.zshrc` file, generally at the very end
+of it. These lines help hooking `envprobe` into your running shells.
+
+```zsh
+unset  ENVPROBE_CONFIG
+export ENVPROBE_LOCATION=~/envprobe
+export ENVPROBE_SHELL_PID=$$
+eval   "$(${ENVPROBE_LOCATION}/envprobe-config.py shell zsh)"
+alias  ep='envprobe'
+alias  epc='envprobe-config'
+```
+
+#### Other extensions
 
 If you are using any other extensions in your shell (such as `byobu-shell` or
 [Bash Git Prompt](https://github.com/magicmonty/bash-git-prompt)), the added
