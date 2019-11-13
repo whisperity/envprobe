@@ -50,7 +50,7 @@ then
   }};
 
   echo "Envprobe loaded successfully. :)";
-  precmd_functions+=__envprobe;
+  precmd_functions+=(__envprobe);
 fi
 """.format(PID=pid,
            LOCATION=location,
