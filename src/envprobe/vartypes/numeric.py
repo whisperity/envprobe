@@ -3,7 +3,7 @@ from . import EnvVar, register_type
 
 class NumericEnvVar(EnvVar):
     """
-    Environmental variable which holds a numeric value. This type can be used
+    Environment variable which holds a numeric value. This type can be used
     to wrap casting to integer or float all the time in Python code.
     """
 

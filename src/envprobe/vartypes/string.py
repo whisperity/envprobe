@@ -1,9 +1,10 @@
-from . import EnvVar, register_type
+from . import register_type
+from .envvar import EnvVar
 
 
-class StringEnvVar(EnvVar):
+class String(EnvVar):
     """
-    The most basic environmental variable type which is a raw string
+    The most basic environment variable type which is a raw string
     contained in a variable.
     """
 
@@ -55,4 +56,4 @@ class StringEnvVar(EnvVar):
         return ret
 
 
-register_type('string', StringEnvVar)
+register_type('string', String)

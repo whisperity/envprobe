@@ -5,7 +5,7 @@ from . import array, register_type
 
 class PathLikeEnvVar(array.ColonSeparatedArrayEnvVar):
     """
-    Represents as POSIX PATH-like environmental variable. `PATH` variables
+    Represents as POSIX PATH-like environment variable. `PATH` variables
     are commonly used as list of locations in a precedence order for finding
     various system elements. Commonly, `PATH`-like environment variables are
     separated by a `:`.

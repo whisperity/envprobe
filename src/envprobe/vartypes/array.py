@@ -1,5 +1,5 @@
 """
-Module which contains the classes for array-like environmental variables.
+Module which contains the classes for array-like environment variables.
 """
 
 from . import EnvVar, register_type
@@ -7,7 +7,7 @@ from . import EnvVar, register_type
 
 class ArrayEnvVar(EnvVar):
     """
-    Represents an environmental variable which contains an array of values.
+    Represents an environment variable which contains an array of values.
     In shells, such variables are often separated by a pre-defined separator
     character (:variable:`self._separator`). See subclasses of this class for
     what kinds of separations are available.
@@ -204,7 +204,7 @@ class ArrayEnvVar(EnvVar):
 
 class ColonSeparatedArrayEnvVar(ArrayEnvVar):
     """
-    Represents an environmental variable in which array elements are
+    Represents an environment variable in which array elements are
     separated by `:`.
     """
 
@@ -218,7 +218,7 @@ class ColonSeparatedArrayEnvVar(ArrayEnvVar):
 
 class SemicolonSeparatedArrayEnvVar(ArrayEnvVar):
     """
-    Represents an environmental variable in which array elements are
+    Represents an environment variable in which array elements are
     separated by `;`.
     """
 
