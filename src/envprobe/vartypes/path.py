@@ -3,7 +3,7 @@ import os
 from . import array, register_type
 
 
-class PathLikeEnvVar(array.ColonSeparatedArrayEnvVar):
+class PathLike(array.ColonSeparatedArray):
     """
     Represents as POSIX PATH-like environment variable. `PATH` variables
     are commonly used as list of locations in a precedence order for finding
@@ -32,4 +32,4 @@ class PathLikeEnvVar(array.ColonSeparatedArrayEnvVar):
                "be normalised and shortened."
 
 
-register_type('path', PathLikeEnvVar)
+register_type('path', PathLike)

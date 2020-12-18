@@ -23,8 +23,7 @@ def test_setter_nonstring():
 
 def test_diff():
     s1 = String("test_string", "foo")
-    s2 = String("test_string", "foo")
-    s2.value = "bar"
+    s2 = String("test_string", "bar")
 
     diff = String.get_difference(s1, s2)
     assert(diff['type'] == "String")

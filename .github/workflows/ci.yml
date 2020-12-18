@@ -34,7 +34,7 @@ jobs:
 
       - name: "Execute linting"
         run: |
-          pycodestyle .
+          VERBOSE=1 make style
 
   test:
     name: "Execute tests"
@@ -79,5 +79,5 @@ jobs:
 
       - name: Execute the tests
         run: |
-          make test
+          VERBOSE=1 make test
 

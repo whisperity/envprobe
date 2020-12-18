@@ -1,10 +1,12 @@
-from . import EnvVar, register_type
+from . import register_type
+from .envvar import EnvVar
 
 
-class NumericEnvVar(EnvVar):
+class Numeric(EnvVar):
     """
-    Environment variable which holds a numeric value. This type can be used
-    to wrap casting to integer or float all the time in Python code.
+    Environment variable which holds a numeric value.
+    This type can be used to wrap casting to integer or float all the time in
+    Python code.
     """
 
     def __init__(self, name, env_string):
@@ -46,6 +48,10 @@ class NumericEnvVar(EnvVar):
     def is_integer(self):
         return self._kind == int
 
+    @property
+    def is_floating(self):
+        return self._kind == float
+
     def to_raw_var(self):
         return str(self.value)
 
@@ -65,4 +71,4 @@ class NumericEnvVar(EnvVar):
         return ret
 
 
-register_type('number', NumericEnvVar)
+register_type('number', Numeric)

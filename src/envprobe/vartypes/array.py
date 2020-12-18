@@ -2,10 +2,11 @@
 Module which contains the classes for array-like environment variables.
 """
 
-from . import EnvVar, register_type
+from . import register_type
+from .envvar import EnvVar
 
 
-class ArrayEnvVar(EnvVar):
+class Array(EnvVar):
     """
     Represents an environment variable which contains an array of values.
     In shells, such variables are often separated by a pre-defined separator
@@ -68,7 +69,7 @@ class ArrayEnvVar(EnvVar):
             # separator character. While escaping, e.g. ':' in PATH with '\:'
             # sounds like a good decision, currently no mainstream Linux or
             # macOS system supports an escaped letter in the PATH.
-            # See: https://stackoverflow.com/a/29213487
+            # See: http://stackoverflow.com/a/29213487
             raise ValueError("Value to be added ('{0}') contains the "
                              "array-like environment variable's separator "
                              "character '{1}'. This will make the "
@@ -147,7 +148,7 @@ class ArrayEnvVar(EnvVar):
 
                 # So instead, insert at the element right after the insertion
                 # position, this way [1, 2].insert_at(-2, "a") will result in
-                # [1, "a", -2]. This corresponds to the command-line help
+                # [1, "a", 2]. This corresponds to the command-line help
                 # "the element will be inserted AT the position given,
                 # shifting every element AFTER the new one to the right".
                 self._value.insert(idx + 1, elem)
@@ -202,7 +203,7 @@ class ArrayEnvVar(EnvVar):
         return ret
 
 
-class ColonSeparatedArrayEnvVar(ArrayEnvVar):
+class ColonSeparatedArray(Array):
     """
     Represents an environment variable in which array elements are
     separated by `:`.
@@ -216,7 +217,7 @@ class ColonSeparatedArrayEnvVar(ArrayEnvVar):
         return "A list of string variables in an array, separated by :"
 
 
-class SemicolonSeparatedArrayEnvVar(ArrayEnvVar):
+class SemicolonSeparatedArray(Array):
     """
     Represents an environment variable in which array elements are
     separated by `;`.
@@ -230,5 +231,5 @@ class SemicolonSeparatedArrayEnvVar(ArrayEnvVar):
         return "A list of string variables in an array, separated by ;"
 
 
-register_type('colon-separated', ColonSeparatedArrayEnvVar)
-register_type('semi-separated', SemicolonSeparatedArrayEnvVar)
+register_type('colon-separated', ColonSeparatedArray)
+register_type('semi-separated', SemicolonSeparatedArray)
