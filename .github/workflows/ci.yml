@@ -1,0 +1,83 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+      - "[0-9]+.[0-9]+.x"
+      - "*-wip"
+    tags:
+      - "[0-9]+.[0-9]+.[0-9]+"
+      - "[0-9]+.[0-9]+.[0-9]+rc[0-9]+"
+  pull_request:
+    branches:
+      - master
+      - "[0-9]+.[0-9]+.x"
+
+jobs:
+  lint:
+    name: "Linting"
+    runs-on: "ubuntu-20.04"
+    steps:
+      - uses: actions/checkout@v2
+        name: "Check out repository"
+
+      - uses: actions/setup-python@v2
+        name: "Set up Python"
+        with:
+          python-version: "3.8"
+
+      - name: "Install dependencies"
+        run: |
+          python3 -m pip install --upgrade pip
+          pip install pycodestyle
+
+      - name: "Execute linting"
+        run: |
+          pycodestyle .
+
+  test:
+    name: "Execute tests"
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        name: [
+            "Ubuntu 18.04 / Python 3.6",
+            "Ubuntu 20.04 / Python 3.8"
+        ]
+
+        include:
+          - name: "Ubuntu 18.04 / Python 3.6"
+            os: "ubuntu-18.04"
+            python: "3.6"
+            # Ubuntu 18.04 still supports "Python 2" as "python" and "pip", so
+            # this has to be explicitly specified to be the Python 3 version.
+            pip-command: "pip3"
+
+          - name: "Ubuntu 20.04 / Python 3.8"
+            os: "ubuntu-20.04"
+            python: "3.8"
+            pip-command: "pip"
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies from pip
+        run: |
+          python3 -m pip install --upgrade pip
+          ${{ matrix.pip-command }} install pytest
+          if [ -f requirements.txt ];
+          then
+            ${{ matrix.pip-command }} install -r requirements.txt
+          fi
+
+      - name: Execute the tests
+        run: |
+          make test
+
