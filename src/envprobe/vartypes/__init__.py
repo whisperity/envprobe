@@ -7,7 +7,7 @@ ENVTYPE_NAMES_TO_CLASSES = {}
 
 
 # Expose the known type of environmental variables from the module.
-__all__ = ['string', 'numeric', 'array', 'path']
+__all__ = ['envvar', 'string', 'numeric', 'array', 'path']
 
 
 def register_type(kind, clazz):

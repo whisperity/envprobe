@@ -1,16 +1,8 @@
-"""
-This module contains the support code that translates envprobe operations to
-shell operations.
-"""
-
-# TODO: Refactor the subcommands to a better layout, support dynamic loading.
-
 from abc import ABCMeta, abstractmethod
+import importlib
 import os
 
-
-SHELL_CLASSES_TO_TYPES = {}
-SHELL_TYPES_TO_CLASSES = {}
+from . import SHELL_TYPES_TO_CLASSES, SHELL_CLASSES_TO_TYPES
 
 
 class Shell(metaclass=ABCMeta):
@@ -18,24 +10,10 @@ class Shell(metaclass=ABCMeta):
     The base class of a system shell.
     """
 
-    def __init__(self):
-        self._shell_pid = None
-        self._envprobe_location = None
-        self._configuration_folder = None
-
-    @staticmethod
-    def for_shell(shell_type):
-        """
-        Creates a Shell instance based on the given `shell_type`, if possible.
-        This is approximately the inverse of the :func:`shell_type`: property.
-
-        Returns none if the given `shell_type` is unknown.
-        """
-        clazz = SHELL_TYPES_TO_CLASSES.get(shell_type)
-        if clazz:
-            return clazz()
-
-        return None
+    def __init__(self, pid, location, config_dir):
+        self._shell_pid = pid
+        self._envprobe_location = location
+        self._configuration_dir = config_dir
 
     @property
     def shell_type(self):
@@ -60,20 +38,20 @@ class Shell(metaclass=ABCMeta):
         return self._envprobe_location
 
     @property
-    def configuration_folder(self):
+    def configuration_directory(self):
         """
         :return: The directory where the :type:`Shell` instance's controlling
         data is kept. This is in all cases a temporary directory used by the
         hooks.
         """
-        return self._configuration_folder
+        return self._configuration_dir
 
     @property
     def control_file(self):
         """
         Returns the location of the shell hook's control file.
         """
-        return os.path.join(self._configuration_folder, 'control.sh')
+        return os.path.join(self.configuration_directory, 'control.sh')
 
     @property
     def state_file(self):
@@ -81,7 +59,9 @@ class Shell(metaclass=ABCMeta):
         Returns the path of the file which is used to save the "known" state
         of the shell.
         """
-        return os.path.join(self._configuration_folder, 'state.pickle')
+        # TODO: Pickle is a bit outdated and sometimes insecure, we need to use
+        #       a better serialisation method.
+        return os.path.join(self._configuration_directory, 'state.pickle')
 
     @abstractmethod
     def is_envprobe_capable(self):
@@ -136,6 +116,7 @@ class Shell(metaclass=ABCMeta):
         # This method SHOULD always assume that the temporary file's state is
         # unknown. Usually, the shell parses and destroys commands in the
         # temporary file at every prompt reading.
+        # TODO: Some locking should be done here.
         with open(self.control_file, 'a') as control:
             control.write('\n')
             control.write(self._prepare_setting_env_var(env_var))
@@ -153,19 +134,6 @@ class Shell(metaclass=ABCMeta):
             control.write('\n')
 
 
-# Expose every shell known in this module.
-__all__ = ['bash', 'zsh']
-
-
-def register_type(kind, clazz):
-    """
-    Register the given :type:`Shell` subtype for the given name in the
-    module's table.
-    """
-    SHELL_CLASSES_TO_TYPES[clazz] = kind
-    SHELL_TYPES_TO_CLASSES[kind] = clazz
-
-
 def get_current_shell():
     """
     Creates a Shell instance based on the current environment, if possible.
@@ -177,8 +145,21 @@ def get_current_shell():
     if not shell_type:
         return None
 
-    shell = Shell.for_shell(shell_type)
-    if not shell:
-        return False
+    clazz = SHELL_TYPES_TO_CLASSES.get(shell_type)
+    if not clazz:
+        try:
+            importlib.import_module("envprobe.shell.%s" % shell_type)
+            # The loading of the module SHOULD register the type.
+        except ModuleNotFoundError:
+            raise KeyError("Shell '%s' is not supported by the current "
+                           "version." % shell_type)
+
+    clazz = SHELL_TYPES_TO_CLASSES.get(shell_type)
+    if not clazz:
+        raise NotImplementedError("Shell '%s' failed to load.")
+
+    shell = clazz(os.environ.get('ENVPROBE_SHELL_PID', None),
+                  os.environ.get('ENVPROBE_LOCATION', None),
+                  os.environ.get('ENVPROBE_CONFIG', None))
 
     return shell

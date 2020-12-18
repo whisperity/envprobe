@@ -6,32 +6,29 @@ import os
 import tempfile
 
 from abc import abstractmethod
-from . import Shell
+from .shell import Shell
 
 
-class BashLikeShell(Shell):
+class BashLike(Shell):
     """
     Common implementation for Bash-like shells.
     """
 
-    def __init__(self):
-        super().__init__()
-        self._shell_pid = os.environ.get('ENVPROBE_SHELL_PID', None)
-
-        location = os.environ.get('ENVPROBE_LOCATION', None)
+    def __init__(self, pid, location, config_dir):
+        super().__init__(pid, location, config_dir)
         if location:
             location = os.path.abspath(os.path.expanduser(location))
-        self._envprobe_location = location
 
-        self._configuration_folder = os.environ.get('ENVPROBE_CONFIG', None)
-        if not self._configuration_folder and self.is_envprobe_capable():
+        if not config_dir and self.is_envprobe_capable():
             # Generate a temporary file that will be used by the Bash shell
             # at every prompt read which *actually* sets the environment as
             # per the user's request. (This is the real "hack" that makes
             # envprobe useful!)
             tempd = tempfile.mkdtemp(
                 prefix='.envprobe.' + self.shell_pid + '-', )
-            self._configuration_folder = tempd
+            config_dir = tempd
+
+        super().__init__(pid, location, config_dir)
 
     def is_envprobe_capable(self):
         return self.shell_pid and self.envprobe_location

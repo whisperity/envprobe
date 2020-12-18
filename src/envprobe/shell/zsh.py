@@ -3,16 +3,16 @@ Module for supporting the Zsh shell.
 """
 
 from . import register_type
-from .bash_like import BashLikeShell
+from .bash_like import BashLike
 
 
-class ZshShell(BashLikeShell):
+class Zsh(BashLike):
     """
     Shell implementation for the Zsh shell.
     """
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, pid, location, config_dir):
+        super().__init__(pid, location, config_dir)
 
     def get_shell_hook(self):
         pid = self.shell_pid
@@ -49,14 +49,13 @@ then
     return $original_retcode;
   }};
 
-  echo "Envprobe loaded successfully. :)";
   precmd_functions+=(__envprobe);
 fi
 """.format(PID=pid,
            LOCATION=location,
-           CONFIG=self._configuration_folder,
+           CONFIG=self.configuration_directory,
            CONTROL_FILE=self.control_file,
            TYPE=self.shell_type)
 
 
-register_type('zsh', ZshShell)
+register_type('zsh', Zsh)

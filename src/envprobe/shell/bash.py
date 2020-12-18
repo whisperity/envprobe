@@ -3,16 +3,16 @@ Module for supporting the Bash shell.
 """
 
 from . import register_type
-from .bash_like import BashLikeShell
+from .bash_like import BashLike
 
 
-class BashShell(BashLikeShell):
+class Bash(BashLike):
     """
     Shell implementation for the Bash shell.
     """
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, pid, location, config_dir):
+        super().__init__(pid, location, config_dir)
 
     def get_shell_hook(self):
         pid = self.shell_pid
@@ -49,14 +49,13 @@ then
     return $original_retcode;
   }};
 
-  echo "Envprobe loaded successfully. :)";
   PROMPT_COMMAND="__envprobe;$PROMPT_COMMAND";
 fi
 """.format(PID=pid,
            LOCATION=location,
-           CONFIG=self._configuration_folder,
+           CONFIG=self.configuration_directory,
            CONTROL_FILE=self.control_file,
            TYPE=self.shell_type)
 
 
-register_type('bash', BashShell)
+register_type('bash', Bash)
