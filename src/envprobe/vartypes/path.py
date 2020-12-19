@@ -31,7 +31,7 @@ class PathLike(ColonSeparatedArray):
 
     @staticmethod
     def type_description():
-        return "A list of files and folders separated by ; This type "        \
+        return "A list of files and folders separated by : This type "        \
                "offers additional benefits in knowing that path entries can " \
                "be normalised and shortened."
 

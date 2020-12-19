@@ -74,4 +74,4 @@ class Numeric(EnvVar):
         return ret
 
 
-register_type('number', Numeric)
+register_type('numeric', Numeric)
