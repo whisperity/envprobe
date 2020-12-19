@@ -2,12 +2,10 @@
 This module contains the support code that translates envprobe operations to
 shell operations.
 """
+import importlib
 
 SHELL_CLASSES_TO_TYPES = {}
 SHELL_TYPES_TO_CLASSES = {}
-
-
-__all__ = ['shell']
 
 
 def register_type(kind, clazz):
@@ -17,3 +15,44 @@ def register_type(kind, clazz):
     """
     SHELL_CLASSES_TO_TYPES[clazz] = kind
     SHELL_TYPES_TO_CLASSES[kind] = clazz
+
+
+def get_class(kind):
+    """
+    Returns the :type:`Shell` subtype for the given kind.
+    """
+    return SHELL_TYPES_TO_CLASSES[kind]
+
+
+def get_kind(clazz):
+    """
+    Returns the textual kind identifier for the :type:`Shell` subtype.
+    """
+    return SHELL_CLASSES_TO_TYPES[clazz]
+
+
+def load(kind):
+    """
+    Tries to load the given `kind` module from the current package and
+    have it registered as a valid shell.
+
+    If the shell is registered, the type (class) is returned.
+    """
+    try:
+        return get_class(kind)
+    except KeyError:
+        pass
+
+    try:
+        importlib.import_module("envprobe.shell.%s" % kind)
+        # The loading of the module SHOULD register the type.
+    except ModuleNotFoundError:
+        raise KeyError("Shell '%s' is not supported by the current version."
+                       % kind)
+
+    return SHELL_TYPES_TO_CLASSES.get(kind, None)
+
+
+# Now that the top-level hierarchy for the loader is set, automatically load
+# and expose to the user the base class definition.
+from . import shell  # noqa

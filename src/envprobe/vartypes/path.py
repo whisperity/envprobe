@@ -3,10 +3,11 @@ Implementation of PATH arrays.
 """
 import os
 
-from . import array, register_type
+from . import register_type
+from .array import ColonSeparatedArray
 
 
-class PathLike(array.ColonSeparatedArray):
+class PathLike(ColonSeparatedArray):
     """
     Represents as POSIX PATH-like environment variable. `PATH` variables
     are commonly used as list of locations in a precedence order for finding

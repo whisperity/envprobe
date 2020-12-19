@@ -3,10 +3,9 @@ Definition of the abstract base class for Shells.
 """
 
 from abc import ABCMeta, abstractmethod
-import importlib
 import os
 
-from . import SHELL_TYPES_TO_CLASSES, SHELL_CLASSES_TO_TYPES
+from . import get_class, get_kind, load
 
 
 class Shell(metaclass=ABCMeta):
@@ -24,7 +23,7 @@ class Shell(metaclass=ABCMeta):
         """
         Returns the current shell's type in a textual format.
         """
-        return SHELL_CLASSES_TO_TYPES.get(type(self), "Unknown?")
+        return get_kind(type(self))
 
     @property
     def shell_pid(self):
@@ -149,18 +148,13 @@ def get_current_shell(environment):
     if not shell_type:
         raise KeyError("Current shell's type is not configured.")
 
-    clazz = SHELL_TYPES_TO_CLASSES.get(shell_type)
-    if not clazz:
-        try:
-            importlib.import_module("envprobe.shell.%s" % shell_type)
-            # The loading of the module SHOULD register the type.
-        except ModuleNotFoundError:
-            raise KeyError("Shell '%s' is not supported by the current "
-                           "version." % shell_type)
-
-    clazz = SHELL_TYPES_TO_CLASSES.get(shell_type)
-    if not clazz:
-        raise NotImplementedError("Shell '%s' failed to load.")
+    clazz = None
+    try:
+        clazz = get_class(shell_type)
+    except KeyError:
+        clazz = load(shell_type)
+        if not clazz:
+            raise NotImplementedError("Shell '%s' failed to load.")
 
     shell = clazz(environment.get("ENVPROBE_SHELL_PID"),
                   environment.get("ENVPROBE_LOCATION"),

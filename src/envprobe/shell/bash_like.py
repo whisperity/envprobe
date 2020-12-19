@@ -15,6 +15,7 @@ class BashLike(Shell):
     """
 
     def __init__(self, pid, location, config_dir):
+        super().__init__(pid, location, config_dir)
         if location:
             location = os.path.abspath(os.path.expanduser(location))
 

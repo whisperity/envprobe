@@ -25,6 +25,8 @@ def test_diff():
     s1 = String("test_string", "foo")
     s2 = String("test_string", "bar")
 
+    assert(not String.get_difference(s1, s1)['diff'])
+
     diff = String.get_difference(s1, s2)
     assert(diff['type'] == "String")
     assert(len(diff['diff']) == 2)
