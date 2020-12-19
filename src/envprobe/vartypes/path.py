@@ -1,3 +1,6 @@
+"""
+Implementation of PATH arrays.
+"""
 import os
 
 from . import array, register_type

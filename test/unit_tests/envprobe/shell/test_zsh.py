@@ -8,36 +8,25 @@ from envprobe.vartypes.string import String
 
 @pytest.fixture
 def environment(tmp_path):
-    cfg = {'pid': str(random.randint(1024, 65536)),
-           'cfg': str(tmp_path),
-           'dir': "/dummy",
-           'type': "zsh"
+    cfg = {'ENVPROBE_SHELL_PID': str(random.randint(1024, 65536)),
+           'ENVPROBE_CONFIG': str(tmp_path),
+           'ENVPROBE_LOCATION': "/dummy",
+           'ENVPROBE_SHELL_TYPE': "zsh"
            }
-
-    os.environ["ENVPROBE_SHELL_TYPE"] = cfg["type"]
-    os.environ["ENVPROBE_SHELL_PID"] = cfg["pid"]
-    os.environ["ENVPROBE_LOCATION"] = cfg["dir"]
-    os.environ["ENVPROBE_CONFIG"] = cfg["cfg"]
-
-    yield cfg
-
-    del os.environ["ENVPROBE_CONFIG"]
-    del os.environ["ENVPROBE_LOCATION"]
-    del os.environ["ENVPROBE_SHELL_PID"]
-    del os.environ["ENVPROBE_SHELL_TYPE"]
+    return cfg
 
 
 def test_load(environment):
-    sh = get_current_shell()
-    assert(sh.shell_type == environment["type"])
-    assert(sh.shell_pid == environment["pid"])
-    assert(sh.envprobe_location == environment["dir"])
-    assert(sh.configuration_directory == environment["cfg"])
+    sh = get_current_shell(environment)
+    assert(sh.shell_type == environment["ENVPROBE_SHELL_TYPE"])
+    assert(sh.shell_pid == environment["ENVPROBE_SHELL_PID"])
+    assert(sh.envprobe_location == environment["ENVPROBE_LOCATION"])
+    assert(sh.configuration_directory == environment["ENVPROBE_CONFIG"])
     assert("precmd_functions" in sh.get_shell_hook())
 
 
 def test_set(environment):
-    sh = get_current_shell()
+    sh = get_current_shell(environment)
     s = String("test", "foo")
     sh.set_env_var(s)
 
@@ -49,7 +38,7 @@ def test_set(environment):
 
 
 def test_set_two(environment):
-    sh = get_current_shell()
+    sh = get_current_shell(environment)
     s1 = String("test", "foo")
     s2 = String("test2", "bar")
     sh.set_env_var(s1)
@@ -64,7 +53,7 @@ def test_set_two(environment):
 
 
 def test_unset(environment):
-    sh = get_current_shell()
+    sh = get_current_shell(environment)
     s1 = String("test", "foo")
     sh.undefine_env_var(s1)
 
@@ -76,7 +65,7 @@ def test_unset(environment):
 
 
 def test_set_and_unset(environment):
-    sh = get_current_shell()
+    sh = get_current_shell(environment)
     s1 = String("test", "foo")
     s2 = String("test2", "bar")
     sh.set_env_var(s1)

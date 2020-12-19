@@ -75,7 +75,11 @@ jobs:
           ${{ matrix.pip-command }} install pytest
           if [ -f requirements.txt ];
           then
-            ${{ matrix.pip-command }} install -r requirements.txt
+            ${{ matrix.pip-command }} install -r requirements.txt;
+          fi
+          if [ -f test/requirements.txt ];
+          then
+            ${{ matrix.pip-command }} install -r test/requirements.txt;
           fi
 
       - name: "Test"

@@ -1,3 +1,7 @@
+"""
+Definition of the abstract base class for Shells.
+"""
+
 from abc import ABCMeta, abstractmethod
 import importlib
 import os
@@ -134,16 +138,16 @@ class Shell(metaclass=ABCMeta):
             control.write('\n')
 
 
-def get_current_shell():
+def get_current_shell(environment):
     """
     Creates a Shell instance based on the current environment, if possible.
 
     Returns False if the current shell type is unknown or None if the user
     does not have envprobe enabled.
     """
-    shell_type = os.environ.get('ENVPROBE_SHELL_TYPE')
+    shell_type = environment.get("ENVPROBE_SHELL_TYPE", None)
     if not shell_type:
-        return None
+        raise KeyError("Current shell's type is not configured.")
 
     clazz = SHELL_TYPES_TO_CLASSES.get(shell_type)
     if not clazz:
@@ -158,8 +162,8 @@ def get_current_shell():
     if not clazz:
         raise NotImplementedError("Shell '%s' failed to load.")
 
-    shell = clazz(os.environ.get('ENVPROBE_SHELL_PID', None),
-                  os.environ.get('ENVPROBE_LOCATION', None),
-                  os.environ.get('ENVPROBE_CONFIG', None))
+    shell = clazz(environment.get("ENVPROBE_SHELL_PID"),
+                  environment.get("ENVPROBE_LOCATION"),
+                  environment.get("ENVPROBE_CONFIG"))
 
     return shell

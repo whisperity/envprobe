@@ -1,5 +1,5 @@
 """
-Module for supporting the Bash-like shells.
+Module for supporting Bash-like shells.
 """
 
 import os
@@ -15,7 +15,6 @@ class BashLike(Shell):
     """
 
     def __init__(self, pid, location, config_dir):
-        super().__init__(pid, location, config_dir)
         if location:
             location = os.path.abspath(os.path.expanduser(location))
 

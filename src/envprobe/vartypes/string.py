@@ -1,3 +1,6 @@
+"""
+Implementation for pure string environment variables.
+"""
 from . import register_type
 from .envvar import EnvVar
 

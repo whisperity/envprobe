@@ -1,3 +1,6 @@
+"""
+Defines the abstract base class for all environment variable types.
+"""
 from abc import ABCMeta, abstractmethod
 
 

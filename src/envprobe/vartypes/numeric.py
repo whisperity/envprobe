@@ -1,3 +1,6 @@
+"""
+Implementation for numeric values.
+"""
 from . import register_type
 from .envvar import EnvVar
 
