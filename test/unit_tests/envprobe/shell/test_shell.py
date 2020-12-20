@@ -5,7 +5,7 @@ from envprobe.shell.shell import get_current_shell
 
 @pytest.fixture
 def environment():
-    cfg = {'ENVPROBE_SHELL_TYPE': "false"}
+    cfg = {"ENVPROBE_SHELL_TYPE": "false"}
     return cfg
 
 

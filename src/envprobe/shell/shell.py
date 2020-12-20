@@ -64,7 +64,7 @@ class Shell(metaclass=ABCMeta):
         """
         # TODO: Pickle is a bit outdated and sometimes insecure, we need to use
         #       a better serialisation method.
-        return os.path.join(self._configuration_directory, 'state.pickle')
+        return os.path.join(self.configuration_directory, 'state.pickle')
 
     @abstractmethod
     def is_envprobe_capable(self):

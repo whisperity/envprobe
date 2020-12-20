@@ -56,6 +56,8 @@ class EnvVar(metaclass=ABCMeta):
         the value of :param:`old_variable` can be transformed into
         :param:`new_variable`.
         """
+        # TODO: This stuff should be made much more type-safe, especially in
+        #       the interaction with `envprobe.environment`...
 
         if type(old_variable) != type(new_variable):
             raise TypeError("Only variables of the same type can be "

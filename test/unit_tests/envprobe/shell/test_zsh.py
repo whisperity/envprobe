@@ -8,10 +8,10 @@ from envprobe.vartypes.string import String
 
 @pytest.fixture
 def environment(tmp_path):
-    cfg = {'ENVPROBE_SHELL_PID': str(random.randint(1024, 65536)),
-           'ENVPROBE_CONFIG': str(tmp_path),
-           'ENVPROBE_LOCATION': "/dummy",
-           'ENVPROBE_SHELL_TYPE': "zsh"
+    cfg = {"ENVPROBE_SHELL_PID": str(random.randint(1024, 65536)),
+           "ENVPROBE_CONFIG": str(tmp_path),
+           "ENVPROBE_LOCATION": "/dummy",
+           "ENVPROBE_SHELL_TYPE": "zsh"
            }
     return cfg
 
