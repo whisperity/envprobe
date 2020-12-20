@@ -2,6 +2,7 @@
 This module contains the object model for environmental variable type classes.
 """
 import importlib
+import os
 
 ENVTYPE_CLASSES_TO_NAMES = {}
 ENVTYPE_NAMES_TO_CLASSES = {}
@@ -46,11 +47,24 @@ def load(kind):
         importlib.import_module("envprobe.vartypes.%s" % kind)
         # The loading of the module SHOULD register the type.
     except ModuleNotFoundError:
-        raise KeyError("Environment variable type '%s' is not supported by "
-                       "the current version."
-                       % kind)
+        raise NotImplementedError(
+                "Environment variable type '%s' is not supported by the "
+                "current version."
+                % kind)
 
     return ENVTYPE_NAMES_TO_CLASSES.get(kind, None)
+
+
+def load_all():
+    """
+    Loads every environment variable type implementation available to the
+    interpreter.
+    """
+    for f in os.listdir(os.path.dirname(__loader__.path)):
+        try:
+            load(f.split('.')[0])
+        except NotImplementedError:
+            pass
 
 
 # Now that the top-level hierarchy for the loader is set, automatically load

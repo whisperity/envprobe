@@ -2,7 +2,6 @@
 Module which contains the classes for array-like environment variables.
 """
 
-from . import register_type
 from .envvar import EnvVar
 
 
@@ -201,35 +200,3 @@ class Array(EnvVar):
             ret['diff'].append((' ', keep))
 
         return ret
-
-
-class ColonSeparatedArray(Array):
-    """
-    Represents an environment variable in which array elements are
-    separated by `:`.
-    """
-
-    def __init__(self, name, env_string):
-        super().__init__(name, env_string, ':')
-
-    @staticmethod
-    def type_description():
-        return "A list of string variables in an array, separated by :"
-
-
-class SemicolonSeparatedArray(Array):
-    """
-    Represents an environment variable in which array elements are
-    separated by `;`.
-    """
-
-    def __init__(self, name, env_string):
-        super().__init__(name, env_string, ';')
-
-    @staticmethod
-    def type_description():
-        return "A list of string variables in an array, separated by ;"
-
-
-register_type('colon-separated', ColonSeparatedArray)
-register_type('semi-separated', SemicolonSeparatedArray)

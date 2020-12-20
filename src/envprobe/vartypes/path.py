@@ -4,7 +4,7 @@ Implementation of PATH arrays.
 import os
 
 from . import register_type
-from .array import ColonSeparatedArray
+from .colon_separated import ColonSeparatedArray
 
 
 class PathLike(ColonSeparatedArray):

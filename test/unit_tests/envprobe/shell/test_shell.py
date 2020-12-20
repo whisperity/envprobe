@@ -1,4 +1,3 @@
-import os
 import pytest
 
 from envprobe.shell.shell import get_current_shell
@@ -11,5 +10,5 @@ def environment():
 
 
 def test_shell_fails_to_load(environment):
-    with pytest.raises(KeyError):
+    with pytest.raises(NotImplementedError):
         get_current_shell(environment)

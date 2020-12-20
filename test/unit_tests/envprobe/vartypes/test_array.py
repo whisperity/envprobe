@@ -1,7 +1,7 @@
 import pytest
 
-from envprobe.vartypes.array import ColonSeparatedArray, \
-        SemicolonSeparatedArray
+from envprobe.vartypes.colon_separated import ColonSeparatedArray
+from envprobe.vartypes.semi_separated import SemicolonSeparatedArray
 
 
 def test_init_and_load():
