@@ -82,7 +82,25 @@ jobs:
             ${{ matrix.pip-command }} install -r test/requirements.txt;
           fi
 
-      - name: "Test"
+      - name: "Unit tests"
         run: |
-          VERBOSE=1 make test
+          VERBOSE=1 make unit_test-coverage
+          mkdir CoverageReport
+          mv htmlcov CoverageReport/unit-test-coverage
+
+      - name: "Integration tests"
+        run: |
+          VERBOSE=1 make integration_test-coverage
+          mv htmlcov CoverageReport/integration-test-coverage
+
+      - name: "Generate merged coverage report"
+        run: |
+          VERBOSE=1 make coverage
+          mv htmlcov CoverageReport/merged-coverage
+
+      - name: "Upload Coverage artefacts"
+        uses: actions/upload-artifact@v2
+        with:
+          name: "Coverage HTML"
+          path: "CoverageReport/*"
 

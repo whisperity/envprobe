@@ -1,0 +1,14 @@
+[tool.pytest.ini_options]
+console_output_style = "count"
+testpaths = ["src",
+             "test/unit_tests"
+             ]
+
+[tool.coverage.run]
+branch = true
+relative_files = true
+omit = [
+    "*/.local/*",
+    "/usr/*",
+    "*/conftest.py"
+    ]
