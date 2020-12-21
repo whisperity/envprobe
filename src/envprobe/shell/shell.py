@@ -137,14 +137,51 @@ class Shell(metaclass=ABCMeta):
             control.write('\n')
 
 
-def get_current_shell(environment):
+class FakeShell(Shell):
     """
-    Creates a Shell instance based on the current environment, if possible.
+    Implements a fake :type:`Shell`, which provides all the methods necessary
+    to be a proper subclass but with guarding against useful facilities.
+    """
+    def __init__(self):
+        super().__init__(-1, os.path.curdir, os.path.curdir)
+
+    @property
+    def shell_type(self):
+        return ""
+
+    @property
+    def control_file(self):
+        return os.path.devnull
+
+    @property
+    def state_file(self):
+        return os.path.devnull
+
+    def is_envprobe_capable(self):
+        return False
+
+    def get_shell_hook(self):
+        return ""
+
+    def get_shell_hook_error(self):
+        return ""
+
+    def _prepare_setting_env_var(self, env_var):
+        return ""
+
+    def _prepare_undefining_env_var(self, env_var):
+        return ""
+
+
+def get_current_shell(environment_dict):
+    """
+    Creates a Shell instance based on the current environment mapping,
+    if possible.
 
     Returns False if the current shell type is unknown or None if the user
     does not have envprobe enabled.
     """
-    shell_type = environment.get("ENVPROBE_SHELL_TYPE", None)
+    shell_type = environment_dict.get("ENVPROBE_SHELL_TYPE", None)
     if not shell_type:
         raise KeyError("Current shell's type is not configured.")
 
@@ -156,8 +193,8 @@ def get_current_shell(environment):
         if not clazz:
             raise NotImplementedError("Shell '%s' failed to load.")
 
-    shell = clazz(environment.get("ENVPROBE_SHELL_PID"),
-                  environment.get("ENVPROBE_LOCATION"),
-                  environment.get("ENVPROBE_CONFIG"))
+    shell = clazz(environment_dict.get("ENVPROBE_SHELL_PID"),
+                  environment_dict.get("ENVPROBE_LOCATION"),
+                  environment_dict.get("ENVPROBE_CONFIG"))
 
     return shell

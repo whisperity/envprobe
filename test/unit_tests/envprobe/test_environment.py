@@ -124,19 +124,21 @@ def test_load_default_state(dummy_shell):
     assert(not environment.stamped_environment)
 
 
-def test_save_stamps(dummy_shell):
+def test_save_stamp(dummy_shell):
     shell, osenv = dummy_shell
     environment = Environment(shell, osenv)
-    environment.save()
+    environment.stamp()
     assert(environment.current_environment == osenv)
     assert(environment.stamped_environment == osenv)
 
+    environment.save()
     assert(os.path.isfile(shell.state_file))
 
 
 def test_change(dummy_shell):
     shell, osenv = dummy_shell
     environment = Environment(shell, osenv)
+    environment.stamp()
     environment.save()
 
     with open(shell.state_file, 'rb') as f:
@@ -165,9 +167,10 @@ def test_change(dummy_shell):
     mod = diff["USER"]
     assert(mod.variable == "USER" and mod.kind == VDK.CHANGED)
 
-    environment.save()
+    environment.stamp()
     assert(not environment.diff())
 
+    environment.save()
     with open(shell.state_file, 'rb') as f:
         f.seek(0, 2)
         size = f.tell()
@@ -181,6 +184,7 @@ def test_apply_change(dummy_shell):
     shell, osenv = dummy_shell
     environment = Environment(shell, osenv)
     environment.save()
+    environment.stamp()
     assert(environment.current_environment == environment.stamped_environment)
 
     user = MockVariable("USER", "root")
@@ -191,7 +195,7 @@ def test_apply_change(dummy_shell):
     assert(len(diff) == 1 and "USER" in diff)
     assert(diff["USER"].kind == VDK.CHANGED)
 
-    environment.emit_saved_in_memory()  # stamped -> disk.
+    environment.save()  # stamped -> disk.
     # disk -> current.
     environment = Environment(shell, {**osenv, "USER": "root"})
     assert(environment.current_environment == environment.stamped_environment)

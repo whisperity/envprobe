@@ -91,3 +91,7 @@ integration_test-coverage: coverage_new_dir integration_test.cover
 	echo "integration-tests" >> .coverage.TITLE-tmp
 	@$(MAKE) coverage_report
 .PHONY: integration_test_coverage
+
+clean:
+	rm -rf *.cover .coverage* htmlcov
+.PHONY: clean

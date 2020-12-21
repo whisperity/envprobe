@@ -196,14 +196,16 @@ class Environment:
         self._stamped_environment = None
         self._type_heuristics = variable_type_heuristic
 
-        if self._shell.is_envprobe_capable():
-            self.load()
-
     def load(self):
         """
-        Loads the current shell's environment *save* into memory.
+        Load the current shell's saved environment from storage into the memory
+        as the :variable:`stamped_environment`.
+
+        If there is no backing file associated with the current shell or a
+        file access error happens, the stamped environment will be empty.
         """
         if not self._shell.is_envprobe_capable():
+            self._stamped_environment = {}
             return
 
         try:
@@ -212,34 +214,31 @@ class Environment:
         except OSError:
             self._stamped_environment = {}
 
-    def save(self):
+    def stamp(self):
         """
-        Save the *current* environment in memory into the state file of the
-        running shell.
+        Stamp the *current* environment passed to :func:`__init__` to store
+        it in the :variable:`stamped_environment`.
         """
-        if not self._shell.is_envprobe_capable():
-            return
-
-        with open(self._shell.state_file, 'wb') as f:
-            pickle.dump(self._environment, f)
-        os.chmod(self._shell.state_file, 0o0600)
-
         # TODO: Please implement a better logic at stamping/saving, that only
         #       stamps (saves) the difference as already handled, not the
         #       ENTIRE shell.
         self._stamped_environment = deepcopy(self._environment)
 
-    def emit_saved_in_memory(self):
+    def save(self):
         """
-        Overwrite the running shell's saved state on the disk with the
-        saved state stored in memory.
+        Emit the environment's *stamped* state
+        (:variable:`stamped_environment`) to the storage for the current
+        shell's backing file.
+
+        If there is no backing file associated with the current shell, the
+        method does nothing.
         """
-        # TODO: Why was this method necessary?
         if not self._shell.is_envprobe_capable():
             return
 
         with open(self._shell.state_file, 'wb') as f:
             pickle.dump(self._stamped_environment, f)
+        os.chmod(self._shell.state_file, 0o0600)
 
     @property
     def current_environment(self):
@@ -256,12 +255,14 @@ class Environment:
     def stamped_environment(self):
         """
         Obtain the environment which was applicable at the last committed
-        modification (such as calling of :func:`save()` or
+        modification (such as calling of :func:`stamp()` or
         :func:`apply_change()`).
 
         This property represents the known state of the environment as was last
         time Envprobe destructively interacted with it.
         """
+        if self._stamped_environment is None:
+            self.load()
         return self._stamped_environment
 
     def apply_change(self, variable, remove=False):
@@ -270,8 +271,8 @@ class Environment:
         value as passed in `variable`. If `remove` is `True`, the variable
         will be removed from memory.
 
-        This function does not change the representation as persisted on the
-        disk.
+        :note: This function does not change the representation as persisted
+        in storage!
         """
         if not remove:
             self._stamped_environment[variable.name] = variable.to_raw_var()
