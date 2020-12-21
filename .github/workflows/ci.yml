@@ -43,22 +43,24 @@ jobs:
       fail-fast: false
       matrix:
         name: [
-            "Ubuntu 18.04 / Python 3.6",
-            "Ubuntu 20.04 / Python 3.8"
+            "Ubuntu 18.04 - Python 3.6",
+            "Ubuntu 20.04 - Python 3.8"
         ]
 
         include:
-          - name: "Ubuntu 18.04 / Python 3.6"
+          - name: "Ubuntu 18.04 - Python 3.6"
             os: "ubuntu-18.04"
             python: "3.6"
             # Ubuntu 18.04 still supports "Python 2" as "python" and "pip", so
             # this has to be explicitly specified to be the Python 3 version.
             pip-command: "pip3"
+            is-main-target: false
 
-          - name: "Ubuntu 20.04 / Python 3.8"
+          - name: "Ubuntu 20.04 - Python 3.8"
             os: "ubuntu-20.04"
             python: "3.8"
             pip-command: "pip"
+            is-main-target: true
 
     steps:
       - uses: actions/checkout@v2
@@ -94,13 +96,17 @@ jobs:
           mv htmlcov CoverageReport/integration-test-coverage
 
       - name: "Generate merged coverage report"
+        if: ${{ matrix.is-main-target }}
+        continue-on-error: true
         run: |
           VERBOSE=1 make coverage
           mv htmlcov CoverageReport/merged-coverage
 
       - name: "Upload Coverage artefacts"
+        if: ${{ matrix.is-main-target }}
+        continue-on-error: true
         uses: actions/upload-artifact@v2
         with:
-          name: "Coverage HTML"
+          name: "Coverage HTML (for ${{ matrix.name }})"
           path: "CoverageReport/*"
 
