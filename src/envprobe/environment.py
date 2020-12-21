@@ -267,6 +267,18 @@ class Environment:
             self.load()
         return self._stamped_environment
 
+    def __getitem__(self, variable_name):
+        """
+        :return: A tuple of an :type:`EnvVar` for the variable with the given
+        name, populated with the value in the :func:`current_environment`, and
+        a boolean indicating whether the variable was actually defined in the
+        environment, or created on the fly.
+        """
+        return create_environment_variable(variable_name,
+                                           self.current_environment,
+                                           self._type_heuristics), \
+            variable_name in self.current_environment
+
     def apply_change(self, variable, remove=False):
         """
         Changes the variable in the :variable:`stamped_environment` have the

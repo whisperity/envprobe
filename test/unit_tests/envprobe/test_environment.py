@@ -128,6 +128,21 @@ def test_load_default_state(dummy_shell):
     assert(not environment.stamped_environment)
 
 
+def test___getitem__(dummy_shell):
+    shell, osenv = dummy_shell
+    environment = Environment(shell, osenv)
+
+    existing_var, existing = environment["USER"]
+    assert(existing_var.name == "USER")
+    assert(existing_var.value == "envprobe")
+    assert(existing)
+
+    not_existing_var, not_existing = environment["TEST"]
+    assert(not_existing_var.name == "TEST")
+    assert(not_existing_var.value == "")
+    assert(not not_existing)
+
+
 def test_save_stamp(dummy_shell):
     shell, osenv = dummy_shell
     environment = Environment(shell, osenv)

@@ -1,3 +1,10 @@
+import shlex
+import sys
+
+from .. import community_descriptions
+from ..vartypes import get_kind
+from ..vartypes.array import Array
+
 name = 'get'
 description = \
     """Print the value of an environment variable in full.
@@ -8,7 +15,38 @@ help = "{?VARIABLE} Print the value of an environment variable."
 
 
 def command(args):
-    print(args)
+    try:
+        env_var, defined = args.environment[args.VARIABLE]
+    except KeyError:
+        raise ValueError("This environment variable can not or should not be "
+                         "managed through Envprobe.")
+
+    if not defined:
+        print("{0} is not defined".format(args.VARIABLE), file=sys.stderr)
+        return
+
+    print("{0}={1}".format(env_var.name, shlex.quote(env_var.to_raw_var())))
+
+    if args.info:
+        if isinstance(env_var, Array):
+            print("\n{0}:".format(env_var.name))
+            if not len(env_var.value):
+                print(" --- empty ---")
+            else:
+                for e in env_var.value:
+                    print("\t{0}".format(e))
+
+        print()
+        print("Type: '{0}'" % get_kind(type(env_var)))
+
+        community_data = community_descriptions.get_description(env_var.name)
+        description = community_data.get("description", None)
+        source = community_data.get("source", None)
+        if description:
+            print("Description:\n\t{0}".format(description))
+
+            if source:
+                print("Source: {0}".format(source))
 
 
 def register(argparser, registered_command_list):
