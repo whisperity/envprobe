@@ -4,7 +4,6 @@ Module for supporting Bash-like shells.
 import shlex
 import tempfile
 
-from abc import abstractmethod
 from .shell import Shell
 
 error_code = \

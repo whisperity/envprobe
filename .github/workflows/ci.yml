@@ -15,29 +15,39 @@ on:
       - "[0-9]+.[0-9]+.x"
 
 jobs:
-  lint:
-    name: "Linting"
+  analysis:
+    name: "Static analysis"
     runs-on: "ubuntu-20.04"
     steps:
-      - uses: actions/checkout@v2
-        name: "Check out repository"
+      - name: "Check out repository"
+        uses: actions/checkout@v2
 
-      - uses: actions/setup-python@v2
-        name: "Set up Python"
+      - name: "Set up Python"
+        uses: actions/setup-python@v2
         with:
           python-version: "3.8"
 
       - name: "Install dependencies"
         run: |
           python3 -m pip install --upgrade pip
-          pip install pycodestyle
+          if [ -f .github/requirements.txt ]; then
+            python3 -m pip install -r .github/requirements.txt;
+          fi
+          if [ -f requirements.txt ]; then
+            python3 -m pip install -r requirements.txt;
+          fi
+          if [ -f test/requirements.txt ]; then
+            python3 -m pip install -r test/requirements.txt;
+          fi
 
       - name: "Lint"
-        run: |
-          VERBOSE=1 make style
+        run: VERBOSE=1 make style
+
+      - name: "Static analysis"
+        run: VERBOSE=1 make static_analysis
 
   test:
-    name: "Execute tests"
+    name: "Test"
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -51,20 +61,16 @@ jobs:
           - name: "Ubuntu 18.04 - Python 3.6"
             os: "ubuntu-18.04"
             python: "3.6"
-            # Ubuntu 18.04 still supports "Python 2" as "python" and "pip", so
-            # this has to be explicitly specified to be the Python 3 version.
-            pip-command: "pip3"
             is-main-target: false
 
           - name: "Ubuntu 20.04 - Python 3.8"
             os: "ubuntu-20.04"
             python: "3.8"
-            pip-command: "pip"
             is-main-target: true
 
     steps:
-      - uses: actions/checkout@v2
-        name: "Check out repository"
+      - name: "Check out repository"
+        uses: actions/checkout@v2
 
       - name: "Set up Python ${{ matrix.python-version }}"
         uses: actions/setup-python@v2
@@ -74,14 +80,11 @@ jobs:
       - name: "Install dependencies"
         run: |
           python3 -m pip install --upgrade pip
-          ${{ matrix.pip-command }} install pytest
-          if [ -f requirements.txt ];
-          then
-            ${{ matrix.pip-command }} install -r requirements.txt;
+          if [ -f requirements.txt ]; then
+            python3 -m pip install -r requirements.txt;
           fi
-          if [ -f test/requirements.txt ];
-          then
-            ${{ matrix.pip-command }} install -r test/requirements.txt;
+          if [ -f test/requirements.txt ]; then
+            python3 -m pip install -r test/requirements.txt;
           fi
 
       - name: "Unit tests"

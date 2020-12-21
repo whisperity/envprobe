@@ -12,7 +12,6 @@ from envprobe.vartypes.path import PathLike
 
 @pytest.fixture
 def cwd_to_root():
-    import os
     wd = os.getcwd()
     os.chdir("/")
     yield None  # Allow running of the test code.

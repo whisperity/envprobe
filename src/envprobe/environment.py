@@ -6,7 +6,7 @@ state, etc.
 from copy import deepcopy
 from enum import Enum
 import os
-import pickle
+import pickle  # nosec: pickle has some issues, we will get back to it later.
 
 from . import vartypes
 
@@ -211,7 +211,7 @@ class Environment:
 
         try:
             with open(self._shell.state_file, 'rb') as f:
-                self._stamped_environment = pickle.load(f)
+                self._stamped_environment = pickle.load(f)  # nosec: pickle
         except OSError:
             self._stamped_environment = {}
 

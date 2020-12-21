@@ -1,10 +1,21 @@
 default: all
 
-all: style test
+all: style test static_analysis
 
 style:
-	pycodestyle .
+	flake8 src/ test/
 .PHONY: style
+
+static_analysis: mypy bandit
+
+mypy:
+	mypy src/envprobe test/unit_tests/envprobe
+.PHONY: mypy
+
+bandit:
+	bandit -r src/envprobe
+	bandit -s B101,B311 -r test
+.PHONY: bandit
 
 test: unit_test integration_test
 .PHONY: test
@@ -46,7 +57,7 @@ coverage: coverage_new_dir
 
 .coverage.TITLE:
 	echo -n "Envprobe Coverage (" > .coverage.TITLE
-	cat .coverage.TITLE-tmp >> .coverage.TITLE
+	cat .coverage.TITLE-tmp | tr -d '\n' >> .coverage.TITLE
 	echo -n ")" >> .coverage.TITLE
 .PHONY: .coverage.TITLE
 
@@ -77,7 +88,7 @@ unit_test.cover:
 unit_test-coverage: coverage_new_dir unit_test.cover
 	cp unit_test.cover .coverage.COMBINE/
 	python3 -m coverage combine .coverage.COMBINE/*
-	echo "unit-tests" >> .coverage.TITLE-tmp
+	echo "unit_test" >> .coverage.TITLE-tmp
 	@$(MAKE) coverage_report
 .PHONY: unit_test_coverage
 
@@ -88,7 +99,7 @@ integration_test.cover:
 integration_test-coverage: coverage_new_dir integration_test.cover
 	cp integration_test.cover .coverage.COMBINE/
 	python3 -m coverage combine .coverage.COMBINE/*
-	echo "integration-tests" >> .coverage.TITLE-tmp
+	echo "integration_test" >> .coverage.TITLE-tmp
 	@$(MAKE) coverage_report
 .PHONY: integration_test_coverage
 

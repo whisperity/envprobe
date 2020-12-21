@@ -90,4 +90,4 @@ def test_ignore():
     assert(var.value == env["variable"])
 
     with pytest.raises(KeyError):
-        breakvar = create_environment_variable("break", env, p)
+        create_environment_variable("break", env, p)
