@@ -43,8 +43,7 @@ def __main():
     # The order of the commands here also specifies the order they are shown
     # in the user's output!
     registered_commands = []
-    register_envvar_commands(subparsers, registered_commands,
-                             shell.is_envprobe_capable())
+    register_envvar_commands(subparsers, registered_commands, shell)
 
     argv = transform_subcommand_shortcut(sys.argv, registered_commands)
     args = parser.parse_args(argv[1:])

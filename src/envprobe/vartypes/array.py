@@ -1,7 +1,6 @@
 """
 Module which contains the classes for array-like environment variables.
 """
-
 from .envvar import EnvVar
 
 

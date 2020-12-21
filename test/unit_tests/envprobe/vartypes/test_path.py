@@ -4,7 +4,6 @@ Tests the "PathLike" environment variable implementation.
 This is largely the same as testing generic separated arrays, except that
 values expand to absolute paths.
 """
-
 import os
 import pytest
 

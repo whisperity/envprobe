@@ -59,9 +59,10 @@ def _register_mock_shell(rand):
     to a lambda type inside the function.
     """
     class MockShell(shell.Shell):
-        def __init__(self, pid, location, config_dir):
-            super().__init__(pid, location, config_dir)
+        def __init__(self, pid, config_dir):
+            super().__init__(pid, config_dir, "control.txt")
 
+        @property
         def is_envprobe_capable(self):
             return True
 
@@ -71,11 +72,15 @@ def _register_mock_shell(rand):
         def get_shell_hook_error(self):
             return ""
 
-        def _prepare_setting_env_var(self, env_var):
-            return "SET %s" % env_var.name
+        @property
+        def manages_environment_variables(self):
+            return True
 
-        def _prepare_undefining_env_var(self, env_var):
-            return "DEL %s" % env_var.name
+        def _set_environment_variable(self, env_var):
+            pass
+
+        def _unset_environment_variable(self, env_var):
+            pass
 
     register_type(rand, MockShell)
 
@@ -104,7 +109,6 @@ def mock_shell(scope='module'):
 def dummy_shell(mock_shell, tmp_path):
     cfg = {"ENVPROBE_SHELL_PID": str(random.randint(1024, 65536)),
            "ENVPROBE_CONFIG": str(tmp_path),
-           "ENVPROBE_LOCATION": "/dummy",
            "ENVPROBE_SHELL_TYPE": mock_shell}
 
     env = {"USER": "envprobe",

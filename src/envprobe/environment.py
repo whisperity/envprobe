@@ -192,7 +192,7 @@ class Environment:
         the set of key-value environment mappings.
         """
         self._shell = shell
-        self._environment = deepcopy(env)
+        self._current_environment = deepcopy(env)
         self._stamped_environment = None
         self._type_heuristics = variable_type_heuristic
 
@@ -204,7 +204,8 @@ class Environment:
         If there is no backing file associated with the current shell or a
         file access error happens, the stamped environment will be empty.
         """
-        if not self._shell.is_envprobe_capable():
+        if not (self._shell.is_envprobe_capable and
+                self._shell.manages_environment_variables):
             self._stamped_environment = {}
             return
 
@@ -222,7 +223,7 @@ class Environment:
         # TODO: Please implement a better logic at stamping/saving, that only
         #       stamps (saves) the difference as already handled, not the
         #       ENTIRE shell.
-        self._stamped_environment = deepcopy(self._environment)
+        self._stamped_environment = deepcopy(self._current_environment)
 
     def save(self):
         """
@@ -233,7 +234,8 @@ class Environment:
         If there is no backing file associated with the current shell, the
         method does nothing.
         """
-        if not self._shell.is_envprobe_capable():
+        if not (self._shell.is_envprobe_capable and
+                self._shell.manages_environment_variables):
             return
 
         with open(self._shell.state_file, 'wb') as f:
@@ -249,7 +251,7 @@ class Environment:
         This represents the potentially "dirty" state which was read on the fly
         by Envprobe and could be changed by external factors.
         """
-        return self._environment
+        return self._current_environment
 
     @property
     def stamped_environment(self):

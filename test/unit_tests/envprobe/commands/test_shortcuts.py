@@ -1,7 +1,6 @@
 # Note that these tests do not concern whether the rewritten shortcut, such as
 # "ep undefine FOO bar" is a legit call or not, only testing the rewriting
 # logic from the symbol shortcut to the full command.
-
 import shlex
 
 from envprobe.commands.shortcuts import transform_subcommand_shortcut

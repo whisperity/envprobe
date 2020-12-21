@@ -1,7 +1,6 @@
 """
 Module for supporting the Zsh shell.
 """
-
 from . import register_type
 from .bash_like import BashLike
 
@@ -10,18 +9,10 @@ class Zsh(BashLike):
     """
     Shell implementation for the Zsh shell.
     """
-
-    def __init__(self, pid, location, config_dir):
-        super().__init__(pid, location, config_dir)
+    def __init__(self, pid, config_dir):
+        super().__init__(pid, config_dir, "control.zsh")
 
     def get_shell_hook(self):
-        pid = self.shell_pid
-        location = self.envprobe_location
-
-        # Return a Zsh shell script that is loaded by the user's shell.
-        # This will call back to envprobe every time the user gets a prompt,
-        # letting us execute the environment variable configuration when
-        # needed.
         return """
 if [[ "${{precmd_functions[(r)__envprobe]}}" = "" ]];
 then
@@ -51,8 +42,7 @@ then
 
   precmd_functions+=(__envprobe);
 fi
-""".format(PID=pid,
-           LOCATION=location,
+""".format(LOCATION="/dev/null",  # TODO: Fix this!
            CONFIG=self.configuration_directory,
            CONTROL_FILE=self.control_file,
            TYPE=self.shell_type)
