@@ -30,7 +30,6 @@ def __main():
 
     # The ordering of the commands here specifies in which order they are
     # shown on the output!
-    envvars_command.create_subcommand_parser(subparsers)
     state_command.create_subcommand_parser(subparsers)
 
     argv = envvars_command.transform_subcommand_shortcut(sys.argv)
