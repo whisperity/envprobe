@@ -10,7 +10,7 @@ ENVTYPE_NAMES_TO_CLASSES = {}
 
 def register_type(kind, clazz):
     """
-    Register the given :type:`Shell` subtype for the given name in the
+    Register the given :type:`EnvVar` subtype for the given name in the
     module's table.
     """
     ENVTYPE_CLASSES_TO_NAMES[clazz] = kind
@@ -19,16 +19,23 @@ def register_type(kind, clazz):
 
 def get_class(kind):
     """
-    Returns the :type:`EnvVar` subtype for the given kind.
+    :return: The :type:`EnvVar` subtype for the given kind.
     """
     return ENVTYPE_NAMES_TO_CLASSES[kind]
 
 
 def get_kind(clazz):
     """
-    Returns the textual kind identifier for the :type:`EnvVar` subtype.
+    :return: The textual kind identifier for the :type:`EnvVar` subtype.
     """
     return ENVTYPE_CLASSES_TO_NAMES[clazz]
+
+
+def get_known_kinds():
+    """
+    :return: The list of :type:`EnvVar` subtype names that are loaded.
+    """
+    return ENVTYPE_NAMES_TO_CLASSES.keys()
 
 
 def load(kind):

@@ -3,14 +3,10 @@ Envprobe: easy environment variable manager with saved states on a per-shell
 basis.
 """
 import os
-import sys
 
 from . import community_descriptions
 from . import environment
 from .shell import shell
-
-
-print("Dummy: envprobe top-level file was imported.", file=sys.stderr)
 
 
 def assemble_standard_type_heuristics_pipeline():

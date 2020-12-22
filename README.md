@@ -64,12 +64,7 @@ Add the following lines to your `~/.bashrc` file, generally at the very end
 of it. These lines help hooking `envprobe` into your running shells.
 
 ```bash
-unset  ENVPROBE_CONFIG
-export ENVPROBE_LOCATION=~/envprobe
-export ENVPROBE_SHELL_PID=$$
-eval   "$(${ENVPROBE_LOCATION}/envprobe-config.py shell bash)"
-alias  ep='envprobe'
-alias  epc='envprobe-config'
+eval "$(~/envprobe/envprobe config hook bash $$)"
 ```
 
 #### Zsh
@@ -78,12 +73,7 @@ Add the following lines to your `~/.zshrc` file, generally at the very end
 of it. These lines help hooking `envprobe` into your running shells.
 
 ```zsh
-unset  ENVPROBE_CONFIG
-export ENVPROBE_LOCATION=~/envprobe
-export ENVPROBE_SHELL_PID=$$
-eval   "$(${ENVPROBE_LOCATION}/envprobe-config.py shell zsh)"
-alias  ep='envprobe'
-alias  epc='envprobe-config'
+eval "$(~/envprobe/envprobe config hook zsh $$)"
 ```
 
 #### Other extensions

@@ -20,16 +20,23 @@ def register_type(kind, clazz):
 
 def get_class(kind):
     """
-    Returns the :type:`Shell` subtype for the given kind.
+    :return: The :type:`Shell` subtype for the given kind.
     """
     return SHELL_TYPES_TO_CLASSES[kind]
 
 
 def get_kind(clazz):
     """
-    Returns the textual kind identifier for the :type:`Shell` subtype.
+    :return: The textual kind identifier for the :type:`Shell` subtype.
     """
     return SHELL_CLASSES_TO_TYPES[clazz]
+
+
+def get_known_kinds():
+    """
+    :return: The list of :type:`Shell` subtype names that are loaded.
+    """
+    return SHELL_TYPES_TO_CLASSES.keys()
 
 
 def load(kind):

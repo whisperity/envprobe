@@ -29,7 +29,7 @@ def test_load(environment):
     assert(os.path.basename(sh.control_file) == "control.sh")
     assert(sh.is_envprobe_capable)
     assert(sh.manages_environment_variables)
-    assert("PROMPT_COMMAND" in sh.get_shell_hook())
+    assert("PROMPT_COMMAND" in sh.get_shell_hook(""))
 
 
 def test_set(environment):

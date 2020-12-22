@@ -1,0 +1,17 @@
+#!/usr/bin/env python3
+"""
+Entrypoint wrapper for the Envprobe tool.
+Running this script will load Envprobe from the proper location and start it.
+"""
+import os
+import sys
+
+abs_path = os.path.dirname(os.path.abspath(__file__))  # .../
+envprobe_root = os.path.join(abs_path, "src")
+sys.path = [envprobe_root] + sys.path
+
+from envprobe import main  # noqa
+
+if __name__ == '__main__':
+    ret = main.handle_mode(envprobe_root)
+    sys.exit(ret)

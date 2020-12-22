@@ -79,7 +79,12 @@ jobs:
 
       - name: "Install dependencies"
         run: |
+          sudo apt-get install zsh
           python3 -m pip install --upgrade pip
+          if [ "${{ matrix.os }}" == "ubuntu-18.04" ]; then
+              # Sarge doesn't want to install otherwise...
+              python3 -m pip install --upgrade setuptools;
+          fi
           if [ -f requirements.txt ]; then
             python3 -m pip install -r requirements.txt;
           fi

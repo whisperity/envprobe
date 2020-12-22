@@ -1,6 +1,7 @@
 """
-This package implements the individual user-facing subcommands of envprobe that
-are related to interfacing with the environment variables.
+This package implements the individual user-facing subcommands of
+`envprobe (main)` that are related to interfacing with the
+environment variables.
 """
 from . import add, get, remove, undefine
 from . import set as set_command

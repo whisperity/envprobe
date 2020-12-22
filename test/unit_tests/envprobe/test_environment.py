@@ -66,10 +66,7 @@ def _register_mock_shell(rand):
         def is_envprobe_capable(self):
             return True
 
-        def get_shell_hook(self):
-            return ""
-
-        def get_shell_hook_error(self):
+        def get_shell_hook(self, envprobe_callback_location):
             return ""
 
         @property

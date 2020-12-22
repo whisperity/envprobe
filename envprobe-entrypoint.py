@@ -1,15 +1,11 @@
-#!/usr/bin/env python3
-
 """
 Main entry point for the Envprobe tool. This module handles the parsing of
 command-line arguments and dispatching the user's request to the submodules.
 """
-
 import argparse
 import sys
 
 from commands import get_common_epilogue_or_die
-from commands import envvars as envvars_command
 from commands import state as state_command
 from shell import *  # Keep this import, this registers the known shells.
 
@@ -32,8 +28,7 @@ def __main():
     # shown on the output!
     state_command.create_subcommand_parser(subparsers)
 
-    argv = envvars_command.transform_subcommand_shortcut(sys.argv)
-    args = parser.parse_args(argv[1:])  # Cut the shell command's name.
+    args = parser.parse_args(sys.argv[1:])  # Cut the shell command's name.
     if 'func' in args:
         try:
             args.func(args)
