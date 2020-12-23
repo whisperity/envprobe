@@ -1,15 +1,121 @@
-envprobe
+Envprobe
 ========
 
-> Overlaying pluggable environment setter:
-> [modules](http://modules.sourceforge.net/) reimagined + toggleable
-> [`direnv`](http://direnv.net/) on the shell, rather than the directory
-> level.
+**Envprobe** (`envprobe`) is a shell hook tool that helps you manage your environment variables on a per-shell basis easily.
+There is no need for clunky `export` sequences or manual `source`-ing of who-knows-where hand-written script files.
 
-**Envprobe** (or `envprobe`, after the command entry point) is a shell
-configuration tool written in Python.
+Envprobe was originally conceived as the tool between [shell `modules`](http://modules.sourceforge.net) and [`direnv`](http://direnv.net), but with added features such as saving your configuration on the fly.
+
+- [Installation](#installation)
+  - [Dependencies](#dependencies)
+  - [Download](#download)
+  - [Hook](#hook)
+- [Quick user guide](#quick-user-guide)
+  - [Managing environment variables](#managing-environment-variables)
+
+---
+
+## Installation <a name="installation"></a>
+
+### Dependencies <a name="dependencies"></a>
+
+Envprobe is supplied as a no-tools-needed Python package.
+The only things you need to have installed on the system are one of our supported POSIX-compliant shells and Python **3**.
+
+Supported shells are reasonably modern versions of Bash and Zsh.
+
+### Officially supported configurations
+
+These are the configurations that the [CI](http://github.com/whisperity/Envprobe/actions) is running tests on:
+
+| Operating system                     | Required dependencies | Shells supported                     |
+|:-------------------------------------|:---------------------:|:-------------------------------------|
+| Ubuntu 18.04 LTS (_Bionic Beaver_)   |    Python &ge; 3.6    | Bash (&ge; 4.4), Zsh (&ge; 5.4)      |
+| Ubuntu 20.04 LTS (_Focal Fossa_)     |    Python &ge; 3.8    | Bash (&ge; 5.0), Zsh (&ge; 5.8)      |
 
 
+### Download <a name="download"></a>
+
+You can grab Envprobe from the GitHub repository, either via `git` or in a tarball form.
+Download the project anywhere you please.
+In this example, we'll use `~/envprobe`.
+
+~~~{.sh}
+git clone http://github.com/whisperity/envprobe.git ~/envprobe \
+    --origin upstream --single-branch --branch master --depth 1
+~~~
+
+or
+
+~~~{.sh}
+mkdir ~/envprobe
+wget http://github.com/whisperity/envprobe/tarball/master -O envprobe.tar.gz
+tar xzf envprobe.tar.gz --strip-components=1 -C ~/envprobe/
+~~~
+
+
+### Hook <a name="hook"></a>
+
+Envprobe applies the changes to your environment variable every time a prompt is generated in your shell.
+For this to work, a hook must be set up in each shell you're using.
+
+The easiest way to do this is to add the hook script at the end of the configuration file for your respective shell.
+
+> **:warning: Note!** If you are using other custom shell extensions, it is **well-advised** for the best experience to load Envprobe **last**.
+
+| Shell                                                |             Configuration file (usually)              |                     Code to add                      |
+|:-----------------------------------------------------|:-----------------------------------------------------:|:----------------------------------------------------:|
+| Bash                                                 |                   `~/.bashrc`                         | `eval "$(~/envprobe/envprobe config hook bash $$)";` |
+| Zsh (stock)                                          | `~/.zshrc`                                            | `eval "$(~/envprobe/envprobe config hook zsh $$)";`  |
+| Zsh ([Oh My Zsh](http://github.com/ohmyzsh/ohmyzsh)) | `~/.oh-my-zsh/custom/zzzzzz_envprobe.zsh` (new file!) | `eval "$(~/envprobe/envprobe config hook zsh $$)";`  |
+
+
+## Quick user guide <a href="quick-user-guide"></a>
+
+If Envprobe is successfully [installed and hooked](#installation.hook), the `ep`/`envprobe` and `epc`/`envprobe-config` convenience _functions_ will be defined in the current shell.
+If you see something like below, the tool is good to go.
+
+~~~{.bash}
+$ ep
+usage: envprobe [-h] ...
+~~~
+
+The following guide will show the usage of Envprobe through a few practical examples.
+
+For a complete overview on the commands available and their usage, you can always call `ep -h` (or `ep get -h`, etc. for each subcommand) to get a quick help.
+
+> :bulb: **TODO:** Or read the full documentation :wink:
+
+
+### Managing environment variables <a href="managing-environment-variables"></a>
+
+For easy access, the environment variable managing commands are also offered
+as shortcuts.
+
+|    Command    |              Shortcut            | Usage                         |
+|:-------------:|:--------------------------------:|:------------------------------|
+|`get VARIABLE` | `?VARIABLE` or simply `VARIABLE` | Print the value of `VARIABLE` |
+
+
+~~~{.bash}
+$ ep get USER
+USER=root
+
+$ ep USER
+USER=root
+
+$ ep PATH
+PATH=/usr/local/bin:/usr/bin:/sbin:/bin
+~~~
+
+
+
+---
+
+# :warning: OLD DOCUMENTATION
+
+> :loudspeaker: Below follows the documentation for the **previous version** of Envprobe that is being rewritten.
+> Some of the parts might no longer or not yet apply!
 
 Why?
 ----
@@ -34,53 +140,6 @@ configuration files, to either of these mentioned systems.
 How to Install?
 ---------------
 
-
-### Dependencies
-
-Currently, the main target supported by *`envprobe`* is Ubuntu 16.04 LTS,
-using the Bash-like shells, namely Bash and Zsh.
-
-You'll need Python 3 installed on your system. The version available in the
-package manager should be good enough.
-
-
-### Obtaining *Envprobe*
-
-Check out the official repository of `envprobe` to an arbitrary folder on
-your system. For convenience, we'll use `~/envprobe` as location:
-
-    git clone http://github.com/whisperity/envprobe.git ~/envprobe \
-      --origin upstream \
-      --single-branch --branch master \
-      --depth 1
-
-
-### Installation
-
-
-#### Bash
-
-Add the following lines to your `~/.bashrc` file, generally at the very end
-of it. These lines help hooking `envprobe` into your running shells.
-
-```bash
-eval "$(~/envprobe/envprobe config hook bash $$)"
-```
-
-#### Zsh
-
-Add the following lines to your `~/.zshrc` file, generally at the very end
-of it. These lines help hooking `envprobe` into your running shells.
-
-```zsh
-eval "$(~/envprobe/envprobe config hook zsh $$)"
-```
-
-#### Other extensions
-
-If you are using any other extensions in your shell (such as `byobu-shell` or
-[Bash Git Prompt](https://github.com/magicmonty/bash-git-prompt)), the added
-lines need to be after the configuration of your existing extensions.
 
 
 ### Invoking *Envprobe*
@@ -139,7 +198,6 @@ of the current shell.
 on the right side.)
 
 ~~~
-get                 {?VARIABLE} Print the value of an environmental
                     variable.
 set                 {VARIABLE=VALUE} Set the environmental variable to a
                     given value.
@@ -156,10 +214,6 @@ undefine            {^VARIABLE} Undefine an environmental variable.
 The `get` and `set` actions can be used to print or change the value of a
 variable.
 
-To query your `EDITOR`:
-
-    ep get EDITOR
-
 To set `EDITOR` to something else:
 
     ep set EDITOR your-favourite-editor
@@ -167,15 +221,7 @@ To set `EDITOR` to something else:
 The shortcut characters `?` and `=` can be used instead of `get` and `set`
 like this:
 
-    ep ?EDITOR
     ep EDITOR=your-favourite-editor
-
-Alternatively, for ease of access on *checking* a variable in the current
-shell, there is no need to type `?` in either:
-
-    ep PATH
-
-> This syntax is 37.5% shorter than the in-all-case equivalent `echo ${PATH}`.
 
 (The special character can appear either as the first and as the last letter
 of the command. If you are fancy of Haskell and prefix syntax, you can say
