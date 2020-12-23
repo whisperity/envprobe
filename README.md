@@ -10,6 +10,28 @@ envprobe
 configuration tool written in Python.
 
 
+---
+
+# :loudspeaker::warning: This is an outdated version! :wastebasket:
+
+The current commit you are viewing contains an outdated version of Envprobe
+that has been **retroactively** dubbed version `0.0.1`. The original version
+was created over just a few days (including a full day, overnight hackathon
+session) to whip up something that _"just works"_.
+
+> **THIS RELEASE IS NOT SUPPORTED ANYMORE.**
+
+However, plenty of bugs were identified that has irked me for a while now, and
+these bugs can only be resolved by a _significant_ rework of the project. This
+effort will be ongoing, and a new version of Envprobe will be made. Do not
+worry, the gist of the tool will remain the same!
+
+I would like to personally thank @gamesh411, @martong, and @steakhal for using
+the tool.
+
+
+---
+
 
 Why?
 ----
