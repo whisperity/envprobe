@@ -96,19 +96,24 @@ jobs:
         run: |
           VERBOSE=1 make unit_test-coverage
           mkdir CoverageReport
-          mv htmlcov CoverageReport/unit-test-coverage
+          mv htmlcov CoverageReport/unit
 
       - name: "Integration tests"
         run: |
           VERBOSE=1 make integration_test-coverage
-          mv htmlcov CoverageReport/integration-test-coverage
+          mv htmlcov CoverageReport/integration
+
+      - name: "Functional tests"
+        run: |
+          VERBOSE=1 make functional_test-coverage
+          mv htmlcov CoverageReport/functional
 
       - name: "Generate merged coverage report"
         if: ${{ matrix.is-main-target }}
         continue-on-error: true
         run: |
           VERBOSE=1 make coverage
-          mv htmlcov CoverageReport/merged-coverage
+          mv htmlcov CoverageReport/Coverage
 
       - name: "Upload Coverage artefacts"
         if: ${{ matrix.is-main-target }}

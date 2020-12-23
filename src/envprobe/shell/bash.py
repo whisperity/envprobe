@@ -28,27 +28,28 @@ then
 
     envprobe()
     {{
-      _ENVPROBE=1 PYTHONPATH="{LOCATION}" \
-        python3 -m envprobe \
-          main "$@";
+        _ENVPROBE=1 PYTHONPATH="{LOCATION}" \
+            python3 -m envprobe \
+            main "$@";
     }};
 
     envprobe-config()
     {{
-      _ENVPROBE=1 PYTHONPATH="{LOCATION}" \
-        python3 -m envprobe \
-          config "$@";
+        _ENVPROBE=1 PYTHONPATH="{LOCATION}" \
+            python3 -m envprobe \
+            config "$@";
     }};
 
     # The prompt hook.
     __envprobe()
     {{
-      local original_retcode="$?";
-      if [[ -f "{CONTROL_FILE}" ]]; then
-          source "{CONTROL_FILE}";
-          rm "{CONTROL_FILE}";
-      fi;
-      return $original_retcode;
+        local original_retcode="$?";
+        if [[ -f "{CONTROL_FILE}" ]]; then
+            echo "Executing Envprobe Bash hook...";
+            source "{CONTROL_FILE}";
+            rm "{CONTROL_FILE}";
+        fi;
+        return $original_retcode;
     }};
 
     # Register the hook.

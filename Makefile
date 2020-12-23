@@ -9,7 +9,7 @@ style:
 static_analysis: mypy bandit
 
 mypy:
-	mypy src/envprobe test/unit_tests/envprobe
+	mypy src/envprobe test/unit/envprobe test/integration
 .PHONY: mypy
 
 bandit:
@@ -17,7 +17,7 @@ bandit:
 	bandit -s B101,B311 -r test
 .PHONY: bandit
 
-test: unit_test integration_test
+test: unit_test integration_test functional_test
 .PHONY: test
 
 # Certain test suites can run automatically embedded with code coverage
@@ -26,14 +26,18 @@ test: unit_test integration_test
 test-with-coverage: unit_test.cover integration_test.cover
 .PHONY: test-with-coverage
 
-UNIT_TEST_CMD=pytest src test/unit_tests
+UNIT_TEST_CMD=pytest src test/unit
 unit_test:
 	python3 -m ${UNIT_TEST_CMD}
 .PHONY: unit_test
 
-INTEGRATION_TEST_CMD=pytest src test/integration_tests
+INTEGRATION_TEST_CMD=pytest src test/integration
 integration_test:
 	python3 -m ${INTEGRATION_TEST_CMD}
+
+FUNCTIONAL_TEST_CMD=pytest src test/functional
+functional_test:
+	python3 -m ${FUNCTIONAL_TEST_CMD}
 
 coverage_new_dir:
 	rm -rf .coverage.COMBINE .coverage.TITLE-tmp
@@ -88,9 +92,9 @@ unit_test.cover:
 unit_test-coverage: coverage_new_dir unit_test.cover
 	cp unit_test.cover .coverage.COMBINE/
 	python3 -m coverage combine .coverage.COMBINE/*
-	echo "unit_test" >> .coverage.TITLE-tmp
+	echo "unit" >> .coverage.TITLE-tmp
 	@$(MAKE) coverage_report
-.PHONY: unit_test_coverage
+.PHONY: unit_test-coverage
 
 integration_test.cover:
 	python3 -m coverage run -m ${INTEGRATION_TEST_CMD}
@@ -99,9 +103,21 @@ integration_test.cover:
 integration_test-coverage: coverage_new_dir integration_test.cover
 	cp integration_test.cover .coverage.COMBINE/
 	python3 -m coverage combine .coverage.COMBINE/*
-	echo "integration_test" >> .coverage.TITLE-tmp
+	echo "integration" >> .coverage.TITLE-tmp
 	@$(MAKE) coverage_report
-.PHONY: integration_test_coverage
+.PHONY: integration_test-coverage
+
+functional_test.cover:
+	# TODO: Functional tests don't seem to generate useful coverage...
+	python3 -m coverage run -m ${FUNCTIONAL_TEST_CMD}
+	mv .coverage functional_test.cover
+
+functional_test-coverage: coverage_new_dir functional_test.cover
+	cp functional_test.cover .coverage.COMBINE/
+	python3 -m coverage combine .coverage.COMBINE/*
+	echo "functional" >> .coverage.TITLE-tmp
+	@$(MAKE) coverage_report
+.PHONY: functional_test-coverage
 
 clean:
 	rm -rf *.cover .coverage* htmlcov

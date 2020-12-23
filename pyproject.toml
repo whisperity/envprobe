@@ -1,8 +1,9 @@
 [tool.pytest.ini_options]
 console_output_style = "count"
 testpaths = ["src",
-             "test/unit_tests",
-             "test/integration_tests"
+             "test/unit",
+             "test/integration",
+             "test/functional"
              ]
 
 [tool.coverage.run]

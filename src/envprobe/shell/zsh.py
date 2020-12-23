@@ -44,6 +44,7 @@ then
     {{
         local original_retcode="$?";
         if [[ -f "{CONTROL_FILE}" ]]; then
+            echo "Executing Envprobe Bash hook...";
             source "{CONTROL_FILE}";
             rm "{CONTROL_FILE}";
         fi;
