@@ -13,7 +13,8 @@ def zsh_shell():
     """
     envprobe_at = envprobe_location()
 
-    with Shell("zsh", "echo $?", ";\n") as shell:
+    with Shell("zsh", "--no-rcs --no-promptsp --interactive --shinstdin",
+               "echo $?", ";\n") as shell:
         _, pid = shell.execute_command("echo $$")
         print("[Zsh] Spawned {0}".format(pid), file=sys.stderr)
 

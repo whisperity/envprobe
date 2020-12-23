@@ -14,15 +14,28 @@ class Shell(AbstractContextManager):
     A real shell process running on the host machine.
     This class is meant to be used as a context manager.
     """
-    def __init__(self, shell_binary, return_code_echo_command,
+    def __init__(self, shell_binary, shell_argstr, return_code_echo_command,
                  command_separator):
         """
-        Initialises the shell process wrapper. This call does not start the
-        shell yet, only the access into the context does.
+        Initialises the shell process wrapper over the `shell_binary` started
+        with the given arguments in `shell_argstr`.
+        Each executed command will also need to receive it's return code, as
+        specified by `return_code_echo_command`.
+        The executed commands will be automatically separated at the end by
+        `command_separator`.
+
+        This call does not start the shell yet, only the access into the
+        context or an explicit call to :func:`start()` does.
         """
+        self._args = shell_argstr
         self._binary = shell_binary
+        # Note: The execution of the command and the reading of the output
+        # has to happen BEFORE this timeout is hit, but a large timeout would
+        # also mean waiting a lot for small commands, so this has to be
+        # balanced carefully.
         self._capture = Capture(timeout=0.1, buffer_size=-1)
-        self._command = Command(shell_binary, stdout=self._capture)
+        self._command = Command(shell_binary + ' ' + shell_argstr,
+                                stdout=self._capture)
         self._echo = return_code_echo_command + command_separator
         self._separator = command_separator
         self._started = False
@@ -37,7 +50,7 @@ class Shell(AbstractContextManager):
         """
         Leaves the shell.
         """
-        self.terminate()
+        self.kill()
         return False
 
     def start(self):
@@ -46,7 +59,7 @@ class Shell(AbstractContextManager):
         """
         if self._started:
             raise OSError(EEXIST, "The shell is already running!")
-        print("[Shell] Starting '{0}'...".format(self._binary),
+        print("[Shell] Starting '{0} {1}'...".format(self._binary, self._args),
               file=sys.stderr)
         try:
             self._command.run(input=PIPE, async_=True)
@@ -87,9 +100,12 @@ class Shell(AbstractContextManager):
         self._capture.close(True)
         self._started = False
 
-    def execute_command(self, cmd):
+    def execute_command(self, cmd, timeout=None):
         """
         Executes the command in the shell.
+        :parameter:`timeout` The amount of seconds to wait for the command's
+        result to be read. If `None`, will use the defaults instead.
+
         :return: A tuple of the result of the executed command, and the
         `stdout` of it.
         """
@@ -101,7 +117,7 @@ class Shell(AbstractContextManager):
         self._command.stdin.write(self._echo.encode('utf-8'))
         self._command.stdin.flush()
 
-        stdout = self._capture.read(timeout=None)
+        stdout = self._capture.read(timeout=timeout)
         parts = stdout.decode().rstrip().split('\n')
         result, returncode = '\n'.join(parts[:-1]).rstrip(), parts[-1].rstrip()
 

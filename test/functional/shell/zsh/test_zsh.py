@@ -11,10 +11,11 @@ def sh():
 
 
 def test_envprobe_loaded(sh):
-    retcode, _ = sh.execute_command("envprobe --help")
+    retcode, _ = sh.execute_command("envprobe --help", timeout=1)
     assert(not retcode)
 
-    _, hook_text = sh.execute_command("envprobe config hook zsh $$")
+    _, hook_text = sh.execute_command("envprobe config hook zsh $$",
+                                      timeout=0.5)
     assert("envprobe" in hook_text)
     assert("precmd_functions" in hook_text)
 
@@ -23,7 +24,7 @@ def test_envprobe_loaded(sh):
 EOF
 )""".format(hook_text))
 
-    retcode, _ = sh.execute_command("eval \"$_HOOK\"")
+    retcode, _ = sh.execute_command("eval \"$_HOOK\"", timeout=0.5)
     assert(not retcode)
 
 

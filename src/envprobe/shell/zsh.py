@@ -43,8 +43,8 @@ then
     __envprobe()
     {{
         local original_retcode="$?";
+        echo "[Debug] Executing Envprobe Bash hook..." >&2;
         if [[ -f "{CONTROL_FILE}" ]]; then
-            echo "Executing Envprobe Bash hook...";
             source "{CONTROL_FILE}";
             rm "{CONTROL_FILE}";
         fi;
