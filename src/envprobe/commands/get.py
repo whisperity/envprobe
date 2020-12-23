@@ -1,7 +1,6 @@
 import shlex
 import sys
 
-from .. import community_descriptions
 from ..vartypes import get_kind
 from ..vartypes.array import Array
 
@@ -37,9 +36,12 @@ def command(args):
                     print("\t{0}".format(e))
 
         print()
-        print("Type: '{0}'" % get_kind(type(env_var)))
+        try:
+            print("Type: '{0}'".format(get_kind(type(env_var))))
+        except KeyError:
+            print("Type: 'unknown' ({0})".format(str(type(env_var))))
 
-        community_data = community_descriptions.get_description(env_var.name)
+        community_data = args.community.get_description(env_var.name)
         description = community_data.get("description", None)
         source = community_data.get("source", None)
         if description:

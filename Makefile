@@ -6,11 +6,7 @@ style:
 	flake8 src/ test/
 .PHONY: style
 
-static_analysis: mypy bandit
-
-mypy:
-	mypy src/envprobe test/unit/envprobe test/integration
-.PHONY: mypy
+static_analysis: bandit
 
 bandit:
 	bandit -r src/envprobe

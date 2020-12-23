@@ -79,7 +79,7 @@ jobs:
 
       - name: "Install dependencies"
         run: |
-          sudo apt-get install zsh
+          sudo apt-get install bash zsh
           python3 -m pip install --upgrade pip
           if [ "${{ matrix.os }}" == "ubuntu-18.04" ]; then
               # Sarge doesn't want to install otherwise...
@@ -94,25 +94,30 @@ jobs:
 
       - name: "Unit tests"
         run: |
-          VERBOSE=1 make unit_test-coverage
+          make unit_test-coverage
           mkdir CoverageReport
           mv htmlcov CoverageReport/unit
 
       - name: "Integration tests"
         run: |
-          VERBOSE=1 make integration_test-coverage
+          make integration_test-coverage
           mv htmlcov CoverageReport/integration
+
+      - name: "Shell versions"
+        run: |
+          bash --version
+          zsh --version
 
       - name: "Functional tests"
         run: |
-          VERBOSE=1 make functional_test-coverage
+          make functional_test-coverage
           mv htmlcov CoverageReport/functional
 
       - name: "Generate merged coverage report"
         if: ${{ matrix.is-main-target }}
         continue-on-error: true
         run: |
-          VERBOSE=1 make coverage
+          make coverage
           mv htmlcov CoverageReport/Coverage
 
       - name: "Upload Coverage artefacts"

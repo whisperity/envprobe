@@ -14,3 +14,10 @@ class CommunityTypeHeuristic(EnvVarTypeHeuristic):
         # TODO: Implement this module. So far, ignore the heuristic, as if
         #       never existed.
         return None
+
+
+class CommunityData:
+    # TODO: This.
+    def get_description(self, var_name):
+        raise NotImplementedError("TODO.")
+        return dict()

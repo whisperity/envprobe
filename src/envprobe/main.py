@@ -10,6 +10,7 @@ import sys
 from . import get_shell_and_env_always
 from .commands import register_envvar_commands
 from .commands.shortcuts import transform_subcommand_shortcut
+from .community_descriptions import CommunityData
 from .config_commands import register_shell_commands
 
 mode_description = \
@@ -61,9 +62,10 @@ def __main_mode(argv):
 
     # Inject the loaded state's manager objects into the user's request, so
     # the command handlers can accept them.
+    args.community = CommunityData()
+    args.environment = env
     args.envprobe_root = argv[0].replace("/__envprobe", "")
     args.shell = shell
-    args.environment = env
 
     # Execute the desired action.
     if 'func' in args:
@@ -123,9 +125,10 @@ def __config_mode(argv):
 
     # Inject the loaded state's manager objects into the user's request, so
     # the command handlers can accept them.
+    args.community = CommunityData()
+    args.environment = env
     args.envprobe_root = argv[0].replace("/__envprobe", "")
     args.shell = shell
-    args.environment = env
 
     # Execute the desired action.
     if 'func' in args:

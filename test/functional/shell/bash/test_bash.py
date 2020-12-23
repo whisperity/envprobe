@@ -35,9 +35,11 @@ def test_alias(sh):
 
 
 def test_get_variable(sh):
-    retcode, result = sh.execute_command("envprobe get PATH")
+    retcode, result = sh.execute_command("envprobe get PATH",
+                                         timeout=0.5)
     assert(not retcode)
     assert(result.startswith("PATH={0}".format(envprobe_location())))
 
-    retcode, result = sh.execute_command("envprobe get ENVPROBE_SHELL_PID")
+    retcode, result = sh.execute_command("envprobe get ENVPROBE_SHELL_PID",
+                                         timeout=0.5)
     assert(retcode == 1)
