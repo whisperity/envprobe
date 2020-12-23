@@ -41,10 +41,10 @@ jobs:
           fi
 
       - name: "Lint"
-        run: VERBOSE=1 make style
+        run: make style
 
       - name: "Static analysis"
-        run: VERBOSE=1 make static_analysis
+        run: make static_analysis
 
   test:
     name: "Test"
@@ -128,3 +128,34 @@ jobs:
           name: "Coverage HTML (for ${{ matrix.name }})"
           path: "CoverageReport/*"
 
+  documentation:
+    name: "Documentation"
+    runs-on: "ubuntu-20.04"
+    steps:
+      - name: "Check out repository"
+        uses: actions/checkout@v2
+
+      - name: "Set up Python"
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.8"
+
+      - name: "Install dependencies"
+        run: |
+          python3 -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then
+            python3 -m pip install -r requirements.txt;
+          fi
+          if [ -f docs/requirements.txt ]; then
+            python3 -m pip install -r docs/requirements.txt;
+          fi
+
+      - name: "Generate documentation"
+        run: make docs
+
+      - name: "Upload documentation artefact"
+        continue-on-error: true
+        uses: actions/upload-artifact@v2
+        with:
+          name: "Documentation (HTML)"
+          path: "docs/_build/html"

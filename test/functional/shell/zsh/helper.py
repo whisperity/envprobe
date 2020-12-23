@@ -14,7 +14,7 @@ def zsh_shell():
     envprobe_at = envprobe_location()
 
     with Shell("zsh", "--no-rcs --no-promptsp --interactive --shinstdin",
-               "echo $?", ";\n") as shell:
+               "echo $?", ";\n", is_interactive=True) as shell:
         _, pid = shell.execute_command("echo $$")
         print("[Zsh] Spawned {0}".format(pid), file=sys.stderr)
 

@@ -13,7 +13,8 @@ def bash_shell():
     """
     envprobe_at = envprobe_location()
 
-    with Shell("bash", "--norc --noprofile -i", "echo $?", ";\n") as shell:
+    with Shell("bash", "--norc --noprofile -i", "echo $?", ";\n",
+               is_interactive=True) as shell:
         _, pid = shell.execute_command("echo $$")
         print("[Bash] Spawned {0}".format(pid), file=sys.stderr)
 

@@ -49,10 +49,10 @@ coverage: coverage_new_dir
 	@$(MAKE) coverage_report
 .PHONY: coverage
 
-.coverage: coverage_new_dir unit_test.cover integration_test.cover
+.coverage: coverage_new_dir unit_test.cover integration_test.cover functional_test.cover
 	# `coverage combine` deletes the original input files...
 	cp *.cover .coverage.COMBINE/
-	echo *.cover | sed "s/\.cover//g" >> .coverage.TITLE-tmp
+	echo *.cover | sed "s/\_test.cover//g" >> .coverage.TITLE-tmp
 	python3 -m coverage combine .coverage.COMBINE/*
 
 .coverage.TITLE:
@@ -115,6 +115,13 @@ functional_test-coverage: coverage_new_dir functional_test.cover
 	@$(MAKE) coverage_report
 .PHONY: functional_test-coverage
 
+docs: docs-html
+
+docs-html:
+	$(MAKE) -C docs/ html
+.PHONY: docs-html
+
 clean:
 	rm -rf *.cover .coverage* htmlcov
+	rm -rf docs/_build
 .PHONY: clean

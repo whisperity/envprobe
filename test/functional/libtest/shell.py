@@ -15,7 +15,7 @@ class Shell(AbstractContextManager):
     This class is meant to be used as a context manager.
     """
     def __init__(self, shell_binary, shell_argstr, return_code_echo_command,
-                 command_separator):
+                 command_separator, is_interactive):
         """
         Initialises the shell process wrapper over the `shell_binary` started
         with the given arguments in `shell_argstr`.
@@ -23,6 +23,12 @@ class Shell(AbstractContextManager):
         specified by `return_code_echo_command`.
         The executed commands will be automatically separated at the end by
         `command_separator`.
+
+        If the shell is marked `interactive`, the closing action will SIGKILL
+        the shell instead of SIGTERM.
+        :note: Setting `is_interactive` to `True` only toggles this, the actual
+        shell's interactiveness usually depends on the invocation of it and the
+        particular shell itself.
 
         This call does not start the shell yet, only the access into the
         context or an explicit call to :func:`start()` does.
@@ -37,6 +43,7 @@ class Shell(AbstractContextManager):
         self._command = Command(shell_binary + ' ' + shell_argstr,
                                 stdout=self._capture)
         self._echo = return_code_echo_command + command_separator
+        self._interactive = is_interactive
         self._separator = command_separator
         self._started = False
 
@@ -50,7 +57,10 @@ class Shell(AbstractContextManager):
         """
         Leaves the shell.
         """
-        self.kill()
+        if self._interactive:
+            self.kill()
+        else:
+            self.terminate()
         return False
 
     def start(self):
@@ -92,6 +102,9 @@ class Shell(AbstractContextManager):
     def terminate(self):
         """
         Terminates (signal 15) the underlying shell.
+
+        In case of `interactive` shells, this is usually not enough to actually
+        kill the process, and :func:`kill()` should be used instead.
         """
         if not self._started:
             raise OSError(ESRCH, "The shell is not running!")
