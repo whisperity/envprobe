@@ -25,28 +25,32 @@ def test_diff():
     s1 = String("test_string", "foo")
     s2 = String("test_string", "bar")
 
-    assert(not String.get_difference(s1, s1)['diff'])
+    diff = String.diff(s1, s2)
+    assert(diff)
+    assert(len(diff) == 2)
+    assert(('+', "bar") in diff)
+    assert(('-', "foo") in diff)
 
-    diff = String.get_difference(s1, s2)
-    assert(diff['type'] == "String")
-    assert(len(diff['diff']) == 2)
-    assert(('+', "bar") in diff['diff'])
-    assert(('-', "foo") in diff['diff'])
+
+def test_no_diff():
+    s = String("test_string", "foo")
+    diff = String.diff(s, s)
+    assert(not diff)
 
 
 def test_diff_new():
     s1 = String("test_string", "")
     s2 = String("test_string", "bar")
 
-    diff = String.get_difference(s1, s2)
-    assert(len(diff['diff']) == 1)
-    assert(('+', "bar") in diff['diff'])
+    diff = String.diff(s1, s2)
+    assert(len(diff) == 1)
+    assert(('+', "bar") in diff)
 
 
 def test_diff_remove():
     s1 = String("test_string", "")
     s2 = String("test_string", "bar")
 
-    diff = String.get_difference(s2, s1)
-    assert(len(diff['diff']) == 1)
-    assert(('-', "bar") in diff['diff'])
+    diff = String.diff(s2, s1)
+    assert(len(diff) == 1)
+    assert(('-', "bar") in diff)

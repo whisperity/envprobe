@@ -80,22 +80,62 @@ class EnvVar(metaclass=ABCMeta):
         pass
 
     @classmethod
-    def get_difference(cls, old_variable, new_variable):
+    def _diff(cls, old, new):
+        """This method implements the `diff` action and should be overridden
+        in subclasses.
+        """
+        if old.value == new.value:
+            return []
+        if not old.value:
+            return [('+', new.value)]
+        if not new.value:
+            return [('-', old.value)]
+        return [('-', old.value), ('+', new.value)]
+
+    @classmethod
+    def diff(cls, old, new):
         """Generate an iterable difference "actions" between two variables.
 
-        Note
-        ----
-        This method should be refactored.
-        """
-        # TODO: This stuff should be made much more type-safe, especially in
-        #       the interaction with `envprobe.environment`...
+        Parameters
+        ----------
+        old : EnvVar
+            The "left" or "baseline" side of the diff.
+        new : EnvVar
+            The "right" or "new" side of the diff.
 
-        if type(old_variable) != type(new_variable):
+        Returns
+        -------
+        list(char, str)
+            The differences between the two variables' values.
+
+            The first element of the tuple, (`char`), is either ``+``, ``-``
+            or ``=`` for **new/added**, **old/removed**, and **unchanged**,
+            respectively.
+            For each entry in the list, the second element (`str`) is the
+            affected value itself.
+
+            If either the `old` or the `new` did not contain a value,
+            the respective side will be missing from the list.
+
+            If the two variables are equal, an empty list is returned.
+
+            The description of the difference is **always** of type `str`.
+
+        Raises
+        ------
+        TypeError
+            Only variables of the same type, and only subclasses of `EnvVar`
+            may be differentiated.
+        """
+        if type(old) != type(new):
             raise TypeError("Only variables of the same type can be "
                             "differentiated.")
+        if not isinstance(old, EnvVar) or \
+                not isinstance(new, EnvVar):
+            raise TypeError("Only variables of 'EnvVar' can be "
+                            "differentiated.")
 
-        return {'type': type(old_variable).__name__,
-                'diff': []}
+        return type(old)._diff(old, new)
 
 
 def register_type(kind, clazz):

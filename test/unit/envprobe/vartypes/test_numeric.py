@@ -16,6 +16,12 @@ def test_init_and_load():
     assert(n2.value == 1.5)
     assert(n2.raw() == "1.5")
 
+    n3 = Numeric("test_int_from_str", "10")
+    assert(n3.is_integer)
+    assert(not n3.is_floating)
+    assert(n3.value == 10)
+    assert(n3.raw() == "10")
+
 
 def test_setter():
     n = Numeric("test_int", 42)
@@ -35,8 +41,13 @@ def test_diff():
     n1 = Numeric("test_int", 1)
     n2 = Numeric("test_int", 2)
 
-    diff = Numeric.get_difference(n1, n2)
-    assert(diff['type'] == "Numeric")
-    assert(len(diff['diff']) == 2)
-    assert(('+', "2") in diff['diff'])
-    assert(('-', "1") in diff['diff'])
+    diff = Numeric.diff(n1, n2)
+    assert(len(diff) == 2)
+    assert(('+', "2") in diff)
+    assert(('-', "1") in diff)
+
+
+def test_no_diff():
+    n = Numeric("test_int", 1)
+    diff = Numeric.diff(n, n)
+    assert(not diff)

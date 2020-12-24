@@ -70,19 +70,14 @@ class Numeric(EnvVar):
         return str(self.value)
 
     @classmethod
-    def get_difference(cls, old_variable, new_variable):
-        if type(old_variable) != type(new_variable):
-            raise TypeError("Only variables of the same type can be "
-                            "differentiated.")
+    def _diff(cls, old, new):
+        """Generate a difference between `old` and `new` values.
 
-        ret = {'type': type(old_variable).__name__,
-               'diff': []}
-        if old_variable.value == new_variable.value:
-            return ret
-
-        ret['diff'].append(('+', str(new_variable.value)))
-        ret['diff'].append(('-', str(old_variable.value)))
-        return ret
+        Unlike `EnvVar.diff`, the difference of `Numeric` variables will always
+        have a ``-`` ("removed") and a ``+`` ("added") side.
+        """
+        return [('-', old.raw()), ('+', new.raw())] \
+            if old.value != new.value else []
 
 
 register_type('numeric', Numeric)

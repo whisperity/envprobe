@@ -133,18 +133,24 @@ def test_diff():
     a1 = ColonSeparatedArray("test_array", "Foo:Bar")
     a2 = ColonSeparatedArray("test_array", "Foo:Bar:Baz")
 
-    diff = ColonSeparatedArray.get_difference(a1, a2)['diff']
+    diff = ColonSeparatedArray.diff(a1, a2)
     assert(len(diff) == 3)
-    assert((' ', "Foo") in diff)
-    assert((' ', "Bar") in diff)
+    assert(('=', "Foo") in diff)
+    assert(('=', "Bar") in diff)
     assert(('+', "Baz") in diff)
 
     a3 = ColonSeparatedArray("test_array_empty", "")
-    diff = ColonSeparatedArray.get_difference(a2, a3)['diff']
+    diff = ColonSeparatedArray.diff(a2, a3)
     assert(len(diff) == 3)
     assert(('-', "Foo") in diff)
     assert(('-', "Bar") in diff)
     assert(('-', "Baz") in diff)
+
+
+def test_no_diff():
+    a = ColonSeparatedArray("test_array", "Foo:Bar")
+    diff = ColonSeparatedArray.diff(a, a)
+    assert(not diff)
 
 
 def test_semicolon():

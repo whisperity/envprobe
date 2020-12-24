@@ -116,15 +116,21 @@ def test_diff(cwd_to_root):
     a1 = Path("test_array", "Foo:Bar")
     a2 = Path("test_array", "Foo:Bar:Baz")
 
-    diff = Path.get_difference(a1, a2)['diff']
+    diff = Path.diff(a1, a2)
     assert(len(diff) == 3)
-    assert((' ', "/Foo") in diff)
-    assert((' ', "/Bar") in diff)
+    assert(('=', "/Foo") in diff)
+    assert(('=', "/Bar") in diff)
     assert(('+', "/Baz") in diff)
 
     a3 = Path("test_array_empty", "")
-    diff = Path.get_difference(a2, a3)['diff']
+    diff = Path.diff(a2, a3)
     assert(len(diff) == 3)
     assert(('-', "/Foo") in diff)
     assert(('-', "/Bar") in diff)
     assert(('-', "/Baz") in diff)
+
+
+def test_no_diff(cwd_to_root):
+    a = Path("test_array", "Foo:Bar")
+    diff = Path.diff(a, a)
+    assert(not diff)

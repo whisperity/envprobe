@@ -161,37 +161,33 @@ class Array(EnvVar):
         return self.separator.join(self._value).strip(self.separator)
 
     @classmethod
-    def get_difference(cls, old_variable, new_variable):
-        if type(old_variable) != type(new_variable):
-            raise TypeError("Only variables of the same type can be "
-                            "differentiated.")
+    def _diff(cls, old, new):
+        """Generate a difference between `old` and `new` values.
 
-        ret = {'type': type(old_variable).__name__,
-               'diff': []}
-
-        # The difference "actions" of arrays is a comparison of elements
-        # from old to new.
-
+        For `Array` variables, the elements that are same in both `old` and
+        `new` will be emitted with an ``=`` ("unchanged") side.
+        """
         def __deduplicate_list_keep_order(list):
             seen = set()
             return [x for x in list
                     if not (x in seen or seen.add(x))]
 
-        old = __deduplicate_list_keep_order(old_variable.value)
-        new = __deduplicate_list_keep_order(new_variable.value)
+        old = __deduplicate_list_keep_order(old.value)
+        new = __deduplicate_list_keep_order(new.value)
         if old == new:
-            return ret
+            return []
 
+        ret = []
         added = list(filter(lambda e: e not in old and e != '', new))
         removed = list(filter(lambda e: e not in new and e != '', old))
         kept = list(filter(lambda e: e in old and e in new and e != '',
                            __deduplicate_list_keep_order(old + new)))
 
         for add in added:
-            ret['diff'].append(('+', add))
+            ret.append(('+', add))
         for remove in removed:
-            ret['diff'].append(('-', remove))
+            ret.append(('-', remove))
         for keep in kept:
-            ret['diff'].append((' ', keep))
+            ret.append(('=', keep))
 
         return ret

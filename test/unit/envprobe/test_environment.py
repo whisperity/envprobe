@@ -5,7 +5,7 @@ import string
 
 from envprobe.environment import VariableDifference, Environment
 from envprobe.environment import VariableDifferenceKind as VDK
-from envprobe import shell
+from envprobe.shell import Shell, get_current_shell, register_type
 
 
 class MockVariable:
@@ -19,7 +19,7 @@ class MockVariable:
 
 def test_diff_new():
     diff = VariableDifference(VDK.ADDED, "X", None, "Bar",
-                              {"diff": [('+', "Bar")]})
+                              [('+', "Bar")])
     assert(diff.is_simple_change)
     assert(diff.is_new)
     assert(not diff.is_unset)
@@ -27,7 +27,7 @@ def test_diff_new():
 
 def test_diff_del():
     diff = VariableDifference(VDK.REMOVED, "X", "Foo", None,
-                              {"diff": [('-', "Foo")]})
+                              [('-', "Foo")])
     assert(diff.is_simple_change)
     assert(not diff.is_new)
     assert(diff.is_unset)
@@ -35,7 +35,7 @@ def test_diff_del():
 
 def test_diff_simple():
     diff = VariableDifference(VDK.CHANGED, "X", "Foo", "Bar",
-                              {"diff": [('+', "Bar"), ('-', "Foo")]})
+                              [('+', "Bar"), ('-', "Foo")])
     assert(diff.is_simple_change)
     assert(not diff.is_new)
     assert(not diff.is_unset)
@@ -43,10 +43,10 @@ def test_diff_simple():
 
 def test_diff_not_simple():
     diff = VariableDifference(VDK.CHANGED, "PATH", "/x:/y", "/x:/z",
-                              {"diff": [(' ', "/x"),
-                                        ('+', "/z"),
-                                        ('-', "/y")
-                                        ]})
+                              [('=', "/x"),
+                               ('+', "/z"),
+                               ('-', "/y")
+                               ])
     assert(not diff.is_simple_change)
     assert(not diff.is_new)
     assert(not diff.is_unset)
@@ -58,7 +58,7 @@ def _register_mock_shell(rand):
     parameters but is not visible to the other contexts because it is bound
     to a lambda type inside the function.
     """
-    class MockShell(shell.Shell):
+    class MockShell(Shell):
         def __init__(self, pid, config_dir):
             super().__init__(pid, config_dir, "control.txt")
 
@@ -79,7 +79,7 @@ def _register_mock_shell(rand):
         def _unset_environment_variable(self, env_var):
             pass
 
-    shell.register_type(rand, MockShell)
+    register_type(rand, MockShell)
 
 
 @pytest.fixture
@@ -111,7 +111,7 @@ def dummy_shell(mock_shell, tmp_path):
            "CMAKE_LIST": "MyModule;FooBar",
            **cfg}
 
-    return shell.get_current_shell(env), env
+    return get_current_shell(env), env
 
 
 def test_load_default_state(dummy_shell):

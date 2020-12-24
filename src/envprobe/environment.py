@@ -145,7 +145,7 @@ class VariableDifference:
         self.variable = var_name
         self.old_value = old_value
         self.new_value = new_value
-        self.diff_actions = difference_actions['diff'] if difference_actions \
+        self.diff_actions = difference_actions if difference_actions \
             else []
 
     @property
@@ -326,7 +326,7 @@ class Environment:
                         var_name,
                         old.value,
                         new.value,
-                        type(old).get_difference(old, new))
+                        type(old).diff(old, new))
 
         def __handle_elements(kind, iterable):
             for e in iter(iterable):
