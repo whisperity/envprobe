@@ -108,10 +108,10 @@ jobs:
           bash --version
           zsh --version
 
-      - name: "Functional tests"
+      - name: "System tests"
         run: |
-          make functional_test-coverage
-          mv htmlcov CoverageReport/functional
+          make system_test-coverage
+          mv htmlcov CoverageReport/system
 
       - name: "Generate merged coverage report"
         if: ${{ matrix.is-main-target }}

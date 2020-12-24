@@ -13,7 +13,7 @@ bandit:
 	bandit -s B101,B311 -r test
 .PHONY: bandit
 
-test: unit_test integration_test functional_test
+test: unit_test integration_test system_test
 .PHONY: test
 
 # Certain test suites can run automatically embedded with code coverage
@@ -31,9 +31,9 @@ INTEGRATION_TEST_CMD=pytest src test/integration
 integration_test:
 	python3 -m ${INTEGRATION_TEST_CMD}
 
-FUNCTIONAL_TEST_CMD=pytest src test/functional
-functional_test:
-	python3 -m ${FUNCTIONAL_TEST_CMD}
+SYSTEM_TEST_CMD=pytest src test/system
+system_test:
+	python3 -m ${SYSTEM_TEST_CMD}
 
 coverage_new_dir:
 	rm -rf .coverage.COMBINE .coverage.TITLE-tmp
@@ -49,7 +49,7 @@ coverage: coverage_new_dir
 	@$(MAKE) coverage_report
 .PHONY: coverage
 
-.coverage: coverage_new_dir unit_test.cover integration_test.cover functional_test.cover
+.coverage: coverage_new_dir unit_test.cover integration_test.cover system_test.cover
 	# `coverage combine` deletes the original input files...
 	cp *.cover .coverage.COMBINE/
 	echo *.cover | sed "s/\_test.cover//g" >> .coverage.TITLE-tmp
@@ -103,17 +103,17 @@ integration_test-coverage: coverage_new_dir integration_test.cover
 	@$(MAKE) coverage_report
 .PHONY: integration_test-coverage
 
-functional_test.cover:
-	# TODO: Functional tests don't seem to generate useful coverage...
-	python3 -m coverage run -m ${FUNCTIONAL_TEST_CMD}
-	mv .coverage functional_test.cover
+system_test.cover:
+	# TODO: System tests don't seem to generate useful coverage...
+	python3 -m coverage run -m ${SYSTEM_TEST_CMD}
+	mv .coverage system_test.cover
 
-functional_test-coverage: coverage_new_dir functional_test.cover
-	cp functional_test.cover .coverage.COMBINE/
+system_test-coverage: coverage_new_dir system_test.cover
+	cp system_test.cover .coverage.COMBINE/
 	python3 -m coverage combine .coverage.COMBINE/*
 	echo "functional" >> .coverage.TITLE-tmp
 	@$(MAKE) coverage_report
-.PHONY: functional_test-coverage
+.PHONY: system_test-coverage
 
 docs: docs-html
 

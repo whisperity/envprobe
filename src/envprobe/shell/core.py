@@ -344,6 +344,9 @@ def load_all():
     This method does not throw if a module does not actually register anything.
     """
     for f in os.listdir(os.path.dirname(__loader__.path)):
+        module_name = f.split('.')[0]
+        if not (module_name and f.endswith('.py')):
+            continue
         try:
             load(f.split('.')[0])
         except NotImplementedError:
