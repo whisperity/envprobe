@@ -1,14 +1,27 @@
 import pytest
 
-from envprobe.shell.shell import get_current_shell
+from envprobe import shell
 
 
-@pytest.fixture
-def environment():
-    cfg = {"ENVPROBE_SHELL_TYPE": "false"}
-    return cfg
+def test_empty_environment():
+    with pytest.raises(KeyError):
+        shell.get_current_shell({})
 
 
-def test_shell_fails_to_load(environment):
-    with pytest.raises(NotImplementedError):
-        get_current_shell(environment)
+def test_unknown_fails_to_load():
+    with pytest.raises(ModuleNotFoundError):
+        shell.get_current_shell({"ENVPROBE_SHELL_TYPE": "false"})
+
+
+def test_mock_registers_and_loads():
+    with pytest.raises(KeyError):
+        shell.get_class('fake')
+
+    with pytest.raises(ModuleNotFoundError):
+        shell.load('fake')
+
+    shell.register_type('fake', shell.FakeShell)
+    assert(shell.get_class('fake') == shell.FakeShell)
+
+    # After registering, load() should not throw.
+    assert(shell.load('fake') == shell.FakeShell)

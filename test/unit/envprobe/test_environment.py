@@ -5,7 +5,7 @@ import string
 
 from envprobe.environment import VariableDifference, Environment
 from envprobe.environment import VariableDifferenceKind as VDK
-from envprobe.shell import register_type, shell
+from envprobe import shell
 
 
 class MockVariable:
@@ -79,7 +79,7 @@ def _register_mock_shell(rand):
         def _unset_environment_variable(self, env_var):
             pass
 
-    register_type(rand, MockShell)
+    shell.register_type(rand, MockShell)
 
 
 @pytest.fixture
@@ -96,10 +96,6 @@ def mock_shell(scope='module'):
     _register_mock_shell(rand_str)
 
     yield rand_str
-
-    # Unregister the shell so even a collision on the name won't track back to
-    # this test fixture.
-    register_type(rand_str, None)
 
 
 @pytest.fixture

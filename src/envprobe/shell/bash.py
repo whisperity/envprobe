@@ -1,13 +1,12 @@
 """
 Module for supporting the Bash shell.
 """
-from . import register_type
 from .bash_like import BashLike
+from .core import register_type
 
 
 class Bash(BashLike):
-    """
-    Shell implementation for the Bash shell.
+    """Implementation of hooks for the Bourne Again Shell.
     """
     def __init__(self, pid, config_dir):
         super().__init__(pid, config_dir, "control.sh")

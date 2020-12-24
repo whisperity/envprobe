@@ -1,12 +1,12 @@
 """
 Module for supporting the Zsh shell.
 """
-from . import register_type
 from .bash_like import BashLike
+from .core import register_type
 
 
 class Zsh(BashLike):
-    """
+    """Implementation of hooks for the Z Shell.
     Shell implementation for the Zsh shell.
     """
     def __init__(self, pid, config_dir):

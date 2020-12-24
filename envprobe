@@ -8,7 +8,7 @@ import sys
 
 abs_path = os.path.dirname(os.path.abspath(__file__))  # .../
 envprobe_root = os.path.join(abs_path, "src")
-sys.path = [envprobe_root] + sys.path
+sys.path.insert(0, envprobe_root)
 
 from envprobe import main  # noqa
 

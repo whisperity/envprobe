@@ -3,12 +3,11 @@ Module for supporting Bash-like shells.
 """
 import shlex
 
-from .shell import Shell
+from .core import Shell
 
 
 class BashLike(Shell):
-    """
-    Common implementation for Bash-like shells.
+    """Common implementation for Bash-like shells.
     """
     def __init__(self, pid, config_dir, control_filename):
         super().__init__(pid, config_dir, control_filename)

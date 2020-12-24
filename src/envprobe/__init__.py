@@ -6,7 +6,7 @@ import os
 
 from . import community_descriptions
 from . import environment
-from .shell import shell
+from . import shell
 
 
 def assemble_standard_type_heuristics_pipeline():

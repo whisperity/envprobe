@@ -44,6 +44,7 @@ Documentation
    quick
    main/index
    config/index
+   reference/index
 
 
 Indices and tables
