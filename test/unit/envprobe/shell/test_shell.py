@@ -13,15 +13,23 @@ def test_unknown_fails_to_load():
         shell.get_current_shell({"ENVPROBE_SHELL_TYPE": "false"})
 
 
+def test_non_subtype_mock_fails():
+    class X:
+        pass
+
+    with pytest.raises(TypeError):
+        shell.register_type("X", X)
+
+
 def test_mock_registers_and_loads():
     with pytest.raises(KeyError):
-        shell.get_class('fake')
+        shell.get_class("fake")
 
     with pytest.raises(ModuleNotFoundError):
-        shell.load('fake')
+        shell.load("fake")
 
-    shell.register_type('fake', shell.FakeShell)
-    assert(shell.get_class('fake') == shell.FakeShell)
+    shell.register_type("fake", shell.FakeShell)
+    assert(shell.get_class("fake") == shell.FakeShell)
 
     # After registering, load() should not throw.
-    assert(shell.load('fake') == shell.FakeShell)
+    assert(shell.load("fake") == shell.FakeShell)

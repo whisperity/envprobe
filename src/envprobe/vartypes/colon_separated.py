@@ -1,19 +1,16 @@
-from . import register_type
 from .array import Array
+from .envvar import register_type
 
 
 class ColonSeparatedArray(Array):
-    """
-    Represents an environment variable in which array elements are
-    separated by `:`.
-    """
+    """A helper class that binds the array's `separator` to ``:``."""
+    def __init__(self, name, raw_value):
+        super().__init__(name, raw_value, ':')
 
-    def __init__(self, name, env_string):
-        super().__init__(name, env_string, ':')
-
-    @staticmethod
-    def type_description():
-        return "A list of string variables in an array, separated by :"
+    @classmethod
+    def type_description(cls):
+        """A list of strings in an array, separated by :"""
+        return "A list of strings in an array, separated by :"
 
 
 register_type('colon_separated', ColonSeparatedArray)

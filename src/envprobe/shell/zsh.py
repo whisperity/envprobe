@@ -1,6 +1,3 @@
-"""
-Module for supporting the Zsh shell.
-"""
 from .bash_like import BashLike
 from .core import register_type
 

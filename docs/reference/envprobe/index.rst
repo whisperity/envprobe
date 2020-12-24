@@ -12,3 +12,4 @@ The core functions that people use Envprobe for are not available if the Python 
    :maxdepth: 1
 
    shell/index
+   vartypes/index

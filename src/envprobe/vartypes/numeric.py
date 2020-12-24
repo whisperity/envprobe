@@ -1,61 +1,72 @@
-"""
-Implementation for numeric values.
-"""
-from . import register_type
-from .envvar import EnvVar
+from .envvar import EnvVar, register_type
 
 
 class Numeric(EnvVar):
-    """
-    Environment variable which holds a numeric value.
-    This type can be used to wrap casting to integer or float all the time in
-    Python code.
+    """This type may only hold a numeric (`int` or `float`) value.
     """
 
-    def __init__(self, name, env_string):
-        super().__init__(name, env_string)
-        self.value = env_string
+    def __init__(self, name, raw_value):
+        """Create a new `Numeric` variable by converting `raw_value`."""
+        super().__init__(name, raw_value)
+        self.value = raw_value
 
-    @staticmethod
-    def type_description():
-        return "Transforms the value into an integer or floating-point number."
+    @classmethod
+    def type_description(cld):
+        """Contains a value that must be an integer or floating-point number.
+        """
+        return "Contains a value that must be an integer or floating-point " \
+               "number."
 
     @property
     def value(self):
-        """
-        Get the current value of the numeric environment variable.
+        """Get the value of the variable.
 
-        :returns: Either a :type:`int` or a :type:`float`, the current value.
+        Returns
+        -------
+        int or float
+            The value.
         """
         return self._value
 
     @value.setter
     def value(self, new_value):
-        """
-        Set the value of the environment variable to the given new value.
-        """
+        """Sets the `value` to `new_value`.
 
+        Parameters
+        ----------
+        new_value: int or float
+            The new value.
+
+        Raises
+        ------
+        ValueError
+            If the given value is neither `int` nor `float`.
+        """
+        # First, try to make the variable a float. Every int can be a float
+        # implicitly.
         try:
             self._value = float(new_value)
             self._kind = float
         except ValueError:
-            # If ValueError is raised, the value is not a float. Raise this
-            # error and refuse loading.
             raise
 
         if self._value.is_integer():
+            # If the float is actually an integer, cast to integer.
             self._value = int(self._value)
             self._kind = int
 
     @property
     def is_integer(self):
+        """Whether the value is of `int` type."""
         return self._kind == int
 
     @property
     def is_floating(self):
+        """Whether the value is of `float` type."""
         return self._kind == float
 
-    def to_raw_var(self):
+    def raw(self):
+        """Convert the value to raw shell representation, i.e. a string."""
         return str(self.value)
 
     @classmethod

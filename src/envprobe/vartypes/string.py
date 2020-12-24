@@ -1,44 +1,51 @@
-"""
-Implementation for pure string environment variables.
-"""
-from . import register_type
-from .envvar import EnvVar
+from .envvar import EnvVar, register_type
 
 
 class String(EnvVar):
-    """
-    The most basic environment variable type which is a raw string
-    contained in a variable.
-    """
+    """The standard type of environment variables."""
 
-    def __init__(self, name, env_string):
-        super().__init__(name, env_string)
-        self.value = env_string
+    def __init__(self, name, raw_value):
+        """Create a new `String` variable."""
+        super().__init__(name, raw_value)
+        self.value = raw_value
 
-    @staticmethod
-    def type_description():
-        return "The most basic environment variable which contains the " \
-               "value as a string."
+    @classmethod
+    def type_description(cls):
+        """The most basic environment variable, which contains
+        type-nondescript strings as values."""
+        return "The most basic environment variable which contains type-" \
+               "nondescript strings as values."
 
     @property
     def value(self):
-        """
-        Get the current value of the string environment variable.
+        """Get the value of the variable.
+
+        Returns
+        -------
+        str
+            The value.
         """
         return self._value
 
     @value.setter
     def value(self, new_value):
-        """
-        Set the value of the environment variable. `new_value` should be a
-        string. If it is not, the `str()` conversion method is used.
+        """Sets the `value` to `new_value`.
+
+        Parameters
+        ----------
+        new_value : str
+            The value to write.
+            If `new_value` isn't a `str`, it will be stringified automatically.
         """
         if not isinstance(new_value, str):
             new_value = str(new_value)
-
         self._value = new_value
 
-    def to_raw_var(self):
+    def raw(self):
+        """Convert the value to raw shell representation.
+
+        For `String`s, this is equivalent to calling `value`.
+        """
         return self.value
 
     @classmethod

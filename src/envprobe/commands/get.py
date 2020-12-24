@@ -24,7 +24,7 @@ def command(args):
         print("{0} is not defined".format(args.VARIABLE), file=sys.stderr)
         return
 
-    print("{0}={1}".format(env_var.name, shlex.quote(env_var.to_raw_var())))
+    print("{0}={1}".format(env_var.name, shlex.quote(env_var.raw())))
 
     if args.info:
         if isinstance(env_var, Array):

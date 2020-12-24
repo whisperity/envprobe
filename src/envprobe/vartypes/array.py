@@ -1,54 +1,62 @@
-"""
-Module which contains the classes for array-like environment variables.
-"""
 from .envvar import EnvVar
 
 
 class Array(EnvVar):
-    """
-    Represents an environment variable which contains an array of values.
-    In shells, such variables are often separated by a pre-defined separator
-    character (:variable:`self._separator`). See subclasses of this class for
-    what kinds of separations are available.
+    """An environment variable where elements are separated by a `separator`.
     """
 
-    def __init__(self, name, env_string, separator):
-        """
+    def __init__(self, name, raw_value, separator):
+        """Create a new array with the given `separator`.
         Initialize a new array environment variable where the given `separator`
         character acts as a separator. The inner array holds values as strings.
         """
-        super().__init__(name, env_string)
+        super().__init__(name, raw_value)
         self._separator = separator
-        self.value = env_string
+        self.value = raw_value
 
-    @staticmethod
-    def type_description():
-        return "An array of string variables, separated by a well-defined " \
-               "separator character."
+    @classmethod
+    def type_description(cls):
+        """An array of string elements separated by a separator."""
+        return "An array of string elements separated by a separator."
 
     @property
     def separator(self):
+        """Get the `separator` the object was instantiated with."""
         return self._separator
 
     @property
     def value(self):
-        """
-        Get the values in the environment variable as an array.
+        """Get the copy of the value of the variable, as a `list`.
 
-        You should NOT use this array directly to add or remove values from
-        the variable.
+        Returns
+        -------
+        list(str)
+            The elements.
+
+        Note
+        ----
+        You should **not** directly change the elements in this `list`, as the
+        changes will not be reflected by the `Array` object.
         """
         return [self._transform_element_get(e) for e in self._value]
 
     @value.setter
     def value(self, new_value):
-        """
-        Set the value of the environment variable to the given array,
-        or a string separated by the `separator` given to :func:`__init__`.
-        This will automatically overwrite ALL the values stored within the
-        array.
-        """
+        """Set the value of the whole array to `new_value`.
 
+        Parameters
+        ----------
+        new_value : list(str)
+            The new array, if `new_value` is a `list`.
+        new_value : str
+            Create an array (using `separator`) from `new_value` if `new_value`
+            is a `str`.
+
+        Raises
+        ------
+        TypeError
+            Raised if `new_value` is neither a `str` nor a `list`.
+        """
         if isinstance(new_value, list):
             self._value = [self._transform_element_set(e) for e in new_value]
         elif isinstance(new_value, str):
@@ -58,10 +66,12 @@ class Array(EnvVar):
                 self._value = [self._transform_element_set(e)
                                for e in new_value.split(self.separator)]
         else:
-            raise ValueError("Cannot set value of ArrayEnvVar to a non-list, "
-                             "non-string parameter.")
+            raise TypeError("Cannot set value of ArrayEnvVar to a non-list, "
+                            "non-string parameter.")
 
     def _check_if_element_valid(self, elem):
+        """Check if the given `elem` contains the `separator` character.
+        This is disallowed as per the POSIX standard (even if escaped)."""
         if self.separator in elem:
             # Disallow adding an element to the array which contains the
             # separator character. While escaping, e.g. ':' in PATH with '\:'
@@ -74,65 +84,51 @@ class Array(EnvVar):
                              "environment variable unusable, as the "
                              "POSIX standard disallows this behaviour!"
                              .format(elem, self.separator))
-
         return True
 
     def _transform_element_get(self, elem):
-        """
-        Transform an element from the internal value in the array to the
-        "external" (shell) representation before returning it to the client
-        code.
-
-        This should be the inverse method of :func:`_transform_element_set`.
+        """Transform the given element from the internal representation to
+        the external (shell) representation before giving it to the client.
         """
         return elem
 
     def _transform_element_set(self, elem):
-        """
-        Transform an element from the "external" value to the internal
-        representation before setting it in the array.
-
-        There should be no expectations by this method that the values given
-        to the method are in any way proper.
-
-        This should be the inverse method of :func:`_transform_element_get`.
+        """Transform the given element from the raw external (shell)
+        representation to the internal one before adding it to the array.
         """
         return str(elem)
 
     def __getitem__(self, idx):
-        """
-        Subscript operator that returns the element with index `idx` in the
-        environmental variable.
-        """
+        """Retrieve the in the array at `idx` index."""
         return self._transform_element_get(self._value[idx])
 
     def __setitem__(self, idx, elem):
-        """
-        Subscript setter operator that sets the given `idx`th element to
-        `value`. The index must be an integer.
-        """
+        """Set the element in the array at `idx` to `elem`."""
         elem = self._transform_element_set(elem)
         if self._check_if_element_valid(elem):
             self._value[idx] = elem
 
     def __delitem__(self, idx):
-        """
-        Removes the element at index `idx` from the elements in the
-        environmental variable.
-        """
+        """Delete the element at index `idx`."""
         del self._value[idx]
 
     def __len__(self):
-        """
-        :return: The length of the array.
-        """
+        """The length of the array."""
         return len(self._value)
 
     def insert_at(self, idx, elem):
-        """
-        Insert a new value into the array at the position specified by `idx`.
-        The elements to the right (having a larger index) will be shifted by
-        one to make place for the new element.
+        """Insert the element at a given index.
+
+        Elements at or after `idx` currently in the array will be shifted to
+        the right by 1.
+
+        Parameters
+        ----------
+        idx : int
+            The index to insert at.
+            The new element will be at this index after insertion.
+        elem : str
+            The element to insert.
         """
         elem = self._transform_element_set(elem)
         if self._check_if_element_valid(elem):
@@ -154,14 +150,14 @@ class Array(EnvVar):
                 self._value.append(elem)
 
     def remove_value(self, elem):
-        """
-        Removes ALL occurrence the given element from the array.
-        """
+        """Removes all occurrences of `elem` from the array."""
         elem = self._transform_element_set(elem)
         for _ in range(0, self._value.count(elem)):
             self._value.remove(elem)
 
-    def to_raw_var(self):
+    def raw(self):
+        """Convert the value to raw shell representation, i.e. a string
+        separated by `separator`."""
         return self.separator.join(self._value).strip(self.separator)
 
     @classmethod

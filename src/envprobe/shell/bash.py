@@ -1,6 +1,3 @@
-"""
-Module for supporting the Bash shell.
-"""
 from .bash_like import BashLike
 from .core import register_type
 

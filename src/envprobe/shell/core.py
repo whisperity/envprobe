@@ -12,16 +12,14 @@ __SHELL_TYPES_TO_CLASSES = {}
 
 
 class CapabilityError(Exception):
-    """
-    Indicates that the requested operation cannot be done in the current Shell.
+    """Indicates that the requested operation cannot be done in the current
+    Shell.
     """
     pass
 
 
 class Shell(metaclass=ABCMeta):
-    """
-    Base class for keeping configuration related to a running shell.
-    """
+    """Base class for keeping configuration related to a running shell."""
 
     def __init__(self, pid, configuration_dir, control_filename):
         """
@@ -48,8 +46,7 @@ class Shell(metaclass=ABCMeta):
 
     @property
     def shell_pid(self):
-        """The `pid` the shell was constructed with.
-        """
+        """The `pid` the shell was constructed with."""
         return self._shell_pid
 
     @property
@@ -290,6 +287,7 @@ def get_known_kinds():
     Return
     ------
     list(str)
+        The names.
     """
     return __SHELL_TYPES_TO_CLASSES.keys()
 
@@ -333,7 +331,7 @@ def load(kind):
 
     try:
         # The loading of the module SHOULD register the type.
-        return __SHELL_TYPES_TO_CLASSES[kind]
+        return get_class(kind)
     except KeyError:
         raise NotImplementedError("envprobe.shell.{0} did not register '{0}'".
                                   format(kind))
@@ -342,6 +340,8 @@ def load(kind):
 def load_all():
     """Loads all `Shell` implementations to the interpreter found under
     `envprobe.shell` in the install.
+
+    This method does not throw if a module does not actually register anything.
     """
     for f in os.listdir(os.path.dirname(__loader__.path)):
         try:

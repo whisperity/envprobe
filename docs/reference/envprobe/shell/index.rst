@@ -9,12 +9,13 @@ The ``envprobe.shell`` package implements the logic that allows Envprobe to inte
 .. autoclass:: CapabilityError
 .. autofunction:: get_current_shell
 .. autoclass:: Shell
+   :members:
 
 
 Dynamic loading
 ===============
 
-The *Shell* library is designed to be dynamically loading the individual shell implementation.
+The *Shell* library is designed to be dynamically loading the individual shell implementations.
 This is accomplished by the following functions, used extensively in clients of the library.
 
 .. autofunction:: get_class

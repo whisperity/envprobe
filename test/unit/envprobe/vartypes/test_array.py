@@ -8,7 +8,7 @@ def test_init_and_load():
     a = ColonSeparatedArray("test_array", "Foo:Bar")
     assert(a.separator == ':')
     assert(a.value == ["Foo", "Bar"])
-    assert(a.to_raw_var() == "Foo:Bar")
+    assert(a.raw() == "Foo:Bar")
     assert(len(a) == 2)
     assert(a[0] == "Foo")
     assert(a[1] == "Bar")
@@ -19,7 +19,7 @@ def test_setter():
     a.value = "A:B"
     assert(a.separator == ':')
     assert(a.value == ["A", "B"])
-    assert(a.to_raw_var() == "A:B")
+    assert(a.raw() == "A:B")
     assert(len(a) == 2)
     assert(a[0] == "A")
     assert(a[1] == "B")
@@ -30,7 +30,7 @@ def test_setter_single():
     a.value = "42"
     assert(a.separator == ':')
     assert(a.value == ["42"])
-    assert(a.to_raw_var() == "42")
+    assert(a.raw() == "42")
     assert(len(a) == 1)
     assert(a[0] == "42")
 
@@ -78,7 +78,7 @@ def test_delitem():
 
     del a[0]
     assert(len(a) == 0)
-    assert(a.to_raw_var() == "")
+    assert(a.raw() == "")
 
 
 def test_insert():

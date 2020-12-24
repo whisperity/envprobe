@@ -7,33 +7,38 @@ from . import register_type
 from .colon_separated import ColonSeparatedArray
 
 
-class PathLike(ColonSeparatedArray):
-    """
-    Represents as POSIX PATH-like environment variable. `PATH` variables
-    are commonly used as list of locations in a precedence order for finding
-    various system elements. Commonly, `PATH`-like environment variables are
-    separated by a `:`.
+class Path(ColonSeparatedArray):
+    """A POSIX-compatible ``PATH`` environment variable.
 
-    This class provides the extra functionality above
-    :type:`ColonSeparatedArrayEnvVar` in automatically converting relative
-    references, such as "~/foo/bar/../lib/c" into absolute paths. This does
-    not resolve symbolic links or expand variables, only removes unnecessary
-    references, and prefixes the working directory.
+    ``PATH`` variables are commonly used as list of locations (directories,
+    and, rarely, files) on the filesystem in an order of precedence for finding
+    various system elements. ``PATH`` variables in POSIX are separated by
+    ``:``, except in rare circumstances.
+
+    This class extends `ColonSeparatedArray` with automatically converting the
+    given paths (when the array is constructed or modified) to
+    **absolute paths**, by calling `os.abspath` on the value.
+    Symbolic links are kept and variable sequences such as ``~`` remain
+    unexpanded, however, relative references (``a/../b`` to ``b``) are removed
+    and the current working directory (`os.getcwd`) is prepended.
     """
+    def __init__(self, name, raw_value):
+        """Create a `Path` from the given `raw_value`."""
+        super().__init__(name, raw_value)
 
     def _transform_element_set(self, elem):
+        """Transforms the `elem` to an absolute path."""
         elem = super()._transform_element_set(elem)
-
         if elem:
             elem = os.path.abspath(elem)
-
         return elem
 
-    @staticmethod
-    def type_description():
-        return "A list of files and folders separated by : This type "        \
-               "offers additional benefits in knowing that path entries can " \
-               "be normalised and shortened."
+    @classmethod
+    def type_description(cls):
+        """A list of directories (and sometimes files) separated by :, and
+        automatically expanded to absolute paths."""
+        return "A list of directories (and sometimes files) separated by :, " \
+               "and automatically expanded to absolute paths."""
 
 
-register_type('path', PathLike)
+register_type('path', Path)

@@ -5,11 +5,11 @@ from envprobe.commands.get import command
 
 
 class MockVar:
-    def __init__(self, var_name, value):
-        self.name = var_name
-        self.value = value
+    def __init__(self, name, raw_value):
+        self.name = name
+        self.value = raw_value
 
-    def to_raw_var(self):
+    def raw(self):
         return self.value
 
 

@@ -28,11 +28,11 @@ author = "Whisperity"
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-        "sphinx.ext.autodoc",
-        "sphinx.ext.autosummary",
-        "sphinx.ext.intersphinx",
-        "sphinx.ext.napoleon",
-        "sphinx_rtd_theme"
+    "sphinx.ext.autodoc",
+    "sphinx.ext.autosummary",
+    "sphinx.ext.intersphinx",
+    "sphinx.ext.napoleon",
+    "sphinx_rtd_theme"
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -73,6 +73,14 @@ autoclass_content = "both"
 # Boolean indicating whether to scan all found documents for autosummary
 # directives, and to generate stub pages for each.
 autosummary_generate = True
+
+
+# -- Options for InterSphinx -------------------------------------------------
+# This config value contains the locations and names of other projects that
+# should be linked to in this documentation.
+intersphinx_mapping = {
+    'python': ("http://docs.python.org/3.6", None)
+    }
 
 
 # -- Options for Napoleon ----------------------------------------------------

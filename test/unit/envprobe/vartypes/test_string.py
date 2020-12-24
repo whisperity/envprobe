@@ -4,14 +4,14 @@ from envprobe.vartypes.string import String
 def test_init_and_load():
     s = String("test_string", "foo")
     assert(s.value == "foo")
-    assert(s.to_raw_var() == "foo")
+    assert(s.raw() == "foo")
 
 
 def test_setter():
     s = String("test_string", "foo")
     s.value = "bar"
     assert(s.value == "bar")
-    assert(s.to_raw_var() == "bar")
+    assert(s.raw() == "bar")
 
 
 def test_setter_nonstring():

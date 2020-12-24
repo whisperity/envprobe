@@ -1,6 +1,3 @@
-"""
-Module for supporting Bash-like shells.
-"""
 import shlex
 
 from .core import Shell

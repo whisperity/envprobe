@@ -2,7 +2,7 @@ from argparse import Namespace
 import pytest
 
 from envprobe.commands.get import command
-from envprobe.vartypes.path import PathLike
+from envprobe.vartypes.path import Path
 
 
 class MockCommunity:
@@ -12,8 +12,8 @@ class MockCommunity:
 
 class MockEnv:
     def __init__(self):
-        self.vars = {"PATH1": PathLike("PATH1", "/Foo:/Bar"),
-                     "PATH_EMPTY": PathLike("PATH_EMPTY", "")
+        self.vars = {"PATH1": Path("PATH1", "/Foo:/Bar"),
+                     "PATH_EMPTY": Path("PATH_EMPTY", "")
                      }
 
     def __getitem__(self, var_name):

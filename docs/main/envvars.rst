@@ -52,8 +52,8 @@ Read and print the value of the specified variable.
       If ``-i``/``--info`` is given, additional information about the variable will be printed after the initial print of the value.
       This additional information includes:
 
-      - The individual elements of the variable in order if it is an :ref:`array variable<vartype_array>`, after the variable name repeated, one per line.
-      - The :ref:`type<vartypes>` of the variable within Envprobe.
+      - The individual elements of the variable in order if it is an *array variable*, after the variable name repeated, one per line.
+      - The :ref:`type<impl_vartypes>` of the variable within Envprobe.
       - TODO: Community data.
 
 .. hint::
