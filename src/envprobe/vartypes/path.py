@@ -15,15 +15,15 @@ class Path(ColonSeparatedArray):
     various system elements. ``PATH`` variables in POSIX are separated by
     ``:``, except in rare circumstances.
 
-    This class extends `ColonSeparatedArray` with automatically converting the
-    given paths (when the array is constructed or modified) to
-    **absolute paths**, by calling `os.abspath` on the value.
+    This class extends :py:class:`ColonSeparatedArray` with automatically
+    converting the given paths (when the array is constructed or modified) to
+    **absolute paths**, by calling :py:func:`os.abspath` on the value.
     Symbolic links are kept and variable sequences such as ``~`` remain
     unexpanded, however, relative references (``a/../b`` to ``b``) are removed
-    and the current working directory (`os.getcwd`) is prepended.
+    and the current working directory (:py:func:`os.getcwd`) is prepended.
     """
     def __init__(self, name, raw_value):
-        """Create a `Path` from the given `raw_value`."""
+        """Create a :py:class:`Path` from the given `raw_value`."""
         super().__init__(name, raw_value)
 
     def _transform_element_set(self, elem):

@@ -1,7 +1,6 @@
 """
-This module implements the logic for interfacing with the environment's
-contents, mapping variable primitives to internal data structure, keeping
-state, etc.
+Implements the logic for interfacing with the environment's contents, mapping
+variable primitives to internal data structure, keeping state, etc.
 """
 from copy import deepcopy
 from enum import Enum
@@ -12,37 +11,109 @@ from . import vartypes
 
 
 class EnvVarTypeHeuristic:
-    """
-    This class and its subclasses implement heuristics that define how an
-    environment variable is mapped to a particular type.
+    """A heuristic maps a variable's name and it's potential value in the
+    environment to an :py:mod:`envprobe.vartypes` type.
     """
     def __call__(self, name, env=None):
-        """
-        The default implementation for a heuristic is simply to consider
-        everything a string variable.
+        """Resolve the variable of `name` (in the `env` environment) to an
+        :py:mod:`envprobe.vartype` type identifier.
 
-        In derived classes, the implementation should return the names of the
-        var type implementation, or `None` if the heuristic doesn't return
-        anything.
-        If the implementation deduces that the given variable should not be
-        manageable by Envprobe, `False` should be returned.
+        The default implementation resolves everything to be ``'string'``,
+        corresponding to :py:class:`.vartypes.string.String`.
+
+        Parameters
+        ----------
+        name : str
+            The name of the environment variable.
+        env : dict, optional
+            The raw mapping of environment variables to their values, as in
+            :py:data:`os.environ`.
+
+        Returns
+        -------
+        vartype_name : str
+            The name of an :py:mod:`envprobe.vartypes` class, if the heuristic
+            resolved successfully.
+
+        None
+            ``None`` is returned if the heuristic could not resolve a type
+            to be used.
+
+        False : bool
+            ``False`` is returned if the heuristic resolved the variable
+            **not to be managed** by Envprobe.
         """
         return 'string'
 
 
 class HeuristicStack:
-    """
-    Implements a simple stack that resolves an environment variable's type
-    by calling each heuristic until an answer is reached.
+    """A stack of :py:class:`EnvVarTypeHeuristic` objects which resolve a
+    variable in a set order.
+
+    Example
+    -------
+    .. code-block:: python
+
+        # Build the pipeline.
+        pipeline = HeuristicStack()
+        pipeline += HeuristicThatAlwaysReturnsString()
+        pipeline += HeuristicThatMapsTESTVarToFalse()
+
+        # (HeuristicStack executes the added heuristics in reverse order.)
+
+        # Use the pipeline to resolve.
+        pipeline("TEST", env)
+        >>> False
+
+        pipeline("OTHER_VAR", env)
+        >>> 'string'
     """
     def __init__(self):
         self._elements = []
 
     def __add__(self, heuristic):
+        """Add the `heuristic` to the top of the stack.
+
+        Raises
+        ------
+        TypeError
+            If `heuristic` isn't an :py:class:`EnvVarTypeHeuristic`.
+        """
+        if not isinstance(heuristic, EnvVarTypeHeuristic):
+            raise TypeError("{0} != EnvVarTypeHeuristic".
+                            format(str(type(heuristic))))
         self._elements.append(heuristic)
         return self
 
     def __call__(self, name, env=None):
+        """Resolve the variable of `name` (in the `env` environment) to an
+        :py:mod:`envprobe.vartype` type identifier, using the heuristics in
+        the order of the stack.
+
+        The resolution is run until a heuristic returns non-None (either
+        ``False`` or an identifier).
+
+        Parameters
+        ----------
+        name : str
+            The name of the environment variable.
+        env : dict, optional
+            The raw mapping of environment variables to their values, as in
+            :py:data:`os.environ`.
+
+        Returns
+        -------
+        vartype_name : str
+            The name of an :py:mod:`envprobe.vartypes` class, if a heuristic
+            resolved successfully.
+
+        None
+            ``None`` is returned if no heuristic could resolve a type to use.
+
+        False : bool
+            ``False`` is returned if a heuristic resolved the variable
+            **not to be managed** by Envprobe.
+        """
         for h in reversed(self._elements):
             result = h(name, env)
             if result:
@@ -55,17 +126,44 @@ class HeuristicStack:
 # Create the default type heuristic pipeline that only uses the default
 # implementation.
 default_heuristic = HeuristicStack()
+"""Provides the default :py:class:`EnvVarTypeHeuristic` in a
+:py:class:`HeuristicStack`.
+"""
 default_heuristic += EnvVarTypeHeuristic()
 
 
-def create_environment_variable(name, env, pipeline):
-    """
-    Creates an :type:`envprobe.vartypes.EnvVar` instance for the environment
-    variable given in `name` in the environment map `env`.
+def create_environment_variable(name, env, pipeline=None):
+    """Create a :py:class:`.vartypes.EnvVar` instance for a variable, using a
+    specific pipeline in an environment.
 
-    :param:`pipeline` is used to figure out the type of the environment
-    variable to instantiate.
+    Parameters
+    ----------
+    name: str
+        The name of the environment variable to create.
+    env : dict
+        The raw mapping of environment variables to their values, as in
+        :py:data:`os.environ`.
+    pipeline : HeuristicStack, optional
+        The heuristics pipeline to use to decide on the variable's type.
+        If not specified, :py:data:`default_heuristic` is used.
+
+    Returns
+    -------
+    .vartypes.EnvVar
+        The instantiated environment variable.
+        The variable is instantiated even if the variable is **not** found in
+        `env`.
+
+    Raises
+    ------
+    KeyError
+        If the variable was not resolved to a valid type by the `pipeline`,
+        either because no heuristic mapped to anything, or a heuristic mapped
+        to ``False``.
     """
+    if not pipeline:
+        pipeline = default_heuristic
+
     kind = pipeline(name, env)
     if not kind:
         raise KeyError("Couldn't resolve '%s' to a variable type." % name)
@@ -76,35 +174,32 @@ def create_environment_variable(name, env, pipeline):
 
 # Let's define some "standard" heuristics.
 class EnvprobeEnvVarHeuristic(EnvVarTypeHeuristic):
-    """
-    This heuristic disables accessing the 'ENVPROBE_' variables, which are
-    needed to be exact to allow Envprobe to run.
-    """
+    """Disable access to internal variables that begin with ``ENVPROBE_``."""
     def __call__(self, name, env=None):
         if name.startswith("ENVPROBE_"):
             return False
 
 
 class HiddenEnvVarHeuristic(EnvVarTypeHeuristic):
-    """
-    Consider environment variables that begin with a _ as hidden ones that
-    should not be managed.
-    """
+    """Disable access to every variable that begins with ``_``, similar to how
+    files named as such are considered "hidden"."""
     def __call__(self, name, env=None):
         if name.startswith('_'):
             return False
 
 
 class PathEnvVarHeuristic(EnvVarTypeHeuristic):
+    """Regard ``PATH`` and variables that end with ``_PATH`` as
+    :py:class:`.vartypes.path.Path`.
+    """
     def __call__(self, name, env=None):
-        if name == "PATH" or name.endswith("PATH"):
+        if name == "PATH" or name.endswith("_PATH"):
             return 'path'
 
 
 class NumericalNameEnvVarHeuristic(EnvVarTypeHeuristic):
-    """
-    This heuristic maps commonly number-only named variables to the numeric
-    type.
+    """Regard commonly numeric-only variables as
+    :py:class:`.vartypes.numeric.Numeric`.
     """
     def __call__(self, name, env=None):
         if name.endswith(("PID", "PORT")):
@@ -112,6 +207,9 @@ class NumericalNameEnvVarHeuristic(EnvVarTypeHeuristic):
 
 
 class NumericalValueEnvVarHeuristic(EnvVarTypeHeuristic):
+    """Regard environment variables that *currently* have a numeric value
+    as :py:class:`.vartypes.numeric.Numeric`.
+    """
     def __call__(self, name, env=None):
         if not env:
             return None

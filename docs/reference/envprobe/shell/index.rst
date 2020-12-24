@@ -1,3 +1,5 @@
+.. _impl_shell:
+
 ===============
 Shell interface
 ===============

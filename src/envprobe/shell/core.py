@@ -127,7 +127,7 @@ class Shell(metaclass=ABCMeta):
         Note
         ----
         The implementation for the actual code writing should be provided in
-        the overriden method `_set_environment_variable` instead.
+        the overriden method :py:func:`_set_environment_variable` instead.
         """
         if not self.manages_environment_variables:
             raise CapabilityError("Can't manage environment variables.")
@@ -152,7 +152,7 @@ class Shell(metaclass=ABCMeta):
         Note
         ----
         The implementation for the actual code writing should be provided in
-        the overriden method `_unset_environment_variable` instead.
+        the overriden method :py:func:`_unset_environment_variable` instead.
         """
         if not self.manages_environment_variables:
             # TODO: Turn this into a meaningful exception type.
@@ -161,13 +161,13 @@ class Shell(metaclass=ABCMeta):
 
 
 class FakeShell(Shell):
-    """A fake `Shell` that provides the interface and is a proper subclass,
-    but does not offer any meaningful functionality.
+    """A fake :py:class:`Shell` that provides the interface and is a proper
+    subclass, but does not offer any meaningful functionality.
 
     Note
     ----
-    This class is **not** available through `load()` and is not registered
-    into the dynamic loading infrastructure.
+    This class is **not** available through :py:func:`shell.load` and is not
+    registered into the dynamic loading infrastructure.
     """
     def __init__(self):
         super().__init__(-1, os.path.curdir, "null.txt")
@@ -197,7 +197,8 @@ class FakeShell(Shell):
 
 
 def register_type(kind, clazz):
-    """Register the `Shell` implementation to the dynamic lookup mechanism.
+    """Register the :py:class:`Shell` implementation to the dynamic lookup
+    mechanism.
 
     Parameters
     ----------
@@ -214,10 +215,10 @@ def register_type(kind, clazz):
 
     Example
     -------
-    The implementing modules of `Shell` subclasses should be named similarly
-    as the shell they are implementing, and after defining the ``class``, in
-    the global code of the module itself, a call to `register_type` should be
-    present:
+    The implementing modules of :py:class:`Shell` subclasses should be named
+    similarly as the shell they are implementing, and after defining the
+    ``class``, in the global code of the module itself, a call to
+    `register_type` should be present:
 
     .. code-block:: py
         :caption: Registering a hypothetical implementation of the PytShell in
@@ -281,7 +282,7 @@ def get_kind(clazz):
 
 
 def get_known_kinds():
-    """Get the list of dynamically registered and loaded `Shell`
+    """Get the list of dynamically registered and loaded :py:class:`Shell`
     implementations.
 
     Return
@@ -293,17 +294,17 @@ def get_known_kinds():
 
 
 def load(kind):
-    """Attempt to load a `Shell` implementation.
+    """Attempt to load a :py:class:`Shell` implementation.
 
-    The function loads the module `kind` from ``envprobe.shell`` and expects
-    it to register the `Shell` named `kind`.
+    The function loads the module `kind` from :py:mod:`envprobe.shell` an
+    expects it to register the :py:class:`Shell` named `kind`.
 
     Parameters
     ----------
     kind : str
         The name of the shell to load.
         The loading will be done from the similarly named Python module under
-        `envprobe.shell`.
+        :py:mod:`envprobe.shell`.
 
     Returns
     -------
@@ -338,8 +339,8 @@ def load(kind):
 
 
 def load_all():
-    """Loads all `Shell` implementations to the interpreter found under
-    `envprobe.shell` in the install.
+    """Loads all :py:class:`Shell` implementations to the interpreter found
+    under :py:mod:`envprobe.shell` in the install.
 
     This method does not throw if a module does not actually register anything.
     """
@@ -354,12 +355,13 @@ def load_all():
 
 
 def get_current_shell(environment_dict):
-    """Create a `Shell` based on the configured environment variables.
+    """Create a :py:class:`Shell` based on the configured environment
+    variables.
 
     Returns
     -------
     Shell
-        The `Shell` is instantiated with the environment settings.
+        The :py:class:`Shell` is instantiated with the environment settings.
 
     Raises
     ------

@@ -2,13 +2,18 @@ from .envvar import EnvVar
 
 
 class Array(EnvVar):
-    """An environment variable where elements are separated by a `separator`.
+    """An environment variable where elements are separated by a
+    :py:attr:`separator`.
+
+    Note
+    ----
+    The instance can be used like :py:class:`list`, i.e.
+    :py:func:`__getitem__`, :py:func:`__setitem__` and :py:func:`__delitem__`
+    are implemented.
     """
 
     def __init__(self, name, raw_value, separator):
-        """Create a new array with the given `separator`.
-        Initialize a new array environment variable where the given `separator`
-        character acts as a separator. The inner array holds values as strings.
+        """Create a new array with the given :py:attr:`separator`.
         """
         super().__init__(name, raw_value)
         self._separator = separator
@@ -26,7 +31,7 @@ class Array(EnvVar):
 
     @property
     def value(self):
-        """Get the copy of the value of the variable, as a `list`.
+        """Get the copy of the value of the variable, as a :py:class:`list`.
 
         Returns
         -------
@@ -35,8 +40,9 @@ class Array(EnvVar):
 
         Note
         ----
-        You should **not** directly change the elements in this `list`, as the
-        changes will not be reflected by the `Array` object.
+        You should **not** directly change the elements in this
+        :py:class:`list`, as the changes will not be reflected by the
+        :py:class:`Array` object.
         """
         return [self._transform_element_get(e) for e in self._value]
 
@@ -47,15 +53,16 @@ class Array(EnvVar):
         Parameters
         ----------
         new_value : list(str)
-            The new array, if `new_value` is a `list`.
+            The new array, if `new_value` is a :py:class:`list`.
         new_value : str
-            Create an array (using `separator`) from `new_value` if `new_value`
-            is a `str`.
+            Create an array (using :py:attr:`separator`) from `new_value` if
+            `new_value` is a :py:class:`str`.
 
         Raises
         ------
         TypeError
-            Raised if `new_value` is neither a `str` nor a `list`.
+            Raised if `new_value` is neither a :py:class:`str` nor a
+            :py:class:`list`.
         """
         if isinstance(new_value, list):
             self._value = [self._transform_element_set(e) for e in new_value]
@@ -70,7 +77,9 @@ class Array(EnvVar):
                             "non-string parameter.")
 
     def _check_if_element_valid(self, elem):
-        """Check if the given `elem` contains the `separator` character.
+        """Check if the given `elem` contains the :py:attr:`separator`
+        character.
+
         This is disallowed as per the POSIX standard (even if escaped)."""
         if self.separator in elem:
             # Disallow adding an element to the array which contains the
@@ -156,16 +165,16 @@ class Array(EnvVar):
             self._value.remove(elem)
 
     def raw(self):
-        """Convert the value to raw shell representation, i.e. a string
-        separated by `separator`."""
+        """Convert the value to raw shell representation, i.e. a
+        :py:class:`str` separated by :py:attr:`separator`."""
         return self.separator.join(self._value).strip(self.separator)
 
     @classmethod
     def _diff(cls, old, new):
         """Generate a difference between `old` and `new` values.
 
-        For `Array` variables, the elements that are same in both `old` and
-        `new` will be emitted with an ``=`` ("unchanged") side.
+        For :py:class:`Array` variables, the elements that are same in both
+        `old` and `new` will be emitted with an ``=`` ("unchanged") side.
         """
         def __deduplicate_list_keep_order(list):
             seen = set()

@@ -2,11 +2,13 @@ from .envvar import EnvVar, register_type
 
 
 class Numeric(EnvVar):
-    """This type may only hold a numeric (`int` or `float`) value.
+    """This type may only hold a numeric (:py:class:`int` or
+    :py:class:`float`) value.
     """
 
     def __init__(self, name, raw_value):
-        """Create a new `Numeric` variable by converting `raw_value`."""
+        """Create a new :py:class:`Numeric` variable by converting
+        `raw_value`."""
         super().__init__(name, raw_value)
         self.value = raw_value
 
@@ -30,7 +32,7 @@ class Numeric(EnvVar):
 
     @value.setter
     def value(self, new_value):
-        """Sets the `value` to `new_value`.
+        """Sets the :py:attr:`value` to `new_value`.
 
         Parameters
         ----------
@@ -40,7 +42,7 @@ class Numeric(EnvVar):
         Raises
         ------
         ValueError
-            If the given value is neither `int` nor `float`.
+            If the given value is neither :py:class`int` nor :py:class`float`.
         """
         # First, try to make the variable a float. Every int can be a float
         # implicitly.
@@ -57,24 +59,26 @@ class Numeric(EnvVar):
 
     @property
     def is_integer(self):
-        """Whether the value is of `int` type."""
+        """Whether the value is of :py:class:`int` type."""
         return self._kind == int
 
     @property
     def is_floating(self):
-        """Whether the value is of `float` type."""
+        """Whether the value is of :py:class:`float` type."""
         return self._kind == float
 
     def raw(self):
-        """Convert the value to raw shell representation, i.e. a string."""
+        """Convert the value to raw shell representation, i.e.
+        a :py:class:`str`.
+        """
         return str(self.value)
 
     @classmethod
     def _diff(cls, old, new):
         """Generate a difference between `old` and `new` values.
 
-        Unlike `EnvVar.diff`, the difference of `Numeric` variables will always
-        have a ``-`` ("removed") and a ``+`` ("added") side.
+        Unlike :py:func:`EnvVar.diff`, the difference of `Numeric` variables
+        will always have a ``-`` ("removed") and a ``+`` ("added") side.
         """
         return [('-', old.raw()), ('+', new.raw())] \
             if old.value != new.value else []

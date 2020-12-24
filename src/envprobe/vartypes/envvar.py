@@ -59,7 +59,7 @@ class EnvVar(metaclass=ABCMeta):
 
         Returns
         -------
-        *unknown*
+        unknown
             The value.
             The (Python) type of the returned value is specific to the
             subclass.
@@ -73,7 +73,7 @@ class EnvVar(metaclass=ABCMeta):
 
         Parameters
         ----------
-        new_value : *unknown*
+        new_value : unknown
             The new `value` to write.
             The exact type of the accepted variable depends on the subclass.
         """
@@ -81,8 +81,8 @@ class EnvVar(metaclass=ABCMeta):
 
     @classmethod
     def _diff(cls, old, new):
-        """This method implements the `diff` action and should be overridden
-        in subclasses.
+        """This method implements the :py:func:`diff` action and should be
+        overridden in subclasses.
         """
         if old.value == new.value:
             return []
@@ -113,19 +113,24 @@ class EnvVar(metaclass=ABCMeta):
             respectively.
             For each entry in the list, the second element (`str`) is the
             affected value itself.
+            The description of the difference is **always** of type `str`.
 
             If either the `old` or the `new` did not contain a value,
             the respective side will be missing from the list.
 
             If the two variables are equal, an empty list is returned.
 
-            The description of the difference is **always** of type `str`.
-
         Raises
         ------
         TypeError
-            Only variables of the same type, and only subclasses of `EnvVar`
-            may be differentiated.
+            Only variables of the same type, and only subclasses of
+            :py:class:`EnvVar` may be differentiated.
+
+        Note
+        ----
+        The implementation for the actual calculating of the difference should
+        be provided in the overridden method :py:func:`_diff` in the
+        subclasses.
         """
         if type(old) != type(new):
             raise TypeError("Only variables of the same type can be "
@@ -139,7 +144,8 @@ class EnvVar(metaclass=ABCMeta):
 
 
 def register_type(kind, clazz):
-    """Register the `EnvVar` implementation to the dynamic lookup mechanism.
+    """Register the :py:class:`EnvVar` implementation to the dynamic lookup
+    mechanism.
 
     Parameters
     ----------
@@ -151,15 +157,15 @@ def register_type(kind, clazz):
     Raises
     ------
     TypeError
-        `clazz` must be a type that is a subclass of `EnvVar`, otherwise an
-        exception is raised.
+        `clazz` must be a type that is a subclass of :py:class:`EnvVar`,
+        otherwise an exception is raised.
 
     Example
     -------
-    The implementing modules of `EnvVar` subclasses should be named similarly
-    as the shell they are implementing, and after defining the ``class``, in
-    the global code of the module itself, a call to `register_type` should be
-    present:
+    The implementing modules of :py:class:`EnvVar` subclasses should be named
+    similarly as the shell they are implementing, and after defining the
+    ``class``, in the global code of the module itself, a call to
+    :py:func:`register_type` should be present:
 
     .. code-block:: py
         :caption: Registering a hypothetical implementation of the Circle in
@@ -223,7 +229,7 @@ def get_kind(clazz):
 
 
 def get_known_kinds():
-    """Get the list of dynamically registered and loaded `EnvVar`
+    """Get the list of dynamically registered and loaded :py:class:`EnvVar`
     implementations.
 
     Return
@@ -235,17 +241,17 @@ def get_known_kinds():
 
 
 def load(kind):
-    """Attempt to load an `EnvVar` implementation.
+    """Attempt to load an :py:class:`EnvVar` implementation.
 
-    The function loads the module `kind` from ``envprobe.vartypes`` and
-    expects it to register the `EnvVar` named `kind`.
+    The function loads the module `kind` from :py:mod:`envprobe.vartypes` and
+    expects it to register the :py:class:`EnvVar` named `kind`.
 
     Parameters
     ----------
     kind : str
         The name of the environment variable type to load.
         The loading will be done from the similarly named Python module under
-        `envprobe.vartypes`.
+        :py:mod:`envprobe.vartypes`.
 
     Returns
     -------
@@ -280,8 +286,8 @@ def load(kind):
 
 
 def load_all():
-    """Loads all `EnvVar` implementations to the interpreter found under
-    `envprobe.vartypes` in the install.
+    """Loads all :py:class:`EnvVar` implementations to the interpreter found
+    under :py:mod:`envprobe.vartypes` in the install.
 
     This method does not throw if a module does not actually register anything.
     """

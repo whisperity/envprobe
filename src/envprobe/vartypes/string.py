@@ -5,7 +5,7 @@ class String(EnvVar):
     """The standard type of environment variables."""
 
     def __init__(self, name, raw_value):
-        """Create a new `String` variable."""
+        """Create a new :py:class:`String` variable."""
         super().__init__(name, raw_value)
         self.value = raw_value
 
@@ -29,13 +29,15 @@ class String(EnvVar):
 
     @value.setter
     def value(self, new_value):
-        """Sets the `value` to `new_value`.
+        """Sets the :py:attr:`value` to `new_value`.
 
         Parameters
         ----------
         new_value : str
             The value to write.
-            If `new_value` isn't a `str`, it will be stringified automatically.
+
+            If `new_value` isn't a :py:class:`str`, it will be stringified
+            automatically.
         """
         if not isinstance(new_value, str):
             new_value = str(new_value)
@@ -44,7 +46,8 @@ class String(EnvVar):
     def raw(self):
         """Convert the value to raw shell representation.
 
-        For `String`s, this is equivalent to calling `value`.
+        For :py:class:`String`s, this is equivalent to calling
+        :py:attr:`value`.
         """
         return self.value
 

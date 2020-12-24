@@ -18,9 +18,8 @@ The list of known variable types in Envprobe are documented in the pages
 accessible from the links below.
 
 .. autosummary::
-   :toctree: generated/
+   :toctree: generated
    :nosignatures:
-   :recursive:
 
    string.String
    numeric.Numeric

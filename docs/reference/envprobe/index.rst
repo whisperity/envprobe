@@ -1,8 +1,8 @@
 .. _impl_pypackage:
 
-===========================
-``envprobe`` Python package
-===========================
+==============
+Python package
+==============
 
 Envprobe is implemented as a single Python package, named ``envprobe``.
 While we strive to make the code as modular and easily extensible as possible, at the core, Envprobe is a *single* program that is offered **whole**.
@@ -13,3 +13,4 @@ The core functions that people use Envprobe for are not available if the Python 
 
    shell/index
    vartypes/index
+   environment

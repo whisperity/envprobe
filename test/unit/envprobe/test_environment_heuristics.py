@@ -54,7 +54,7 @@ def test_pipeline_simple():
     assert(p("test") == "test")
 
 
-class NumericHeuristic():
+class NumericHeuristic(EnvVarTypeHeuristic):
     def __call__(self, name, env=None):
         if name not in env:
             return None
