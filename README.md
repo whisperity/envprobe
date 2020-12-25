@@ -95,6 +95,7 @@ For easy access, the environment variable managing commands are also offered as 
 |:--------------------:|:--------------------------------:|:------------------------------|
 | `get VARIABLE`       | `?VARIABLE` or simply `VARIABLE` | Print the value of `VARIABLE` |
 | `set VARIABLE VALUE` | `!VARIABLE`, `VARIABLE=VALUE`    | Sets `VARIABLE` to `VALUE`    |
+| `undefine VARIABLE`  | `^VARIABLE`                      | Undefine `VARIABLE`           |
 
 
 ~~~{.bash}
@@ -108,9 +109,14 @@ $ ep PATH
 PATH=/usr/local/bin:/usr/bin:/sbin:/bin
 
 $ echo $SOME_VARIABLE
+# No result, variable is not defined.
 $ ep SOME_VARIABLE=MyValue
 $ echo $SOME_VARIABLE
 MyValue
+
+$ ep ^SOME_VARIABLE
+$ echo $SOME_VARIABLE
+# No result.
 ~~~
 
 
@@ -207,7 +213,6 @@ add                 {+VARIABLE VALUE} Add values to an array-like
                     environmental variable.
 remove              {-VARIABLE VALUE} Remove values from an array-like
                     environmental variable.
-undefine            {^VARIABLE} Undefine an environmental variable.
 ~~~
 
 
@@ -264,14 +269,6 @@ like how traditionally one would give it to `export`.
 
     ep set PATH /home/username:/usr/bin
     ep PATH=/home/username:/usr/bin
-
-#### Undefining a variable
-
-To make a variable undefined, use the `undefine` (`^`) command:
-
-    ep undefine BUILD_ID
-    ep ^BUILD_ID
-
 
 
 Usage: Saving and loading environments

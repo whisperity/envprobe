@@ -1,7 +1,7 @@
 from argparse import Namespace
 import pytest
 
-from envprobe.commands.set import command
+from envprobe.commands.undefine import command
 
 
 class MockVar:
@@ -15,10 +15,10 @@ class MockVar:
 
 class MockShell:
     def __init__(self):
-        self.m_vars = []
+        self.m_vars = ["TEST"]
 
-    def set_environment_variable(self, env_var):
-        self.m_vars.append(env_var.name)
+    def unset_environment_variable(self, env_var):
+        self.m_vars.remove(env_var.name)
 
 
 class MockEnv:
@@ -29,8 +29,11 @@ class MockEnv:
         return self.vars.get(var_name, MockVar(var_name, "")), \
                 var_name in self.vars
 
-    def set_variable(self, env_var):
-        self.vars[env_var.name] = env_var.raw()
+    def set_variable(self, env_var, remove=False):
+        if remove:
+            del self.vars[env_var.name]
+        else:
+            raise NotImplementedError("Not-removing is not supported!")
 
 
 @pytest.fixture
@@ -42,27 +45,25 @@ def args():
     yield arg
 
 
-def test_set_existing(capfd, args):
+def test_undefine_existing(capfd, args):
     args.VARIABLE = "TEST"
-    args.VALUE = "Bar"
     command(args)
 
     stdout, stderr = capfd.readouterr()
     assert(not stdout)
     assert(not stderr)
 
-    assert("TEST" in args.shell.m_vars)
-    assert(args.environment.vars["TEST"] == "Bar")
+    assert("TEST" not in args.shell.m_vars)
+    assert("TEST" not in args.environment.vars)
 
 
-def test_set_nonexistent(capfd, args):
+def test_undefine_nonexistent(capfd, args):
     args.VARIABLE = "THIS DOESN'T EXIST"
-    args.VALUE = "Something"
     command(args)
 
     stdout, stderr = capfd.readouterr()
     assert(not stdout)
     assert(not stderr)
 
-    assert("THIS DOESN'T EXIST" in args.shell.m_vars)
-    assert(args.environment.vars["THIS DOESN'T EXIST"] == "Something")
+    assert("THIS DOESN'T EXIST" not in args.shell.m_vars)
+    assert("THIS DOESN'T EXIST" not in args.environment.vars)

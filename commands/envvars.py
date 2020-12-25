@@ -43,14 +43,6 @@ def __remove(args):
     get_current_shell().set_env_var(env_var)
 
 
-def __undefine(args):
-    env_var = create_environment_variable(args.VARIABLE)
-    if env_var is None:
-        raise ValueError("This environment variable cannot or should not "
-                         "be managed.")
-    get_current_shell().undefine_env_var(env_var)
-
-
 def create_subcommand_parser(main_parser):
     if not get_current_shell():
         return

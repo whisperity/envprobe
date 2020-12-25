@@ -13,9 +13,6 @@ All commands are offered through *shortcuts* to ease access to the core function
 Reading (``get``, ``?``)
 ========================
 
-Read and print the value of the specified variable.
-
-
 .. py:function:: get(VARIABLE, info=False)
 
    Read and print the value of the environment variable ``VARIABLE`` to the standard output in the format ``VARIABLE=value``.
@@ -56,6 +53,8 @@ Read and print the value of the specified variable.
       - The :ref:`type class<impl_vartypes>` of the variable within Envprobe.
       - TODO: Community data.
 
+..
+   TODO.
 .. hint::
 
    Community features are yet to be migrated to the new version.
@@ -67,9 +66,6 @@ Read and print the value of the specified variable.
 
 Writing (``set``, ``!``, ``=``)
 ===============================
-
-Set the value of the specified variable.
-
 
 .. py:function:: set(VARIABLE, VALUE)
 
@@ -88,7 +84,9 @@ Set the value of the specified variable.
 
          $ echo $SOME_VARIABLE
          # No result, the variable is not set.
+
          $ ep set SOME_VARIABLE MyValue
+
          $ echo $SOME_VARIABLE
          MyValue
 
@@ -104,3 +102,41 @@ Set the value of the specified variable.
 
          $ which ls
          # No result.
+
+
+Undefining (``undefine``, ``^``)
+================================
+
+.. py:function:: undefine(VARIABLE)
+
+   Undefine the ``VARIABLE``.
+
+   In some cases, there can be subtle differences between a variable that is defined (but usually empty string), and variables that are *not defined* at all.
+   However, in many cases, the two are equivalent.
+
+   :param VARIABLE: The name of the environment variable to undefine.
+
+   :Possible invocations:
+      - ``ep undefine VARIABLE``
+      - ``ep ^VARIABLE``
+
+   :Examples:
+      .. code-block:: bash
+
+         $ echo $USER
+         root
+
+         $ ep undefine USER
+
+         $ echo $SOME_VARIABLE
+         # No result, the variable is not set.
+
+      .. code-block:: bash
+
+         $ echo $HOME/bin
+         /home/user/bin
+
+         $ ep ^HOME
+
+         $ echo $HOME/bin
+         /bin

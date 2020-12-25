@@ -426,19 +426,17 @@ class Environment:
                                            self.type_heuristics), \
             variable_name in self.current_environment
 
-    def apply_change(self, variable, remove=False):
-        """Applies the changes in `variable` to the
-        :py:attr:`stamped_environment`, i.e. modifying the pristine state.
+    def set_variable(self, variable, remove=False):
+        """Sets the value of `variable` in the :py:attr:`current_environment`
+        to the parameter, i.e. storing the change to the dirty state.
 
         Parameters
         ----------
         variable : .vartypes.EnvVar
-            The environment variable whose value has been modified.
-            (If the variable does not exist in the environment, it will be
-            added with its current value.)
+            The variable which should be saved.
         remove : bool
             If ``True``, the `variable` will be removed from the environment,
-            otherwise, the modification is applied.
+            otherwise the new value is saved.
 
         Warning
         -------
@@ -446,6 +444,43 @@ class Environment:
         environment manager instance.
         This method does not attempt to guarantee in any way that the change of
         the value is respected by the underlying `shell`.
+
+        See Also
+        --------
+        apply_change
+        """
+        if not remove:
+            self._current_environment[variable.name] = variable.raw()
+        else:
+            try:
+                del self._current_environment[variable.name]
+            except KeyError:
+                pass
+
+    def apply_change(self, variable, remove=False):
+        """Applies the changes in `variable` to the
+        :py:attr:`stamped_environment`, i.e. modifying the pristine state.
+
+        Parameters
+        ----------
+        variable : .vartypes.EnvVar
+            The environment variable which value has been modified.
+            (If the variable does not exist in the environment, it will be
+            added with its current value.)
+        remove : bool
+            If ``True``, the `variable` will be removed from the environment,
+            otherwise, the new value is saved.
+
+        Warning
+        -------
+        The application of the change only happens to the "knowledge" of the
+        environment manager instance.
+        This method does not attempt to guarantee in any way that the change of
+        the value is respected by the underlying `shell`.
+
+        See Also
+        --------
+        set_variable
 
         Note
         ----

@@ -12,7 +12,17 @@ help = "{^VARIABLE} Undefine an environment variable."
 
 
 def command(args):
-    print(args)
+    try:
+        env_var, defined = args.environment[args.VARIABLE]
+    except KeyError:
+        raise ValueError("This environment variable can not or should not be "
+                         "managed through Envprobe.")
+
+    if not defined:
+        return
+
+    args.environment.set_variable(env_var, remove=True)
+    args.shell.unset_environment_variable(env_var)
 
 
 def register(argparser, registered_command_list):

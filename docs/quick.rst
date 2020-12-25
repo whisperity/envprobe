@@ -28,6 +28,11 @@ This page contains excerpts of Envprobe's usage that detail typical everyday tas
    PATH=/usr/local/bin:/usr/bin:/sbin:/bin
 
    $ echo $SOME_VARIABLE
+   # No result, variable is not defined.
    $ ep SOME_VARIABLE=MyValue
    $ echo $SOME_VARIABLE
    MyValue
+
+   $ ep ^SOME_VARIABLE
+   $ echo $SOME_VARIABLE
+   # No result.

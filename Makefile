@@ -111,7 +111,7 @@ system_test.cover:
 system_test-coverage: coverage_new_dir system_test.cover
 	cp system_test.cover .coverage.COMBINE/
 	python3 -m coverage combine .coverage.COMBINE/*
-	echo "functional" >> .coverage.TITLE-tmp
+	echo "system" >> .coverage.TITLE-tmp
 	@$(MAKE) coverage_report
 .PHONY: system_test-coverage
 

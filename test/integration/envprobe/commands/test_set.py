@@ -9,7 +9,7 @@ from envprobe.shell import FakeShell
 
 class FakeShell2(FakeShell):
     def __init__(self):
-        self.m_vars = list()
+        self.m_vars = []
 
     @property
     def manages_environment_variables(self):
@@ -53,7 +53,7 @@ def test_set_path(capfd, args, cwd_to_root):
     assert(not stdout)
     assert(not stderr)
 
-    assert(args.environment.stamped_environment["PATH"] == "/Baz")
+    assert(args.environment.current_environment["PATH"] == "/Baz")
     assert("PATH" in args.shell.m_vars)
 
 
@@ -65,7 +65,7 @@ def test_set_path_empty(capfd, args, cwd_to_root):
     stdout, stderr = capfd.readouterr()
     assert(not stdout)
     assert(not stderr)
-    assert(args.environment.stamped_environment["PATH"] == "")
+    assert(args.environment.current_environment["PATH"] == "")
     assert("PATH" in args.shell.m_vars)
 
 
@@ -77,9 +77,9 @@ def test_set_new_variable(capfd, args, cwd_to_root):
     stdout, stderr = capfd.readouterr()
     assert(not stdout)
     assert(not stderr)
-    assert(args.environment.stamped_environment["NEW_PATH"] == "/root")
+    assert(args.environment.current_environment["NEW_PATH"] == "/root")
     assert("NEW_PATH" in args.shell.m_vars)
 
     # The other variable should be unchanged.
-    assert("PATH" not in args.environment.stamped_environment)
+    assert(args.environment.current_environment["PATH"] == "/Foo:/Bar")
     assert("PATH" not in args.shell.m_vars)

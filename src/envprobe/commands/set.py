@@ -16,7 +16,7 @@ def command(args):
                          "managed through Envprobe.")
 
     env_var.value = args.VALUE
-    args.environment.apply_change(env_var)
+    args.environment.set_variable(env_var)
     args.shell.set_environment_variable(env_var)
 
 

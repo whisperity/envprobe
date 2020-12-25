@@ -89,3 +89,25 @@ def test_set_variable(sh):
     assert(not result)
     _, result = sh.execute_command("echo $DUMMY_VAR")
     assert(result == "shortcut")
+
+
+def test_undefine_variable(sh):
+    retcode, result = sh.execute_command("envprobe undefine NON_EXISTING_VAR",
+                                         timeout=0.5)
+    assert(not retcode)
+    assert(not result)
+
+    _, result = sh.execute_command("echo $DUMMY_VAR")
+    assert(result == "shortcut")
+
+    retcode, result = sh.execute_command("ep undefine DUMMY_VAR", timeout=0.5)
+    assert(not retcode)
+    assert(not result)
+    _, result = sh.execute_command("echo $DUMMY_VAR")
+    assert(not result)
+
+    retcode, result = sh.execute_command("ep ^DUMMY_PATH", timeout=0.5)
+    assert(not retcode)
+    assert(not result)
+    _, result = sh.execute_command("echo $DUMMY_PATH")
+    assert(not result)
