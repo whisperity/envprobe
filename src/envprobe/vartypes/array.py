@@ -192,11 +192,11 @@ class Array(EnvVar):
         kept = list(filter(lambda e: e in old and e in new and e != '',
                            __deduplicate_list_keep_order(old + new)))
 
-        for add in added:
-            ret.append(('+', add))
         for remove in removed:
             ret.append(('-', remove))
         for keep in kept:
             ret.append(('=', keep))
+        for add in added:
+            ret.append(('+', add))
 
         return ret

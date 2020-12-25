@@ -135,16 +135,16 @@ def test_diff():
 
     diff = ColonSeparatedArray.diff(a1, a2)
     assert(len(diff) == 3)
-    assert(('=', "Foo") in diff)
-    assert(('=', "Bar") in diff)
-    assert(('+', "Baz") in diff)
+    assert(diff[0] == ('=', "Foo"))
+    assert(diff[1] == ('=', "Bar"))
+    assert(diff[2] == ('+', "Baz"))
 
     a3 = ColonSeparatedArray("test_array_empty", "")
     diff = ColonSeparatedArray.diff(a2, a3)
     assert(len(diff) == 3)
-    assert(('-', "Foo") in diff)
-    assert(('-', "Bar") in diff)
-    assert(('-', "Baz") in diff)
+    assert(diff[0] == ('-', "Foo"))
+    assert(diff[1] == ('-', "Bar"))
+    assert(diff[2] == ('-', "Baz"))
 
 
 def test_no_diff():

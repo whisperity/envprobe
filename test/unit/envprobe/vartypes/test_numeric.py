@@ -43,8 +43,8 @@ def test_diff():
 
     diff = Numeric.diff(n1, n2)
     assert(len(diff) == 2)
-    assert(('+', "2") in diff)
-    assert(('-', "1") in diff)
+    assert(diff[0] == ('-', "1"))
+    assert(diff[1] == ('+', "2"))
 
 
 def test_no_diff():

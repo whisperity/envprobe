@@ -15,16 +15,31 @@ At the core of the library is the :py:class:`.Environment` class, which is insta
    :members:
    :special-members: __getitem__
 
+
 Difference of environments
 ==========================
 
-Foo
+The :py:func:`environment.diff` function returns for each variable instances of the following class.
+
+.. autoclass:: VariableDifference
+   :members:
 
 .. autoclass:: VariableDifferenceKind
-.. autoclass:: VariableDifference
+
+   .. autoattribute:: ADDED
+      :no-value:
+
+   .. autoattribute:: CHANGED
+      :no-value:
+
+   .. autoattribute:: REMOVED
+      :no-value:
+
 
 Type heuristics
 ===============
+
+To ensure that environment variables (which are in almost all cases handled simply as strings until they are parsed by a program) can be :ref:`managed in a type-safe manner<impl_vartypes>`, heuristics that map a raw environment variable to a proper type can be passed to :py:func:`create_environment_variable` and :py:class:`Environment`.
 
 .. autoclass:: EnvVarTypeHeuristic
    :members:
@@ -40,8 +55,8 @@ Type heuristics
 Available heuristics
 --------------------
 
-The following heuristics are implemented in the `environment` module.
-All these classes are subclasses of :py:class:`EnvVarTypeHeuristic<envprobe.environment.EnvVarTypeHeuristic>`
+The following heuristics are implemented in the :py:mod:`environment` module.
+All these classes are subclasses of :py:class:`EnvVarTypeHeuristic<envprobe.environment.EnvVarTypeHeuristic>`.
 
 .. autosummary::
    :nosignatures:

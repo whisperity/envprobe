@@ -20,7 +20,7 @@ def test_diff_del():
 
 def test_diff_simple():
     diff = VariableDifference(VDK.CHANGED, "X", "Foo", "Bar",
-                              [('+', "Bar"), ('-', "Foo")])
+                              [('-', "Foo"), ('+', "Bar")])
     assert(diff.is_simple_change)
     assert(not diff.is_new)
     assert(not diff.is_unset)

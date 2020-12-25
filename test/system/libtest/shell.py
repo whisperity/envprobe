@@ -1,5 +1,4 @@
-"""
-Helper code for executing commands in a subshell (a real process running on
+"""Helper code for executing commands in a subshell (a real process running on
 the machine) and interfacing with it.
 """
 from contextlib import AbstractContextManager
@@ -10,28 +9,27 @@ import sys
 
 
 class Shell(AbstractContextManager):
-    """
-    A real shell process running on the host machine.
-    This class is meant to be used as a context manager.
-    """
+    """A real shell running on the host machine, to be used in a context."""
     def __init__(self, shell_binary, shell_argstr, return_code_echo_command,
                  command_separator, is_interactive):
-        """
-        Initialises the shell process wrapper over the `shell_binary` started
-        with the given arguments in `shell_argstr`.
-        Each executed command will also need to receive it's return code, as
-        specified by `return_code_echo_command`.
-        The executed commands will be automatically separated at the end by
-        `command_separator`.
+        """Sets up the context for a system shell process.
 
-        If the shell is marked `interactive`, the closing action will SIGKILL
-        the shell instead of SIGTERM.
-        :note: Setting `is_interactive` to `True` only toggles this, the actual
-        shell's interactiveness usually depends on the invocation of it and the
-        particular shell itself.
-
-        This call does not start the shell yet, only the access into the
-        context or an explicit call to :func:`start()` does.
+        Parameters
+        ----------
+        shell_binary : str
+            The shell binary, e.g. ``/bin/bash``, to start.
+        shell_argstr : str
+            Additional arguments to be passed to the shell at start.
+        return_code_echo_command : str
+            A command string in the shell's own language that prints to
+            standard output the return code of the previously executed command.
+        command_separator : str
+            The character sequence to separate commands with.
+        is_interactive : bool
+            Whether the started shell is an interactive one.
+            This does only change the behaviour of the context manager, to make
+            the shell itself interactive, additional arguments in
+            `shell_argstr` might need to be passed.
         """
         self._args = shell_argstr
         self._binary = shell_binary
@@ -48,15 +46,11 @@ class Shell(AbstractContextManager):
         self._started = False
 
     def __enter__(self):
-        """
-        Starts the shell.
-        """
+        """Starts the shell in a context manager setting."""
         return self.start()
 
     def __exit__(self, exc_type, exc_value, trace):
-        """
-        Leaves the shell.
-        """
+        """Destroys the shell and leaves the context."""
         if self._interactive:
             self.kill()
         else:
@@ -64,8 +58,8 @@ class Shell(AbstractContextManager):
         return False
 
     def start(self):
-        """
-        Starts the underlying shell.
+        """Starts the underlying shell process as configured in
+        :py:func:`__init__`.
         """
         if self._started:
             raise OSError(EEXIST, "The shell is already running!")
@@ -81,17 +75,13 @@ class Shell(AbstractContextManager):
 
     @property
     def pid(self):
-        """
-        :return: The PID of the running process, if running.
-        """
+        """The PID of the started process."""
         if not self._started:
             raise OSError(ESRCH, "The shell is not running!")
         return self._command.process.pid
 
     def kill(self):
-        """
-        Kills (signal 9) the underlying shell.
-        """
+        """Kills (by sending ``SIGKILL`` (``9``)) to the shell process."""
         if not self._started:
             raise OSError(ESRCH, "The shell is not running!")
         self._command.kill()
@@ -100,11 +90,13 @@ class Shell(AbstractContextManager):
         self._started = False
 
     def terminate(self):
-        """
-        Terminates (signal 15) the underlying shell.
+        """Terminates (by sending ``SIGTERM`` (``15``)) to the shell process.
 
-        In case of `interactive` shells, this is usually not enough to actually
-        kill the process, and :func:`kill()` should be used instead.
+        Note
+        ----
+        Interactive shells (:py:attr:`is_interactive`) usually catch and ignore
+        this signal, and as such, :py:func:`kill` should be used to shut them
+        down properly.
         """
         if not self._started:
             raise OSError(ESRCH, "The shell is not running!")
@@ -114,13 +106,56 @@ class Shell(AbstractContextManager):
         self._started = False
 
     def execute_command(self, cmd, timeout=None):
-        """
-        Executes the command in the shell.
-        :parameter:`timeout` The amount of seconds to wait for the command's
-        result to be read. If `None`, will use the defaults instead.
+        """Execute `cmd` in the shell, wait `timeout` seconds, and read back
+        the result.
 
-        :return: A tuple of the result of the executed command, and the
-        `stdout` of it.
+        Parameters
+        ----------
+        cmd : str
+            The command to execute.
+            This string will be written into the shell's standard input
+            verbatim.
+        timeout : int
+            The time (in seconds) to wait before the output of the command is
+            read.
+
+        Returns
+        -------
+        return_code : int
+            The return code of the executed command.
+        result : str
+            The *standard output* of the executed command.
+
+        Note
+        ----
+        The command executed in the shell is extended with
+        :py:attr:`command_separator` and :py:attr:`return_code_echo_command`,
+        and written to the shell.
+        In case of a conventional ``/bin/bash`` shell, for example, executing
+        `cmd` ``echo "Foo"`` will actually execute:
+
+        .. code-block:: bash
+
+           echo "Foo";
+           echo $;
+
+        Which will result in the output:
+
+        .. code-block:: bash
+
+           Foo
+           0
+
+        to be read as a result.
+
+        Warning
+        -------
+        The underlying library and the execution of piped shells does not allow
+        a good method of "sensing" when the output became available while
+        keeping interactivity.
+        A too small `timeout` on a loaded system might result in output being
+        lost, while a too big one will result in every command waiting for
+        a considerable time.
         """
         cmd = cmd + self._separator
         print("[Shell '{0}'] Running command: {1}".format(self._binary, cmd),

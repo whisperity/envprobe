@@ -16,7 +16,8 @@ class EnvVarTypeHeuristic:
     """
     def __call__(self, name, env=None):
         """Resolve the variable of `name` (in the `env` environment) to an
-        :py:mod:`envprobe.vartype` type identifier.
+        :py:mod:`envprobe.vartype` type identifier (as registered by
+        :py:func:`.vartypes.register_type`).
 
         The default implementation resolves everything to be ``'string'``,
         corresponding to :py:class:`.vartypes.string.String`.
@@ -32,8 +33,8 @@ class EnvVarTypeHeuristic:
         Returns
         -------
         vartype_name : str
-            The name of an :py:mod:`envprobe.vartypes` class, if the heuristic
-            resolved successfully.
+            The name of an :py:mod:`envprobe.vartypes` implementation, if the
+            heuristic resolved successfully.
 
         None
             ``None`` is returned if the heuristic could not resolve a type
@@ -104,8 +105,8 @@ class HeuristicStack:
         Returns
         -------
         vartype_name : str
-            The name of an :py:mod:`envprobe.vartypes` class, if a heuristic
-            resolved successfully.
+            The name of an :py:mod:`envprobe.vartypes` implementation, if a
+            heuristic resolved successfully.
 
         None
             ``None`` is returned if no heuristic could resolve a type to use.
@@ -126,8 +127,8 @@ class HeuristicStack:
 # Create the default type heuristic pipeline that only uses the default
 # implementation.
 default_heuristic = HeuristicStack()
-"""Provides the default :py:class:`EnvVarTypeHeuristic` in a
-:py:class:`HeuristicStack`.
+"""Provides the default :py:class:`EnvVarTypeHeuristic` added to an
+instantiated :py:class:`HeuristicStack`.
 """
 default_heuristic += EnvVarTypeHeuristic()
 
@@ -172,7 +173,6 @@ def create_environment_variable(name, env, pipeline=None):
     return clazz(name, env.get(name, ""))
 
 
-# Let's define some "standard" heuristics.
 class EnvprobeEnvVarHeuristic(EnvVarTypeHeuristic):
     """Disable access to internal variables that begin with ``ENVPROBE_``."""
     def __call__(self, name, env=None):
@@ -223,19 +223,50 @@ class NumericalValueEnvVarHeuristic(EnvVarTypeHeuristic):
 
 
 class VariableDifferenceKind(Enum):
+    """Named enumeration to indicate the "direction" of the
+    :py:class:`VariableDifference`.
+    """
+
     UNKNOWN = 0
     CHANGED = 1
+    """The variable is defined on both sides ("old" and "new") of the
+    difference, but to different values.
+    """
     REMOVED = 2
+    """The variable is defined in "old" but not defined in "new"."""
     ADDED = 3
+    """The variable is not defined in "old" but defined in "new"."""
 
 
 class VariableDifference:
-    """
-    Represents and allows accessing the difference between the values of a
-    variable.
-    """
+    """The difference of a single variable between two states."""
     def __init__(self, kind, var_name, old_value=None, new_value=None,
                  difference_actions=None):
+        """
+        Parameters
+        ----------
+        kind : VariableDifferenceKind
+            The "direction" of the difference's result.
+        var_name : str
+            The name of the variable that was differentiated.
+        old_value : unknown
+            The "old" value of the variable.
+        new_value : unknown
+            The "new" value of the variable.
+        difference_actions : list(char, str)
+            The individual changes in the variable's value, as returned by
+            :py:meth:`.vartypes.EnvVar.diff`.
+
+            The list contains the changes with a *mode* symbol (``-``, ``=``
+            or ``+`` for *removed*, *unchanged/same*, *added*, respectively),
+            and the value that was affected.
+
+        Raises
+        ------
+        TypeError
+            `kind` must be one of the constants in
+            :py:class:`VariableDifferenceKind`.
+        """
         if not isinstance(kind, VariableDifferenceKind):
             raise TypeError("'kind' must be a valid kind")
 
@@ -248,34 +279,33 @@ class VariableDifference:
 
     @property
     def is_simple_change(self):
-        """
-        :return: If the current difference only represents a simple change.
+        """Whether the current instance represents a simple change.
 
-        A change is simple if it is either a single addition or delete, or
-        a single definite change from one value to another.
+        A simple change is either the creation or removal of a value, or a
+        single-step modification of a value from one value to another.
         """
-        return len(self.diff_actions) == 1 or \
+        return ((self.kind == VariableDifferenceKind.ADDED or
+                self.kind == VariableDifferenceKind.REMOVED) and
+                len(self.diff_actions) == 1) or \
             (len(self.diff_actions) == 2 and
-                self.diff_actions[0][0] == '+' and
-                self.diff_actions[1][0] == '-' and
-                self.diff_actions[0][1] == self.new_value and
-                self.diff_actions[1][1] == self.old_value)
+                self.diff_actions[0] == ('-', self.old_value) and
+                self.diff_actions[1] == ('+', self.new_value))
 
     @property
     def is_new(self):
+        """Whether the current instance represents the definition of a new
+        variable.
         """
-        :return: If the current change sets the variable from an unset state
-        to the set state.
-        """
-        return len(self.diff_actions) == 1 and not self.old_value
+        return len(self.diff_actions) == 1 and not self.old_value and \
+            self.kind == VariableDifferenceKind.ADDED
 
     @property
     def is_unset(self):
+        """Whether the current instance represents the removal/unsetting of
+        an existing variable.
         """
-        :return: If the current change unsets the variable from the previously
-        set state.
-        """
-        return len(self.diff_actions) == 1 and not self.new_value
+        return len(self.diff_actions) == 1 and not self.new_value and \
+            self.kind == VariableDifferenceKind.REMOVED
 
 
 class Environment:
@@ -444,7 +474,7 @@ class Environment:
         Note
         ----
         While this method is closely related and under the hood using
-        :py:func:`.vartypes.EnvVar.diff` to calculate the difference, the
+        :py:meth:`.vartypes.EnvVar.diff` to calculate the difference, the
         semantics of what is considered "added", "removed", and "changed"
         differ substantially.
         """

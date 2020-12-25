@@ -28,8 +28,8 @@ def test_diff():
     diff = String.diff(s1, s2)
     assert(diff)
     assert(len(diff) == 2)
-    assert(('+', "bar") in diff)
-    assert(('-', "foo") in diff)
+    assert(diff[0] == ('-', "foo"))
+    assert(diff[1] == ('+', "bar"))
 
 
 def test_no_diff():
@@ -44,7 +44,7 @@ def test_diff_new():
 
     diff = String.diff(s1, s2)
     assert(len(diff) == 1)
-    assert(('+', "bar") in diff)
+    assert(diff[0] == ('+', "bar"))
 
 
 def test_diff_remove():
@@ -53,4 +53,4 @@ def test_diff_remove():
 
     diff = String.diff(s2, s1)
     assert(len(diff) == 1)
-    assert(('-', "bar") in diff)
+    assert(diff[0] == ('-', "bar"))
