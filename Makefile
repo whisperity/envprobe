@@ -1,6 +1,6 @@
 default: all
 
-all: style test static_analysis
+all: style test static_analysis docs
 
 style:
 	flake8 src/ test/

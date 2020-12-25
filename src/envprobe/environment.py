@@ -337,9 +337,9 @@ class Environment:
             If not specified, :py:data:`default_heuristic` is used.
         """
         self._shell = shell
-        self._current_environment = deepcopy(env)
+        self._current_environment = dict(deepcopy(env))
         self._stamped_environment = None
-        self._type_heuristics = variable_type_heuristic
+        self.type_heuristics = variable_type_heuristic
 
     def load(self):
         """Load the shell's saved environment from storage to
@@ -423,7 +423,7 @@ class Environment:
         """
         return create_environment_variable(variable_name,
                                            self.current_environment,
-                                           self._type_heuristics), \
+                                           self.type_heuristics), \
             variable_name in self.current_environment
 
     def apply_change(self, variable, remove=False):
@@ -453,6 +453,9 @@ class Environment:
         only what is in the memory of the interpreter.
         Please use :py:func:`save()` to emit changes to disk.
         """
+        if self._stamped_environment is None:
+            self.load()
+
         if not remove:
             self._stamped_environment[variable.name] = variable.raw()
         else:
@@ -483,10 +486,10 @@ class Environment:
         def __create_difference(kind, var_name):
             old = create_environment_variable(var_name,
                                               self.stamped_environment,
-                                              self._type_heuristics)
+                                              self.type_heuristics)
             new = create_environment_variable(var_name,
                                               self.current_environment,
-                                              self._type_heuristics)
+                                              self.type_heuristics)
 
             if old is None or new is None:
                 # If the saved (persisted) or the current environment does not

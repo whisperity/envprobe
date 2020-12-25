@@ -2,7 +2,8 @@ from argparse import Namespace
 import pytest
 
 from envprobe.commands.get import command
-from envprobe.vartypes.path import Path
+from envprobe.environment import Environment
+from envprobe.shell import FakeShell
 
 
 class MockCommunity:
@@ -10,21 +11,22 @@ class MockCommunity:
         return dict()
 
 
-class MockEnv:
-    def __init__(self):
-        self.vars = {"PATH1": Path("PATH1", "/Foo:/Bar"),
-                     "PATH_EMPTY": Path("PATH_EMPTY", "")
-                     }
-
-    def __getitem__(self, var_name):
-        return self.vars.get(var_name), var_name in self.vars
+class PathHeuristic:
+    def __call__(self, name, env=None):
+        return 'path'
 
 
 @pytest.fixture
 def args():
+    shell = FakeShell()
+    envdict = {"PATH1": "/Foo:/Bar",
+               "PATH_EMPTY": ""
+               }
+
     arg = Namespace()
     arg.community = MockCommunity()
-    arg.environment = MockEnv()
+    arg.environment = Environment(shell, envdict, PathHeuristic())
+    arg.shell = shell
     arg.info = True
 
     yield arg

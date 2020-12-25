@@ -21,8 +21,8 @@ Read and print the value of the specified variable.
    Read and print the value of the environment variable ``VARIABLE`` to the standard output in the format ``VARIABLE=value``.
 
    :param VARIABLE: The name of the environment variable to query.
-   :param info: Whether to print additional information.
-   :type info: ``True`` if ``-i`` or ``info`` is given
+   :param info:     Whether to print additional information.
+   :type info:      ``True`` if ``-i`` or ``info`` is given
 
    :Possible invocations:
       - ``ep get [-i|--info] VARIABLE``
@@ -60,7 +60,47 @@ Read and print the value of the specified variable.
 
    Community features are yet to be migrated to the new version.
 
-
 .. [1] The shorthand format ``ep VARIABLE`` for ``ep get VARIABLE`` is available only if the given variable name (``"VARIABLE"``) is not "shadowed" by a subcommand name that is valid at the time the command is executed.
    E.g. if ``get`` is an environment variable defined in the shell, saying ``ep get`` will not be resolved as if the user said ``ep get get``, but instead, it will simply call ``ep get`` without a variable name, resulting in an error.
    As most environment variables are named in *SCREAMING_SNAKE_CASE*, this should not pose an issue except in the rarest of situations.
+
+
+Writing (``set``, ``!``, ``=``)
+===============================
+
+Set the value of the specified variable.
+
+
+.. py:function:: set(VARIABLE, VALUE)
+
+   Set the value of ``VARIABLE`` to the specified ``VALUE``.
+
+   :param VARIABLE: The name of the environment variable to set.
+   :param VALUE:    The new value to set to.
+
+   :Possible invocations:
+      - ``ep set VARIABLE VALUE``
+      - ``ep !VARIABLE VALUE``
+      - ``ep VARIABLE=VALUE``
+
+   :Examples:
+      .. code-block:: bash
+
+         $ echo $SOME_VARIABLE
+         # No result, the variable is not set.
+         $ ep set SOME_VARIABLE MyValue
+         $ echo $SOME_VARIABLE
+         MyValue
+
+      .. code-block:: bash
+
+         $ which ls
+         /bin/ls
+
+         $ ep PATH
+         PATH=/usr/local/bin:/usr/bin:/sbin:/bin
+
+         $ ep PATH="/tmp"
+
+         $ which ls
+         # No result.

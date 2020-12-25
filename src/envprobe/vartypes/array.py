@@ -13,8 +13,7 @@ class Array(EnvVar):
     """
 
     def __init__(self, name, raw_value, separator):
-        """Create a new array with the given :py:attr:`separator`.
-        """
+        """Create a new array with the given :py:attr:`separator`."""
         super().__init__(name, raw_value)
         self._separator = separator
         self.value = raw_value

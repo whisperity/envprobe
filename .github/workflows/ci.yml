@@ -105,8 +105,8 @@ jobs:
 
       - name: "Shell versions"
         run: |
-          bash --version
-          zsh --version
+          bash --version | head -n 1
+          zsh --version  | head -n 1
 
       - name: "System tests"
         run: |

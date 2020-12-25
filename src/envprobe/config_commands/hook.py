@@ -1,6 +1,3 @@
-"""
-Handles the operation concerning of hooking Envprobe into a shell.
-"""
 import tempfile
 
 from ..environment import Environment
@@ -25,8 +22,13 @@ def command(args):
     tempd = tempfile.mkdtemp(prefix=".envprobe.{0}-".format(args.PID))
     shell = load(args.SHELL)(args.PID, tempd)
 
-    # Create the initial environment dump in the persisted storage.
-    environment = Environment(shell)
+    # Create the initial environment dump in the persisted storage for the
+    # now instantiated shell.
+    environment = Environment(shell,
+                              # Use the environment the 'hook' command was
+                              # called with.
+                              args.environment.current_environment,
+                              args.environment.type_heuristics)
     environment.stamp()
     environment.save()
 

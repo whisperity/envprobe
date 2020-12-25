@@ -6,6 +6,7 @@ There is no need for clunky `export` sequences or manual `source`-ing of who-kno
 
 Envprobe was originally conceived as the tool between [shell `modules`](http://modules.sourceforge.net) and [`direnv`](http://direnv.net), but with added features such as saving your configuration on the fly.
 
+- The [**full documentation**](http://envprobe.readthedocs.io/en/latest/index.html) is available on _Read the Docs_.
 - [Installation](#installation)
   - [Dependencies](#dependencies)
   - [Download](#download)
@@ -15,9 +16,9 @@ Envprobe was originally conceived as the tool between [shell `modules`](http://m
 
 ---
 
-## Installation <a name="installation"></a>
+## Installation
 
-### Dependencies <a name="dependencies"></a>
+### Dependencies
 
 Envprobe is supplied as a no-tools-needed Python package.
 The only things you need to have installed on the system are one of our supported POSIX-compliant shells and Python **3**.
@@ -34,7 +35,7 @@ These are the configurations that the [CI](http://github.com/whisperity/Envprobe
 | Ubuntu 20.04 LTS (_Focal Fossa_)     |    Python &ge; 3.8    | Bash (&ge; 5.0), Zsh (&ge; 5.8)      |
 
 
-### Download <a name="download"></a>
+### Download
 
 You can grab Envprobe from the GitHub repository, either via `git` or in a tarball form.
 Download the project anywhere you please.
@@ -54,7 +55,7 @@ tar xzf envprobe.tar.gz --strip-components=1 -C ~/envprobe/
 ~~~
 
 
-### Hook <a name="hook"></a>
+### Hook
 
 Envprobe applies the changes to your environment variable every time a prompt is generated in your shell.
 For this to work, a hook must be set up in each shell you're using.
@@ -70,7 +71,7 @@ The easiest way to do this is to add the hook script at the end of the configura
 | Zsh ([Oh My Zsh](http://github.com/ohmyzsh/ohmyzsh)) | `~/.oh-my-zsh/custom/zzzzzz_envprobe.zsh` (new file!) | `eval "$(~/envprobe/envprobe config hook zsh $$)";`  |
 
 
-## Quick user guide <a href="quick-user-guide"></a>
+## Quick user guide
 
 If Envprobe is successfully [installed and hooked](#installation.hook), the `ep`/`envprobe` and `epc`/`envprobe-config` convenience _functions_ will be defined in the current shell.
 If you see something like below, the tool is good to go.
@@ -83,18 +84,17 @@ usage: envprobe [-h] ...
 The following guide will show the usage of Envprobe through a few practical examples.
 
 For a complete overview on the commands available and their usage, you can always call `ep -h` (or `ep get -h`, etc. for each subcommand) to get a quick help.
+The [complete documentation](http://envprobe.readthedocs.io/en/latest/main/index.html) for the user-facing commands is available behind the link.
 
-> :bulb: **TODO:** Or read the full documentation :wink:
 
+### Managing environment variables
 
-### Managing environment variables <a href="managing-environment-variables"></a>
+For easy access, the environment variable managing commands are also offered as shortcuts.
 
-For easy access, the environment variable managing commands are also offered
-as shortcuts.
-
-|    Command    |              Shortcut            | Usage                         |
-|:-------------:|:--------------------------------:|:------------------------------|
-|`get VARIABLE` | `?VARIABLE` or simply `VARIABLE` | Print the value of `VARIABLE` |
+|       Command        |              Shortcut            | Usage                         |
+|:--------------------:|:--------------------------------:|:------------------------------|
+| `get VARIABLE`       | `?VARIABLE` or simply `VARIABLE` | Print the value of `VARIABLE` |
+| `set VARIABLE VALUE` | `!VARIABLE`, `VARIABLE=VALUE`    | Sets `VARIABLE` to `VALUE`    |
 
 
 ~~~{.bash}
@@ -106,6 +106,11 @@ USER=root
 
 $ ep PATH
 PATH=/usr/local/bin:/usr/bin:/sbin:/bin
+
+$ echo $SOME_VARIABLE
+$ ep SOME_VARIABLE=MyValue
+$ echo $SOME_VARIABLE
+MyValue
 ~~~
 
 
@@ -198,39 +203,12 @@ of the current shell.
 on the right side.)
 
 ~~~
-                    variable.
-set                 {VARIABLE=VALUE} Set the environmental variable to a
-                    given value.
 add                 {+VARIABLE VALUE} Add values to an array-like
                     environmental variable.
 remove              {-VARIABLE VALUE} Remove values from an array-like
                     environmental variable.
 undefine            {^VARIABLE} Undefine an environmental variable.
 ~~~
-
-
-### Querying and changing
-
-The `get` and `set` actions can be used to print or change the value of a
-variable.
-
-To set `EDITOR` to something else:
-
-    ep set EDITOR your-favourite-editor
-
-The shortcut characters `?` and `=` can be used instead of `get` and `set`
-like this:
-
-    ep EDITOR=your-favourite-editor
-
-(The special character can appear either as the first and as the last letter
-of the command. If you are fancy of Haskell and prefix syntax, you can say
-something like the following. The "prefix" and "suffix" forms are equivalent.)
-
-    ep =EDITOR your-favourite-editor
-    ep = EDITOR your-favourite-editor
-    ep EDITOR?
-    ep EDITOR ?
 
 
 ### Adding and removing "array-like" components (e.g. `PATH`)

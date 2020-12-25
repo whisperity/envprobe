@@ -35,6 +35,9 @@ def test_alias(sh):
 
 
 def test_get_variable(sh):
+    retcode, _ = sh.execute_command("envprobe get", timeout=0.5)
+    assert(retcode == 2)
+
     retcode, result = sh.execute_command("envprobe get PATH",
                                          timeout=0.5)
     assert(not retcode)
@@ -43,3 +46,46 @@ def test_get_variable(sh):
     retcode, result = sh.execute_command("envprobe get ENVPROBE_SHELL_PID",
                                          timeout=0.5)
     assert(retcode == 1)
+
+    retcode, result = sh.execute_command("ep PATH")
+    assert(not retcode)
+    assert(result.startswith("PATH={0}".format(envprobe_location())))
+
+    retcode, result = sh.execute_command("ep \'?PATH\'")
+    assert(not retcode)
+    assert(result.startswith("PATH={0}".format(envprobe_location())))
+
+
+def test_set_variable(sh):
+    retcode, _ = sh.execute_command("envprobe set SOMETHING", timeout=0.5)
+    assert(retcode == 2)
+
+    _, result = sh.execute_command("echo $DUMMY_VAR $DUMMY_PATH")
+    assert(not result)
+
+    retcode, result = sh.execute_command("envprobe set DUMMY_VAR test",
+                                         timeout=0.5)
+    assert(not retcode)
+    assert(not result)
+    _, result = sh.execute_command("echo $DUMMY_VAR")
+    assert(result == "test")
+
+    retcode, result = sh.execute_command("envprobe set DUMMY_PATH /mnt",
+                                         timeout=0.5)
+    assert(not retcode)
+    assert(not result)
+    _, result = sh.execute_command("echo $DUMMY_PATH")
+    assert(result == "/mnt")
+
+    retcode, result = sh.execute_command("ep DUMMY_VAR=system", timeout=0.5)
+    assert(not retcode)
+    assert(not result)
+    _, result = sh.execute_command("echo $DUMMY_VAR")
+    assert(result == "system")
+
+    retcode, result = sh.execute_command("ep \'!DUMMY_VAR\' shortcut",
+                                         timeout=0.5)
+    assert(not retcode)
+    assert(not result)
+    _, result = sh.execute_command("echo $DUMMY_VAR")
+    assert(result == "shortcut")

@@ -1,18 +1,13 @@
-"""
-This package implements the individual user-facing subcommands of
-`envprobe (main)` that are related to interfacing with the
-environment variables.
+"""This package implements the individual user-facing subcommands of
+`envprobe (main)` that are related to interfacing with the environment
+variables.
 """
 from . import add, get, remove, undefine
 from . import set as set_command
 
 
 def register_envvar_commands(argparser, registered_command_list, shell):
-    """
-    Registers the commands related to environment variable processing into
-    the :package:`argparse` argument parser and the command list given,
-    if applicable.
-    """
+    """Register the command related to environment variable processing."""
     if not (shell.is_envprobe_capable and shell.manages_environment_variables):
         return
 

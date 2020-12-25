@@ -43,15 +43,6 @@ def __remove(args):
     get_current_shell().set_env_var(env_var)
 
 
-def __set(args):
-    env_var = create_environment_variable(args.VARIABLE)
-    if env_var is None:
-        raise ValueError("This environment variable cannot or should not "
-                         "be managed.")
-    env_var.value = args.VALUE
-    get_current_shell().set_env_var(env_var)
-
-
 def __undefine(args):
     env_var = create_environment_variable(args.VARIABLE)
     if env_var is None:
