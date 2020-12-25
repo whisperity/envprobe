@@ -7,11 +7,6 @@ from envprobe.commands.shortcuts import transform_subcommand_shortcut
 
 
 def target(arg_string):
-    """
-    Calls the method under test as if :param:`arg_string` was a command-line
-    invocation, without the invoked command's name.
-    """
-
     args_to_pass = ["envprobe"] + shlex.split(arg_string)
     result = transform_subcommand_shortcut(args_to_pass, ["__RESERVED"])
     assert(result[0] == "envprobe")

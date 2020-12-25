@@ -4,7 +4,7 @@
 Shell interface
 ===============
 
-The ``envprobe.shell`` package implements the logic that allows Envprobe to interface with system shells.
+The :py:mod:`envprobe.shell` package implements the logic that allows Envprobe to interface with system shells.
 
 .. currentmodule:: envprobe.shell
 

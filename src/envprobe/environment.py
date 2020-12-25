@@ -279,15 +279,32 @@ class VariableDifference:
 
 
 class Environment:
-    """
-    The Environment is responsible for owning and managing the understanding
-    of environment variables in an environment.
+    """Owns and manages the understanding of environment variables' state
+    attached to a shell.
+
+    `Environment` manages two "states", the :py:attr:`current_environment` and
+    the :py:attr:`stamped_environment`.
+    The *current* environment is usually instantiated from the environment of
+    the shell Envprobe is running in, while the *stamped* environment is loaded
+    from storage and lives between executions of an Envprobe operation.
     """
     def __init__(self, shell, env=None,
                  variable_type_heuristic=default_heuristic):
-        """
-        Initialises the environment manager for a particular :type:`Shell` and
-        the set of key-value environment mappings.
+        """Create an environment manager.
+
+        Parameters
+        ----------
+        shell : .shell.Shell
+            The shell to attach the manager to.
+            The :py:attr:`.shell.Shell.configuration_directory` of the shell
+            will be respected as data storage.
+        env : dict, optional
+            The raw mapping of environment variables to their values, as in
+            :py:data:`os.environ`.
+        variable_type_heuristic : HeuristicStack, optional
+            The variable-to-:py:class:`.vartypes.EnvVar` type mapping
+            heuristics.
+            If not specified, :py:data:`default_heuristic` is used.
         """
         self._shell = shell
         self._current_environment = deepcopy(env)
@@ -295,12 +312,14 @@ class Environment:
         self._type_heuristics = variable_type_heuristic
 
     def load(self):
-        """
-        Load the current shell's saved environment from storage into the memory
-        as the :variable:`stamped_environment`.
+        """Load the shell's saved environment from storage to
+        :py:attr:`stamped_environment`.
 
-        If there is no backing file associated with the current shell or a
-        file access error happens, the stamped environment will be empty.
+        Note
+        ----
+        If there is no backing file associated with the current shell's state,
+        or an IO error happens, the stamped environment will be loaded as
+        empty.
         """
         if not (self._shell.is_envprobe_capable and
                 self._shell.manages_environment_variables):
@@ -314,9 +333,8 @@ class Environment:
             self._stamped_environment = {}
 
     def stamp(self):
-        """
-        Stamp the *current* environment passed to :func:`__init__` to store
-        it in the :variable:`stamped_environment`.
+        """Stamp the :py:attr:`current_environment`, making it become the
+        :py:attr:`stamped_environment`.
         """
         # TODO: Please implement a better logic at stamping/saving, that only
         #       stamps (saves) the difference as already handled, not the
@@ -324,13 +342,12 @@ class Environment:
         self._stamped_environment = deepcopy(self._current_environment)
 
     def save(self):
-        """
-        Emit the environment's *stamped* state
-        (:variable:`stamped_environment`) to the storage for the current
-        shell's backing file.
+        """Save the :py:attr:`stamped_environment` to the persistent storage.
 
-        If there is no backing file associated with the current shell, the
-        method does nothing.
+        Note
+        ----
+        If there is no backing file associated with the current shell's state,
+        the method will do nothing.
         """
         if not (self._shell.is_envprobe_capable and
                 self._shell.manages_environment_variables):
@@ -342,35 +359,37 @@ class Environment:
 
     @property
     def current_environment(self):
-        """
-        Obtain the environment that was applicable to the running shell when
-        the instance was constructed from the real world data.
-
-        This represents the potentially "dirty" state which was read on the fly
-        by Envprobe and could be changed by external factors.
+        """Obtain the *current* environment, which is usually the state of
+        variables the object was instantiated with.
+        This is considered the "dirty state" of the environment the tool is
+        running in.
         """
         return self._current_environment
 
     @property
     def stamped_environment(self):
-        """
-        Obtain the environment which was applicable at the last committed
-        modification (such as calling of :func:`stamp()` or
-        :func:`apply_change()`).
-
-        This property represents the known state of the environment as was last
-        time Envprobe destructively interacted with it.
+        """Obtain the *stamped* environment which which is usually the one
+        loaded from inter-session storage.
+        This is considered the "pristine state" of the environment the tool is
+        running in.
         """
         if self._stamped_environment is None:
             self.load()
         return self._stamped_environment
 
     def __getitem__(self, variable_name):
-        """
-        :return: A tuple of an :type:`EnvVar` for the variable with the given
-        name, populated with the value in the :func:`current_environment`, and
-        a boolean indicating whether the variable was actually defined in the
-        environment, or created on the fly.
+        """Retrieve a :py:class:`.vartypes.EnvVar` environment variable from
+        the :py:attr:`current_environment`'s values.
+
+        Returns
+        -------
+        env_var : .vartypes.EnvVar
+            The typed environment variable object.
+            This object is always constructed, if there is no value associated
+            with it then to a default empty state.
+        is_defined : bool
+            ``True`` if the variable was actually **defined** in the
+            environment.
         """
         return create_environment_variable(variable_name,
                                            self.current_environment,
@@ -378,16 +397,34 @@ class Environment:
             variable_name in self.current_environment
 
     def apply_change(self, variable, remove=False):
-        """
-        Changes the variable in the :variable:`stamped_environment` have the
-        value as passed in `variable`. If `remove` is `True`, the variable
-        will be removed from memory.
+        """Applies the changes in `variable` to the
+        :py:attr:`stamped_environment`, i.e. modifying the pristine state.
 
-        :note: This function does not change the representation as persisted
-        in storage!
+        Parameters
+        ----------
+        variable : .vartypes.EnvVar
+            The environment variable whose value has been modified.
+            (If the variable does not exist in the environment, it will be
+            added with its current value.)
+        remove : bool
+            If ``True``, the `variable` will be removed from the environment,
+            otherwise, the modification is applied.
+
+        Warning
+        -------
+        The application of the change only happens to the "knowledge" of the
+        environment manager instance.
+        This method does not attempt to guarantee in any way that the change of
+        the value is respected by the underlying `shell`.
+
+        Note
+        ----
+        The function does **not** change what is written to persistent storage,
+        only what is in the memory of the interpreter.
+        Please use :py:func:`save()` to emit changes to disk.
         """
         if not remove:
-            self._stamped_environment[variable.name] = variable.to_raw_var()
+            self._stamped_environment[variable.name] = variable.raw()
         else:
             try:
                 del self._stamped_environment[variable.name]
@@ -395,12 +432,21 @@ class Environment:
                 pass
 
     def diff(self):
-        """
-        Calculate the difference between :variable:`stamped_environment` and
-        :variable:`current_environment`.
+        """Generate the difference between :py:attr:`stamped_environment` and
+        :py:attr:`current_environment`.
 
-        :return: A `dict` containing the :type:`VariableDifference` for each
-        change.
+        Returns
+        -------
+        dict(str, VariableDifference)
+            The difference for each variable that has been added, removed,
+            or changed when the two environments are compared.
+
+        Note
+        ----
+        While this method is closely related and under the hood using
+        :py:func:`.vartypes.EnvVar.diff` to calculate the difference, the
+        semantics of what is considered "added", "removed", and "changed"
+        differ substantially.
         """
         diff = dict()
 

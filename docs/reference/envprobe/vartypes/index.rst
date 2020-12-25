@@ -4,7 +4,7 @@
 Environment variable types
 ==========================
 
-The ``envprobe.vartypes`` package implements the logic that maps different environment variables allows Envprobe to interface with system shells.
+The :py:mod:`envprobe.vartypes` package implements the logic that maps different environment variables allows Envprobe to interface with system shells.
 
 .. currentmodule:: envprobe.vartypes
 

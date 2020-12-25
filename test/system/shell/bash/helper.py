@@ -8,9 +8,7 @@ from libtest.shell import Shell
 
 @contextmanager
 def bash_shell():
-    """
-    This function provides a spawned Bash shell where Envprobe is available.
-    """
+    """Spawns a Bash shell and provides Envprobe in the PATH."""
     envprobe_at = envprobe_location()
 
     with Shell("bash", "--norc --noprofile -i", "echo $?", ";\n",

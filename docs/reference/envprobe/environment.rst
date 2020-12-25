@@ -1,25 +1,30 @@
 .. _impl_environment:
 
-===========
-Environment
-===========
+======================
+Environment management
+======================
 
 .. currentmodule:: envprobe.environment
 
-.. autodata:: default_heuristic
-   :no-value:
+The :py:mod:`envprobe.environment` module implements the logic that allow Envprobe to keep track of the current environment it is running in.
+At the core of the library is the :py:class:`.Environment` class, which is instantiated together with the current :py:class:`.shell.Shell`.
+
 .. autofunction:: create_environment_variable
+
+.. autoclass:: Environment(shell, env, variable_type_heuristics)
+   :members:
+   :special-members: __getitem__
+
+Difference of environments
+==========================
+
+Foo
 
 .. autoclass:: VariableDifferenceKind
 .. autoclass:: VariableDifference
 
-.. autoclass:: Environment
-   :members:
-   :special-members: __getitem__
-
-
-Variable type heuristics
-========================
+Type heuristics
+===============
 
 .. autoclass:: EnvVarTypeHeuristic
    :members:
@@ -29,6 +34,8 @@ Variable type heuristics
    :members:
    :special-members: __call__
 
+.. autodata:: default_heuristic
+   :no-value:
 
 Available heuristics
 --------------------

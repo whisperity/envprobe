@@ -22,7 +22,7 @@ class BashLike(Shell):
             cfile.write('\n')
             cfile.write("export {0}={1};".format(
                             env_var.name,
-                            shlex.quote(env_var.to_raw_var())))
+                            shlex.quote(env_var.raw())))
 
     def _unset_environment_variable(self, env_var):
         with open(self.control_file, 'a') as cfile:

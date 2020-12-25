@@ -10,7 +10,7 @@ class MockVar:
         self.name = var_name
         self.value = value
 
-    def to_raw_var(self):
+    def raw(self):
         return self.value
 
 

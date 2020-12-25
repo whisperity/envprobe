@@ -8,9 +8,7 @@ from libtest.shell import Shell
 
 @contextmanager
 def zsh_shell():
-    """
-    This function provides a spawned Zsh shell where Envprobe is available.
-    """
+    """Spawns a Zsh shell and provides Envprobe in the PATH."""
     envprobe_at = envprobe_location()
 
     with Shell("zsh", "--no-rcs --no-promptsp --interactive --shinstdin",
