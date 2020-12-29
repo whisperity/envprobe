@@ -64,11 +64,11 @@ The easiest way to do this is to add the hook script at the end of the configura
 
 > **:warning: Note!** If you are using other custom shell extensions, it is **well-advised** for the best experience to load Envprobe **last**.
 
-| Shell                                                |             Configuration file (usually)              |                     Code to add                      |
-|:-----------------------------------------------------|:-----------------------------------------------------:|:----------------------------------------------------:|
-| Bash                                                 |                   `~/.bashrc`                         | `eval "$(~/envprobe/envprobe config hook bash $$)";` |
-| Zsh (stock)                                          | `~/.zshrc`                                            | `eval "$(~/envprobe/envprobe config hook zsh $$)";`  |
-| Zsh ([Oh My Zsh](http://github.com/ohmyzsh/ohmyzsh)) | `~/.oh-my-zsh/custom/zzzzzz_envprobe.zsh` (new file!) | `eval "$(~/envprobe/envprobe config hook zsh $$)";`  |
+| Shell                              |             Configuration file (usually)              |                     Code to add                      |
+|:-----------------------------------|:-----------------------------------------------------:|:----------------------------------------------------:|
+| Bash                               |                   `~/.bashrc`                         | `eval "$(~/envprobe/envprobe config hook bash $$)";` |
+| Zsh (stock)                        | `~/.zshrc`                                            | `eval "$(~/envprobe/envprobe config hook zsh $$)";`  |
+| Zsh ([Oh My Zsh](http://ohmyz.sh)) | `~/.oh-my-zsh/custom/zzzzzz_envprobe.zsh` (new file!) | `eval "$(~/envprobe/envprobe config hook zsh $$)";`  |
 
 
 ## Quick user guide

@@ -68,7 +68,7 @@ Put the following code as-is (including quotes, etc.) at the end of ``~/.zshrc``
 Zsh with *Oh-My-Zsh*
 ~~~~~~~~~~~~~~~~~~~~
 
-Create a new file ``~/.oh-my-zsh/custom/zzzzzz_envprobe.zsh`` with the following contents as-is (including quotes, etc.):
+If you are using `Oh-My-Zsh <http://ohmyz.sh>`_ to manage your Zsh, create a new file ``~/.oh-my-zsh/custom/zzzzzz_envprobe.zsh`` with the following contents as-is (including quotes, etc.):
 
 .. code-block:: bash
 

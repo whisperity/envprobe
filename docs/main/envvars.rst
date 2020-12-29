@@ -9,6 +9,11 @@ The changes to the variables are applied to the environment of the shell the com
 
 All commands are offered through *shortcuts* to ease access to the core functions.
 
+.. note::
+
+   These commands are only available if Envprobe has been
+   :ref:`hooked<install_hook>` in the current shell.
+
 
 Reading (``get``, ``?``)
 ========================
