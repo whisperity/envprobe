@@ -36,3 +36,25 @@ This page contains excerpts of Envprobe's usage that detail typical everyday tas
    $ ep ^SOME_VARIABLE
    $ echo $SOME_VARIABLE
    # No result.
+
+
+   $ fancy
+   fancy: command not found!
+
+   $ ep +PATH /opt/fancy/bin
+   $ fancy
+   Fancy tool works!
+
+   $ ep PATH
+   PATH=/opt/fancy/bin:/usr/local/bin:/usr/bin:/sbin:/bin
+
+   $ pwd
+   /root
+
+   $ ep -PATH /opt/fancy/bin
+   $ ep PATH+ .
+   $ ep PATH
+   PATH=/usr/local/bin:/usr/bin:/sbin:/bin:/root
+
+   $ ep +PATH ..
+   PATH=/:/usr/local/bin:/usr/bin:/sbin:/bin:/root

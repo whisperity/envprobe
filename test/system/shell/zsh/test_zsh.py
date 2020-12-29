@@ -1,3 +1,4 @@
+import os
 import pytest
 
 from .helper import zsh_shell
@@ -47,11 +48,11 @@ def test_get_variable(sh):
                                          timeout=0.5)
     assert(retcode == 1)
 
-    retcode, result = sh.execute_command("ep PATH")
+    retcode, result = sh.execute_command("ep PATH", timeout=0.5)
     assert(not retcode)
     assert(result.startswith("PATH={0}".format(envprobe_location())))
 
-    retcode, result = sh.execute_command("ep \'?PATH\'")
+    retcode, result = sh.execute_command("ep \'?PATH\'", timeout=0.5)
     assert(not retcode)
     assert(result.startswith("PATH={0}".format(envprobe_location())))
 
@@ -111,3 +112,38 @@ def test_undefine_variable(sh):
     assert(not result)
     _, result = sh.execute_command("echo $DUMMY_PATH")
     assert(not result)
+
+
+def test_add_and_remove(sh, tmp_path):
+    retcode, result = sh.execute_command("pwd")
+    assert(not retcode)
+    old_wd = result
+    retcode, _ = sh.execute_command("cd \"{0}\"".format(tmp_path))
+    assert(not retcode)
+    retcode, _ = sh.execute_command("mkdir dummy")
+    assert(not retcode)
+    retcode, _ = sh.execute_command("echo 'echo \"Hello\"' > dummy/exe")
+    assert(not retcode)
+    retcode, _ = sh.execute_command("chmod +x dummy/exe")
+    assert(not retcode)
+
+    retcode, result = sh.execute_command("which exe")
+    assert(retcode == 1)
+    assert(result == "exe not found")
+
+    retcode, result = sh.execute_command("ep +PATH dummy", timeout=0.5)
+    assert(not retcode)
+    assert(not result)
+    retcode, result = sh.execute_command("which exe")
+    assert(not retcode)
+    assert(result == os.path.join(tmp_path, "dummy/exe"))
+
+    retcode, result = sh.execute_command("ep remove PATH dummy", timeout=0.5)
+    assert(not retcode)
+    assert(not result)
+    retcode, result = sh.execute_command("which exe")
+    assert(retcode == 1)
+    assert(result == "exe not found")
+
+    retcode, _ = sh.execute_command("cd \"{0}\"".format(old_wd))
+    assert(not retcode)

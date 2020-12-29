@@ -1,3 +1,6 @@
+from envprobe.vartypes.array import Array
+
+
 name = 'remove'
 description = \
     """"Remove element value(s) from an environment variable.
@@ -10,7 +13,21 @@ help = "{-VARIABLE} Remove element(s) from an array variable."
 
 
 def command(args):
-    print(args)
+    try:
+        env_var, _ = args.environment[args.VARIABLE]
+    except KeyError:
+        raise ValueError("This environment variable can not or should not be "
+                         "managed through Envprobe.")
+
+    if not isinstance(env_var, Array):
+        raise TypeError("'remove' can not be called on variables that are "
+                        "not arrays.")
+
+    for val in args.VALUE:
+        env_var.remove_value(val)
+
+    args.environment.set_variable(env_var)
+    args.shell.set_environment_variable(env_var)
 
 
 def register(argparser, registered_command_list):

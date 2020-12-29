@@ -117,6 +117,19 @@ def test_insert():
     assert(a.value == ["42", "Baz", "Foo", "Qux", "Bar"])
 
 
+def test_insert_overflow():
+    a = ColonSeparatedArray("test_array", ':'.join(map(str, range(1, 51))))
+    assert(len(a) == 50)
+
+    a.insert_at(-100, "X")
+    a.insert_at(100, "Y")
+
+    assert(a[0] == "X")
+    assert(a[51] == "Y")
+
+    assert(a.value == ["X"] + list(map(str, range(1, 51))) + ["Y"])
+
+
 def test_remove_element():
     a = ColonSeparatedArray("test_array", "Foo:Bar")
     a.remove_value("Foo")

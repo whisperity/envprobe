@@ -1,3 +1,6 @@
+from envprobe.vartypes.array import Array
+
+
 name = 'add'
 description = \
     """Add element value(s) to an environment variable.
@@ -33,7 +36,27 @@ epilogue = \
 
 
 def command(args):
-    print(args)
+    try:
+        env_var, _ = args.environment[args.VARIABLE]
+    except KeyError:
+        raise ValueError("This environment variable can not or should not be "
+                         "managed through Envprobe.")
+
+    if not isinstance(env_var, Array):
+        raise TypeError("'add' can not be called on variables that are "
+                        "not arrays.")
+
+    for val in args.VALUE:
+        env_var.insert_at(args.position, val)
+        if args.position >= 0:
+            # The arguments in VALUE are appended sequentially, so in case
+            # of a positive index, the insert location should be kept in sync.
+            # For negative insert indices, the shifting takes care of this
+            # automatically.
+            args.position += 1
+
+    args.environment.set_variable(env_var)
+    args.shell.set_environment_variable(env_var)
 
 
 def register(argparser, registered_command_list):

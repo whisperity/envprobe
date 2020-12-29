@@ -91,11 +91,13 @@ The [complete documentation](http://envprobe.readthedocs.io/en/latest/main/index
 
 For easy access, the environment variable managing commands are also offered as shortcuts.
 
-|       Command        |              Shortcut            | Usage                         |
-|:--------------------:|:--------------------------------:|:------------------------------|
-| `get VARIABLE`       | `?VARIABLE` or simply `VARIABLE` | Print the value of `VARIABLE` |
-| `set VARIABLE VALUE` | `!VARIABLE`, `VARIABLE=VALUE`    | Sets `VARIABLE` to `VALUE`    |
-| `undefine VARIABLE`  | `^VARIABLE`                      | Undefine `VARIABLE`           |
+| Command                 | Shortcut                                            | Usage                         |
+|:------------------------|:----------------------------------------------------|:------------------------------|
+| `get VARIABLE`          | `?VARIABLE` or simply `VARIABLE`                    | Print the value of `VARIABLE` |
+| `set VARIABLE VALUE   ` | `!VARIABLE`, `VARIABLE=VALUE`                       | Sets `VARIABLE` to `VALUE`    |
+| `undefine VARIABLE`     | `^VARIABLE`                                         | Undefine `VARIABLE`           |
+| `add VARIABLE VALUE`    | `+VARIABLE VALUE` (front), `VARIABLE+ VALUE` (back) | Add a `VALUE` to an array     |
+| `remove VARIABLE VALUE` | `-VARIABLE VALUE`                                   | Remove `VALUE` from an array  |
 
 
 ~~~{.bash}
@@ -117,9 +119,30 @@ MyValue
 $ ep ^SOME_VARIABLE
 $ echo $SOME_VARIABLE
 # No result.
+
+$ fancy
+fancy: command not found!
+
+$ ep +PATH /opt/fancy/bin
+$ fancy
+Fancy tool works!
+
+$ ep PATH
+PATH=/opt/fancy/bin:/usr/local/bin:/usr/bin:/sbin:/bin
+
+$ pwd
+/root
+
+$ ep -PATH /opt/fancy/bin
+$ ep PATH+ .
+$ ep PATH
+PATH=/usr/local/bin:/usr/bin:/sbin:/bin:/root
+
+$ ep +PATH ..
+PATH=/:/usr/local/bin:/usr/bin:/sbin:/bin:/root
 ~~~
 
-
+---
 
 ---
 
@@ -152,7 +175,6 @@ How to Install?
 ---------------
 
 
-
 ### Invoking *Envprobe*
 
 After envprobe is installed, you can use it in the shell with the `envprobe`
@@ -168,19 +190,6 @@ Overview example
 In one shell:
 
 ```bash
-$ ep PATH
-PATH=/bin
-
-$ fancy
-Error! fancy: command not found
-
-$ ep +PATH /opt/fancy/bin
-$ ep PATH
-PATH=/opt/fancy/bin:/bin
-
-$ fancy
-Fancy tool works!
-
 $ ep save fancy
 ```
 
@@ -208,67 +217,12 @@ of the current shell.
 (Shortcuts for the long form of actions is presented between `{` and `}`
 on the right side.)
 
-~~~
-add                 {+VARIABLE VALUE} Add values to an array-like
-                    environmental variable.
-remove              {-VARIABLE VALUE} Remove values from an array-like
-                    environmental variable.
-~~~
-
 
 ### Adding and removing "array-like" components (e.g. `PATH`)
-
-Traditionally, extending `PATH` with your current working directory required
-a lengthy sequence: `export PATH="$(pwd):${PATH}"`. Envprobe provides support
-for "array-like" environment variables via the `add` and `remove` commands,
-which insert or remove an element from an array.
 
 Currently, variables whose name include the substring `PATH` are considered
 as array variables. (This is expected to change to be more configurable as
 `envprobe`'s development furthers.)
-
-To remove `/usr/bin` from your `PATH`, type either the long or the short form:
-
-    ep remove PATH /usr/bin
-    ep -PATH /usr/bin
-
-To add your current directory to `CMAKE_PREFIX_PATH`:
-
-    ep add CMAKE_PREFIX_PATH `pwd`
-    ep +CMAKE_PREFIX_PATH `pwd`
-
-#### Adding values at a certain position
-
-`add` also supports suffixing the array with the argument, i.e. adding it as
-the last element. **Note, that *unlike `?VAR` and `VAR?`*, `+VAR` and `VAR+`
-are *NOT* equivalent commands.**
-
-    ep add --position -1 CMAKE_PREFIX_PATH `pwd`
-    ep CMAKE_PREFIX_PATH+ `pwd`
-
-You can insert the command-line argument to anywhere in the array with giving
-a `--position`.
-
-#### Adding and removing multiple values
-
-`add` and `remove` take multiple values, which will be added to or removed
-from the environment variable. In case of `add`, if a position (e.g.
-`--position 1` or `+VARIABLE` is used), the arguments are added in the order
-they are specified:
-
-    $ echo ${PATH}
-    > /usr/bin
-
-    $ ep +PATH /one /two   # Or: ep add --position 1 PATH /one /two
-    $ echo ${PATH}
-    > /one:/two:/usr/bin
-
-Directly overwriting an array-like variable is supported too. In this case,
-the value given to `set` must be the proper string form of the array, just
-like how traditionally one would give it to `export`.
-
-    ep set PATH /home/username:/usr/bin
-    ep PATH=/home/username:/usr/bin
 
 
 Usage: Saving and loading environments

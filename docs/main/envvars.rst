@@ -140,3 +140,129 @@ Undefining (``undefine``, ``^``)
 
          $ echo $HOME/bin
          /bin
+
+
+Adding to arrays (``add``, ``+``)
+=================================
+
+Traditionally, extending a variable such as ``PATH`` with your current working directory required executing a lengthy sequence: ``export PATH="$(pwd):${PATH}"``.
+
+.. py:function:: add(VARIABLE, VALUE..., position=0)
+
+   Add the given ``VALUE`` (or values, can be multiple) to the ``VARIABLE`` array.
+   The values will be located starting at the given ``position`` index, while all subsequent elements will be shifted to the right (to higher indices).
+
+   :param VARIABLE: The name of the environment variable to add to.
+   :param VALUE:    The value(s) to add.
+   :param position: The position where the added value(s) will be put to.
+                    A *positive* position counts from the beginning of the array, while a *negative* position counts from the end.
+                    ``0`` is the **first**, and ``-1`` is the **last** element's position.
+   :type position:  int
+
+   :Possible invocations:
+      - ``ep add [--position] VARIABLE VALUE``
+      - ``ep +VARIABLE VALUE`` (for ``position = 0``)
+      - ``ep VARIABLE+ VALUE`` (for ``position = -1``)
+
+   :Examples:
+      .. code-block:: bash
+
+         $ ep PATH
+         PATH=/usr/local/bin:/usr/bin:/sbin:/bin
+         $ fancy
+         fancy: command not found!
+
+         $ ep add --position 0 PATH /opt/fancy/bin
+         $ fancy
+         Fancy tool works!
+
+         $ ep PATH
+         PATH=/opt/fancy/bin:/usr/local/bin:/usr/bin:/sbin:/bin
+
+      .. code-block:: bash
+         :caption: Using ``--position`` to control where the values will be added to.
+            Note the ``^1`` markers indicating what the individual variables' positions are understood as.
+
+         $ ep SOME_ARRAY
+         SOME_ARRAY=Foo:Bar:Baz
+         #          ^0  ^1  ^2
+         #          -3^ -2^ -1^
+
+         $ ep add --position 1 SOME_ARRAY BLAH
+         $ ep SOME_ARRAY
+         SOME_ARRAY=Foo:BLAH:Bar:Baz
+         #          ^0  ^1   ^2  ^3
+         #          -4^ -3^  -2^ -1^
+
+         $ ep add --position -2 SOME_ARRAY FIZZ
+         $ ep SOME_ARRAY
+         SOME_ARRAY=Foo:BLAH:FIZZ:Bar:Baz
+
+
+      .. code-block:: bash
+
+         $ ep PATH
+         PATH=/usr/local/bin:/usr/bin:/sbin:/bin
+
+         $ ep PATH+ /
+
+         $ ep PATH
+         PATH=/usr/local/bin:/usr/bin:/sbin:/bin:/
+
+   .. note::
+      The ``add`` command only works with environment variables that are :py:class:`Array<envprobe.vartypes.array.Array>`.
+      In case Envprobe did not correctly resolve the type of the variable, see ... on how to set the type.
+
+      .. hint::
+
+         Configuration management is yet to be migrated to the new version.
+
+
+Removing from arrays (``remove``, ``-``)
+========================================
+
+.. py:function:: remove(VARIABLE, VALUE...)
+
+   Remove **all occurrences** of ``VALUE`` (or values, can be multiple) from the ``VARIABLE`` array.
+
+   :param VARIABLE: The name of the environment variable to remove from.
+   :param VALUE:    The value(s) to remove.
+
+   :Possible invocations:
+      - ``ep remove VARIABLE VALUE``
+      - ``ep -VARIABLE VALUE``
+
+   :Examples:
+      .. code-block:: bash
+
+         $ ep PATH
+         PATH=/opt/fancy/bin:/usr/local/bin:/usr/bin:/sbin:/bin
+         $ fancy
+         Fancy tool works!
+
+         $ ep remove PATH /opt/fancy/bin
+         $ fany
+         fancy: command not found!
+
+         $ ep PATH
+         PATH=/usr/local/bin:/usr/bin:/sbin:/bin
+
+      .. code-block:: bash
+         :caption: **All** occurrences are removed.
+            The following array has ``/bin`` in it *7* times.
+
+         $ ep PATH
+         PATH=/bin:/bin:/bin:/usr/local/bin:/bin:/usr/bin:/sbin:/bin:/bin:/bin
+
+         $ ep -PATH /bin
+
+         $ ep PATH
+         PATH=/usr/local/bin:/usr/bin:/sbin
+
+   .. note::
+      The ``remove`` command only works with environment variables that are :py:class:`Array<envprobe.vartypes.array.Array>`.
+      In case Envprobe did not correctly resolve the type of the variable, see ... on how to set the type.
+
+      .. hint::
+
+         Configuration management is yet to be migrated to the new version.
