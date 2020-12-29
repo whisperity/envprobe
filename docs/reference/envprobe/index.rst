@@ -17,3 +17,11 @@ Envprobe is implemented as a single Python package, named ``envprobe``.
    shell/index
    vartypes/index
    environment
+
+
+Miscellaneous functions
+=======================
+
+.. currentmodule:: envprobe.library
+
+.. autofunction:: get_shell_and_env_always

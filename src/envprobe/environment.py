@@ -1,6 +1,5 @@
-"""
-Implements the logic for interfacing with the environment's contents, mapping
-variable primitives to internal data structure, keeping state, etc.
+"""Implements the logic for interfacing with the environment's contents,
+mapping variable primitives to internal data structure, keeping state, etc.
 """
 from copy import deepcopy
 from enum import Enum
@@ -171,55 +170,6 @@ def create_environment_variable(name, env, pipeline=None):
 
     clazz = vartypes.load(kind)
     return clazz(name, env.get(name, ""))
-
-
-class EnvprobeEnvVarHeuristic(EnvVarTypeHeuristic):
-    """Disable access to internal variables that begin with ``ENVPROBE_``."""
-    def __call__(self, name, env=None):
-        if name.startswith("ENVPROBE_"):
-            return False
-
-
-class HiddenEnvVarHeuristic(EnvVarTypeHeuristic):
-    """Disable access to every variable that begins with ``_``, similar to how
-    files named as such are considered "hidden"."""
-    def __call__(self, name, env=None):
-        if name.startswith('_'):
-            return False
-
-
-class PathEnvVarHeuristic(EnvVarTypeHeuristic):
-    """Regard ``PATH`` and variables that end with ``_PATH`` as
-    :py:class:`.vartypes.path.Path`.
-    """
-    def __call__(self, name, env=None):
-        if name == "PATH" or name.endswith("_PATH"):
-            return 'path'
-
-
-class NumericalNameEnvVarHeuristic(EnvVarTypeHeuristic):
-    """Regard commonly numeric-only variables as
-    :py:class:`.vartypes.numeric.Numeric`.
-    """
-    def __call__(self, name, env=None):
-        if name.endswith(("PID", "PORT")):
-            return 'numeric'
-
-
-class NumericalValueEnvVarHeuristic(EnvVarTypeHeuristic):
-    """Regard environment variables that *currently* have a numeric value
-    as :py:class:`.vartypes.numeric.Numeric`.
-    """
-    def __call__(self, name, env=None):
-        if not env:
-            return None
-
-        value = env.get(name, "")
-        try:
-            float(value)
-            return 'numeric'
-        except ValueError:
-            return None
 
 
 class VariableDifferenceKind(Enum):

@@ -1,5 +1,5 @@
-"""
-Main entry point for the Envprobe tool when called as a Python module.
+"""Main entry point for the Envprobe tool when called as a Python module.
+
 This script is responsible for setting up the interaction with the user, and
 handling the invocation.
 """
@@ -7,11 +7,11 @@ import argparse
 import os
 import sys
 
-from . import get_shell_and_env_always
 from .commands import register_envvar_commands
 from .commands.shortcuts import transform_subcommand_shortcut
 from .community_descriptions import CommunityData
 from .config_commands import register_shell_commands
+from .library import get_shell_and_env_always
 
 mode_description = \
     """Envprobe is a shell tool that helps you manage your environment

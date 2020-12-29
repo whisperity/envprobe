@@ -55,9 +55,10 @@ To ensure that environment variables (which are in almost all cases handled simp
 Available heuristics
 --------------------
 
-The following heuristics are implemented in the :py:mod:`environment` module.
+The following heuristics are implemented in the :py:mod:`vartype_heuristics` module.
 All these classes are subclasses of :py:class:`EnvVarTypeHeuristic<envprobe.environment.EnvVarTypeHeuristic>`.
 
+.. currentmodule:: envprobe.vartype_heuristics
 .. autosummary::
    :nosignatures:
 
@@ -66,3 +67,6 @@ All these classes are subclasses of :py:class:`EnvVarTypeHeuristic<envprobe.envi
    PathEnvVarHeuristic
    NumericalNameEnvVarHeuristic
    NumericalValueEnvVarHeuristic
+
+.. autodata:: standard_vartype_pipeline
+   :no-value:
