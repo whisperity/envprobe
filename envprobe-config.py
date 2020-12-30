@@ -10,10 +10,8 @@ import argparse
 import sys
 
 from commands import get_common_epilogue_or_die
-from commands import shell as shell_command
 from commands import tracking as tracking_command
 from commands import vartypes as vartypes_command
-from shell import *  # Keep this import, this registers the known shells.
 
 
 def __main():
@@ -31,7 +29,6 @@ def __main():
 
     # The ordering of the commands here specifies in which order they are
     # shown on the output!
-    shell_command.create_subcommand_parser(subparsers)
     tracking_command.create_subcommand_parser(subparsers)
     vartypes_command.create_subcommand_parser(subparsers)
 

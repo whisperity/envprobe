@@ -2,7 +2,6 @@ import os
 
 
 __all__ = ['get_configuration_folder',
-           'global_config',
            'locking_configuration_json',
            'tracked_variables']
 
