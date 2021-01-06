@@ -14,7 +14,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-from . import config_file
+from . import config_file, variable_tracking
 from .core import get_configuration_directory, get_data_directory, \
     get_runtime_directory
 
@@ -22,5 +22,6 @@ __all__ = [
     'config_file',
     'get_configuration_directory',
     'get_data_directory',
-    'get_runtime_directory'
+    'get_runtime_directory',
+    'variable_tracking'
     ]

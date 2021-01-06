@@ -52,10 +52,14 @@ def test_accessors(tmp):
     assert(c.changed)
     assert(len(c) == 1)
     assert(c["x"] == "x")
+    assert(c.get("x") == "x")
+    assert(c.get("x", 2) == "x")
 
     del c["x"]
     assert(not c.changed)  # x was added and removed -> no change.
     assert(len(c) == 0)
+    assert(c.get("x") is None)
+    assert(c.get("x", 2) == 2)
 
     with pytest.raises(KeyError):
         print(c["x"])
@@ -221,3 +225,24 @@ def test_nonlocal_file(tmp):
     assert(os.path.isdir("foo"))
     assert(os.path.isdir(os.path.join("foo", "bar")))
     assert(os.path.isfile(os.path.join("foo", "bar", "cfg.json")))
+
+
+def test_extended_encode_decode(tmp):
+    a_list = [1, 2, 3, 'a', 'b', 'c', "Envprobe!"]
+    a_set = set(a_list)
+
+    c = ConfigurationFile("extended.json")
+    c.load()
+
+    c["mylist"] = a_list
+    c["myset"] = a_set
+
+    c.save()
+
+    c = ConfigurationFile("extended.json")
+    assert(not len(c))
+
+    c.load()
+    assert(len(c) == 2)
+    assert(c["mylist"] == a_list)
+    assert(c["myset"] == a_set)

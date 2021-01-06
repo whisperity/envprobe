@@ -21,4 +21,4 @@ The ``main`` mode is also unique in offering *shortcuts* to further lessen the a
    :maxdepth: 2
 
    envvars
-   saves
+   snapshots
