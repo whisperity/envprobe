@@ -18,12 +18,20 @@
 `envprobe config` that are related to setting the configuration of Envprobe
 both on the user and the shell level.
 """
-from . import hook
+from . import hook, track
 
 
 def register_shell_commands(argparser, shell):
-    """Registers the commands related to shell management into the."""
+    """Registers the commands related to shell management."""
     if shell.is_envprobe_capable:
         return
 
     hook.register(argparser)
+
+
+def register_tracking_commands(argparser, shell):
+    """Registers the commands related to configuring variable tracking."""
+    manage_local_config = shell.is_envprobe_capable and \
+        shell.manages_environment_variables
+
+    track.register(argparser, manage_local_config)

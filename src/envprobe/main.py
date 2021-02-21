@@ -26,7 +26,8 @@ import sys
 from .commands import register_envvar_commands
 from .commands.shortcuts import transform_subcommand_shortcut
 from .community_descriptions import CommunityData
-from .config_commands import register_shell_commands
+from .config_commands import \
+    register_shell_commands, register_tracking_commands
 from .library import get_shell_and_env_always
 
 mode_description = \
@@ -134,7 +135,7 @@ def __config_mode(argv):
     # The order of the commands here also specifies the order they are shown
     # in the user's output!
     register_shell_commands(subparsers, shell)
-    # TODO: tracking
+    register_tracking_commands(subparsers, shell)
     # TODO: vartypes (community?)
 
     args = parser.parse_args(argv[1:])

@@ -18,10 +18,13 @@ Bug fixes and performance improvements :beetle:
  * Fixed an issue with invalid control code generation when a variable's value contained spaces (#12).
 
 
-Backwards incompatible and other game-breaking changes :warn:
--------------------------------------------------------------
+Backwards incompatible and other game-breaking changes :warning:
+----------------------------------------------------------------
 
  * The `envprobe.py` and `envprobe-config.py` entry point scripts have been **removed** and the shell hook made shorter and simpler. (#10)
    Now, the `envprobe` is the **only** entry point through which the program can be called.
+ * The `epc track` and `epc default-tracking` commands have been merged together into the `epc track` command.
+   Setting the *default behaviour* (previously through `epc default-tracking`) is done by giving the `--default` flag.
+   Resetting a particular variable's behaviour to the default (previously done by `epc track --default`) is done by using `epc track --reset`.
  * Envprobe's user-level configuration files have been moved to `~/.config/envprobe` by default.
  * The internals of the implementation have been almost completely reworked, which means everything that relied upon Envprobe on the Python scripting level is surely broken!

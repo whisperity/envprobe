@@ -10,7 +10,6 @@ import argparse
 import sys
 
 from commands import get_common_epilogue_or_die
-from commands import tracking as tracking_command
 from commands import vartypes as vartypes_command
 
 
@@ -29,7 +28,6 @@ def __main():
 
     # The ordering of the commands here specifies in which order they are
     # shown on the output!
-    tracking_command.create_subcommand_parser(subparsers)
     vartypes_command.create_subcommand_parser(subparsers)
 
     args = parser.parse_args(sys.argv[1:])  # Cut the shell command's name.

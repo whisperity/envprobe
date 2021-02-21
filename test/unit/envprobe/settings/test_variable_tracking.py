@@ -92,7 +92,7 @@ def test_overlay():
            == [False, True, False, True, False])
 
 
-def test_unconfigured():
+def test_empty_config():
     L = nullcontext(dict())
     G = nullcontext(dict())
 
@@ -102,13 +102,15 @@ def test_unconfigured():
     assert(t.local_tracking is None)
     assert(t.global_tracking is True)
 
-    assert(t.is_tracked("FOO"))
+    with pytest.raises(KeyError):
+        assert(t.is_tracked("FOO"))
 
     t.global_tracking = False
 
     assert(t.default_tracking is False)
 
-    assert(not t.is_tracked("FOO"))
+    with pytest.raises(KeyError):
+        assert(not t.is_tracked("FOO"))
 
     with pytest.raises(KeyError):
         t.track_local("FOO")

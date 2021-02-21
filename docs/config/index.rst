@@ -18,3 +18,4 @@ Calling ``epc`` automatically brings up the argument parser for *config mode*.
    :maxdepth: 2
 
    hook
+   track

@@ -55,7 +55,7 @@ def get_runtime_directory(user_id):
     Otherwise, the system-specific temporary directory will be used.
     """
     try:
-        rootdir = os.environ['XDG_RUNTIME_DIR']
+        rootdir = os.environ["XDG_RUNTIME_DIR"]
         # Use only 'envprobe' as the top-level directory because RUNTIME_DIR
         # is user-specific.
         directory = os.path.join(rootdir, "envprobe")

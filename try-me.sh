@@ -82,6 +82,7 @@ echo 'eval "$('"$MY_PATH"'/envprobe config hook ${SHELL} $$)"' >> ./.${SHELL}rc
 popd
 
 env -u XDG_CONFIG_HOME -u XDG_DATA_HOME -u XDG_RUNTIME_DIR \
+    -u ENVPROBE_SHELL_PID -u ENVPROBE_SHELL_TYPE -u ENVPROBE_CONFIG \
     HOME="${TEMPHOME}" TMPDIR="${TEMPHOME}/tmp" \
     ${SHELL}
 
