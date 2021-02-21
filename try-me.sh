@@ -1,6 +1,24 @@
 #!/bin/bash
+
+# Copyright (C) 2018 Whisperity
+#
+# SPDX-License-Identifier: GPL-3.0
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # Create a temporary HOME directory and run a shell there to test envprobe
 # without having to mess up the user's real home.
+
 
 # -----------------------------------------------------------------------------
 # (via http://stackoverflow.com/a/14203146)
@@ -37,6 +55,7 @@ shift $((OPTIND-1))
 
 [ "${1:-}" = "--" ] && shift
 
+
 # ----------------------------------------------------------------------------
 # (via http://stackoverflow.com/a/630387)
 
@@ -47,6 +66,7 @@ if [ -z "$MY_PATH" ] ; then
   # to the script (e.g. permissions re-evaled after suid)
   exit 1  # fail
 fi
+
 
 # ----------------------------------------------------------------------------
 
