@@ -59,7 +59,7 @@ then
         echo "[Debug] Executing Envprobe Bash hook..." >&2;
         if [[ -f "{CONTROL_FILE}" ]]; then
             source "{CONTROL_FILE}";
-            cat "{CONTROL_FILE}"; echo;
+            cat "{CONTROL_FILE}" >&2; echo >&2;
             rm "{CONTROL_FILE}";
         fi;
         return $original_retcode;

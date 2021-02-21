@@ -14,9 +14,12 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+import os
+import stat
 import tempfile
 
 from ..environment import Environment
+from ..settings import get_runtime_directory
 from ..shell import load, load_all, get_known_kinds
 
 name = 'hook'
@@ -35,7 +38,11 @@ help = "Generate the hooks and register Envprobe into the shell."
 def command(args):
     # Generate a temporary directory where the running shell's data will be
     # persisted.
-    tempd = tempfile.mkdtemp(prefix=".envprobe.{0}-".format(args.PID))
+    rtdir = get_runtime_directory(os.getuid())
+    dir_mode = stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR
+    os.makedirs(rtdir, dir_mode, exist_ok=True)
+
+    tempd = tempfile.mkdtemp(prefix="{0}-".format(args.PID), dir=rtdir)
     shell = load(args.SHELL)(args.PID, tempd)
 
     # Create the initial environment dump in the persisted storage for the
