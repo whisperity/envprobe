@@ -63,6 +63,6 @@ def get_runtime_directory(user_id):
         rootdir = tempfile.gettempdir()
         # Use 'envprobe-USERID' as top-level directory because the global
         # temporary directory is not user-specific.
-        directory = os.path.join(rootdir, "envprobe-%s" % user_id)
+        directory = os.path.join(rootdir, "envprobe-{0}".format(user_id))
 
     return directory

@@ -5,10 +5,10 @@ Contribution guidelines
 Python style
 ------------
 
-We use [pycodestyle](http://pypi.python.org/pypi/pycodestyle/) to
-automatically check our coding style.
+We use [flake8](http://flake8.pycqa.org/en/latest/) to check code style and
+perform linting.
 
-In addition to the general rules of `pycodestyle`, please keep the following
+In addition to the general rules of `flake8`, please keep the following
 rules while writing your code:
 
   * Comments must be whole sentences, beginning with a capital letter and

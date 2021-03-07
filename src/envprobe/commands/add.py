@@ -92,7 +92,7 @@ def register(argparser, registered_command_list):
                         nargs='+',
                         help="The value(s) to be added, e.g. \"/usr/bin\". "
                              "The list may contain duplicates.")
-    parser.add_argument("--position",
+    parser.add_argument('--position',
                         type=int,
                         required=False,
                         default=0,

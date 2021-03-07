@@ -17,6 +17,7 @@
 import os
 
 from .environment import Environment
+from .settings import core as settings, config_file, variable_tracking
 from .shell import get_current_shell, FakeShell
 from .vartype_heuristics import standard_vartype_pipeline
 
@@ -54,3 +55,38 @@ def get_shell_and_env_always(env_dict=None):
     env = Environment(sh, env_dict, standard_vartype_pipeline)
 
     return sh, env
+
+
+def get_variable_tracking(shell=None):
+    """Creates a read-only tracking manager for the standard global and local
+    configuration files.
+
+    Parameters
+    ----------
+    shell : .shell.Shell, optional
+        The shell which is used in the current environment, used to retrieve
+        the local configuration directory.
+
+    Returns
+    -------
+    .settings.variable_tracking.VariableTracking
+        The tracking handler engine.
+        The configuration files are opened **read-only**.
+    """
+    if shell and shell.is_envprobe_capable:
+        local_config_file = config_file.ConfigurationFile(
+            os.path.join(shell.configuration_directory,
+                         variable_tracking.get_tracking_file_name()),
+            variable_tracking.VariableTracking.config_schema_local,
+            read_only=True)
+    else:
+        local_config_file = None
+
+    global_config_file = config_file.ConfigurationFile(
+        os.path.join(settings.get_configuration_directory(),
+                     variable_tracking.get_tracking_file_name()),
+        variable_tracking.VariableTracking.config_schema_local,
+        read_only=True)
+
+    return variable_tracking.VariableTracking(global_config_file,
+                                              local_config_file)

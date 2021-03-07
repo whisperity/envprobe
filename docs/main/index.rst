@@ -14,8 +14,8 @@ The ``main`` mode is also unique in offering *shortcuts* to further lessen the a
 
 .. attention::
 
-   The list of available subcommands for a mode is generated in a *context-sensitive* fashion.
-   This means that in case the current context does not allow the execution of an action, Envprobe will usually fail with an ``invalid choice`` error.
+    The list of available subcommands for a mode is generated in a *context-sensitive* fashion.
+    This means that in case the current context does not allow the execution of an action, Envprobe will usually fail with an ``invalid choice`` error.
 
 .. toctree::
    :maxdepth: 2

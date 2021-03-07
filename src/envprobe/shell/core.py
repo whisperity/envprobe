@@ -342,7 +342,7 @@ def load(kind):
         pass
 
     try:
-        importlib.import_module("envprobe.shell.%s" % kind)
+        importlib.import_module("envprobe.shell.{0}".format(kind))
     except ModuleNotFoundError:
         raise
 

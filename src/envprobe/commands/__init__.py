@@ -18,12 +18,12 @@
 `envprobe (main)` that are related to interfacing with the environment
 variables.
 """
-from . import add, get, remove, undefine
+from . import add, diff, get, remove, undefine
 from . import set as set_command
 
 
 def register_envvar_commands(argparser, registered_command_list, shell):
-    """Register the command related to environment variable processing."""
+    """Register commands related to environment variable processing."""
     if not (shell.is_envprobe_capable and shell.manages_environment_variables):
         return
 
@@ -33,3 +33,13 @@ def register_envvar_commands(argparser, registered_command_list, shell):
     undefine.register(argparser, registered_command_list)
     add.register(argparser, registered_command_list)
     remove.register(argparser, registered_command_list)
+
+
+def register_snapshot_commands(argparser, registered_command_list, shell):
+    """Register commands related to saved environment setting snapshots."""
+    # list.
+    if shell.is_envprobe_capable and shell.manages_environment_variables:
+        diff.register(argparser, registered_command_list)
+        # load.
+        # save.
+    # delete.

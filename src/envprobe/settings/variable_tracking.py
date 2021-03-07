@@ -20,9 +20,9 @@ except ImportError:
     from envprobe.compatibility import nullcontext  # noqa
 
 
-K_DEFAULT_SETTING = "default"
-K_TRACK_LIST = "explicit_track"
-K_IGNORE_LIST = "explicit_ignore"
+K_DEFAULT_SETTING = 'default'
+K_TRACK_LIST = 'explicit_track'
+K_IGNORE_LIST = 'explicit_ignore'
 
 
 def get_tracking_file_name():

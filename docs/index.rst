@@ -31,7 +31,7 @@ You can change your environments on the fly and if the setup works, Envprobe can
 
 .. Attention::
 
-   The saving and loading feature are yet to be migrated from the previous version!
+    The saving and loading feature are yet to be migrated from the previous version!
 
 
 Documentation

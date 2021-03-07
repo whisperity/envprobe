@@ -6,7 +6,6 @@ import argparse
 import sys
 
 from commands import get_common_epilogue_or_die
-from commands import state as state_command
 from shell import *  # Keep this import, this registers the known shells.
 
 
@@ -26,7 +25,6 @@ def __main():
 
     # The ordering of the commands here specifies in which order they are
     # shown on the output!
-    state_command.create_subcommand_parser(subparsers)
 
     args = parser.parse_args(sys.argv[1:])  # Cut the shell command's name.
     if 'func' in args:

@@ -27,10 +27,11 @@
 OPTIND=1         # Reset in case getopts has been used previously in the shell.
 
 # Initialize our own variables:
-DO_CLEANUP=0
+LOAD_ENVPROBE=1
+KEEP_TEMPORARY_HOME=0
 SHELL="bash"
 
-while getopts "ch?s:" opt; do
+while getopts "hkn?s:" opt; do
     case "$opt" in
     h|\?)
         echo "Usage: try-me.sh [OPTION]..."
@@ -39,12 +40,15 @@ while getopts "ch?s:" opt; do
         echo "home directory, to allow trying out Envprobe without anything"
         echo "affecting the current user's configuration."
         echo
-        echo -e "\t-c\t\tclean up the temporary HOME after execution"
+        echo -e "\t-k\t\tdo not clean up the temporary HOME after execution"
+        echo -e "\t-n\t\tdry-run: start a shell, but do NOT load 'Envprobe'"
         echo -e "\t-s SHELL\tuse the given SHELL (defaults to '${SHELL}')"
         echo -e "\t-h\t\tdisplay this help and exit"
         exit 0
         ;;
-    c)  DO_CLEANUP=1
+    k)  KEEP_TEMPORARY_HOME=1
+        ;;
+    n)  LOAD_ENVPROBE=0
         ;;
     s)  SHELL="${OPTARG}"
         ;;
@@ -78,7 +82,11 @@ touch \
     .is_temporary_home \
     .sudo_as_admin_successful
 mkdir tmp
-echo 'eval "$('"$MY_PATH"'/envprobe config hook ${SHELL} $$)"' >> ./.${SHELL}rc
+if [ $LOAD_ENVPROBE -eq 1 ]
+then
+    echo 'eval "$('"$MY_PATH"'/envprobe config hook ${SHELL} $$)"' \
+        >> ./.${SHELL}rc
+fi
 popd
 
 env -u XDG_CONFIG_HOME -u XDG_DATA_HOME -u XDG_RUNTIME_DIR \
@@ -87,8 +95,7 @@ env -u XDG_CONFIG_HOME -u XDG_DATA_HOME -u XDG_RUNTIME_DIR \
     ${SHELL}
 
 # Cleanup.
-if [ $DO_CLEANUP -eq 1 ]
+if [ $KEEP_TEMPORARY_HOME -ne 1 ]
 then
-    echo "'-c' was specified, removing temporary HOME..."
     rm -rf "${TEMPHOME}"
 fi

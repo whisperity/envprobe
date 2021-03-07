@@ -182,7 +182,8 @@ def create_environment_variable(name, env, pipeline=None):
 
     kind = pipeline(name, env)
     if not kind:
-        raise KeyError("Couldn't resolve '%s' to a variable type." % name)
+        raise KeyError("Couldn't resolve '{0}' to a variable type."
+                       .format(name))
 
     clazz = vartypes.load(kind)
     return clazz(name, env.get(name, ""))
@@ -485,12 +486,17 @@ class Environment:
         diff = dict()
 
         def __create_difference(kind, var_name):
-            old = create_environment_variable(var_name,
-                                              self.stamped_environment,
-                                              self.type_heuristics)
-            new = create_environment_variable(var_name,
-                                              self.current_environment,
-                                              self.type_heuristics)
+            try:
+                old = create_environment_variable(var_name,
+                                                  self.stamped_environment,
+                                                  self.type_heuristics)
+                new = create_environment_variable(var_name,
+                                                  self.current_environment,
+                                                  self.type_heuristics)
+            except KeyError:
+                # Creating the environment variable instance failed because it
+                # was deemed not to be managed. Ignore.
+                return
 
             if old is None or new is None:
                 # If the saved (persisted) or the current environment does not

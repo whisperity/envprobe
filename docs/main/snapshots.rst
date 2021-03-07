@@ -4,9 +4,96 @@
 Saved snapshots
 ===============
 
+This page details the user-facing commands which deal with interactively accessing the saved snapshots for environment variables.
+**Saved snapshots** allow interactively storing some values for environment variables with a name, and later loading these changes in another shell, resulting in the environment set up the same way.
+
+A recurring theme in this section is the mention of *current values* versus the *saved state*:
+
+  * **Current values** are the values for all environment variables when an Envprobe command started executing.
+    This state is the same as if ``env`` was called in the shell.
+  * The **saved state** is the knowledge about environment variables' values when Envprobe last saved or loaded a snapshot.
+
+Initially, when Envprobe is loaded into a shell, the *current values* at the time of loading becomes the first *saved state* itself.
+
+
 .. Attention::
 
    This feature is yet to be implemented.
+
+
+Difference of current environment (``diff``, ``%``)
+===================================================
+
+.. py:function:: diff(VARIABLE..., format="normal")
+
+    .. note::
+
+        This command is only available if Envprobe has been :ref:`hooked<install_hook>` in the current shell.
+
+    Show the difference between the current values of environment variables and the last known saved state.
+    (A saved state is updated when ``save`` or ``load`` is called.
+    The initial saved state is generated when :ref:`Envprobe is loaded<config_hook>`.)
+
+    :param VARIABLE: The names of environment variables to show the diff for.
+                     If empty, all variables which changed values are shown.
+    :param format:   The output format to generate.
+
+                     * ``-n``/``--normal``: Generate a human-readable output.
+                       This is the default option.
+                     * ``-u``/``--unified``: Generate a more *machine-readable* output akin to `unified diffs <http://gnu.org/software/diffutils/manual/html_node/Unified-Format.html>`_.
+
+    :type format: choice
+
+    :Possible invocations:
+        - ``envprobe diff [VARIABLE]``
+        - ``ep % [VARIABLE]``
+
+    :Examples:
+        .. code-block:: bash
+
+            $ ep PATH
+            PATH=/foo:/bar
+            $ ep FOO
+            FOO is not defined
+            $ ep NUM
+            NUM=8
+
+            $ ep +PATH /mnt
+            $ ep -PATH /bar
+            $ ep FOO=Bar
+            $ ep ^NUM
+
+            $ ep %
+            (+) Added:       FOO
+                    defined value: Bar
+
+            (-) Removed:     NUM
+                    value was:     8
+
+            (!) Changed:     PATH
+                    added:         /mnt
+                    removed:       /bar
+
+        .. code-block:: diff
+           :caption: *Unified diff* output format for the above code example, as if ``ep % -u`` (or ``envprobe diff --unified``) was called.
+
+           --- /dev/null
+           +++ FOO
+           @@ -0,0 +1,1 @@
+           +Bar
+
+           --- NUM
+           +++ /dev/null
+           @@ -1,1 +0,0 @@
+           -8
+
+           --- PATH
+           +++ PATH
+           @@ -1,2 +1,2 @@
+            /foo
+           -/bar
+           +/mnt
+
 
 Variable tracking
 =================

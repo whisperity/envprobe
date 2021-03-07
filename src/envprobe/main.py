@@ -23,12 +23,12 @@ import argparse
 import os
 import sys
 
-from .commands import register_envvar_commands
+from .commands import register_envvar_commands, register_snapshot_commands
 from .commands.shortcuts import transform_subcommand_shortcut
 from .community_descriptions import CommunityData
 from .config_commands import \
     register_shell_commands, register_tracking_commands
-from .library import get_shell_and_env_always
+from .library import get_shell_and_env_always, get_variable_tracking
 
 mode_description = \
     """Envprobe is a shell tool that helps you manage your environment
@@ -52,10 +52,39 @@ main_subcommands_description = \
     and is based on your current shell and environment setup."""
 
 
+def __inject_state_to_args(args, shell, environment, argvZero):
+    """Injects the common Envprobe library objects to the
+    :py:class:`argparse.Namespace` object.
+
+    Parameters
+    ----------
+    args: argparse.Namespace
+        The parsed command-line arguments.
+    shell : .shell.Shell
+        The current Shell backend implementation.
+    environment : .environment.Environment
+        The handler for environment variable access.
+    argvZero : str
+        The first element of the command-line invocation list, containing the
+        executed program's name.
+
+    Returns
+    -------
+    argparse.Namespace
+        The parsed command-line arguments, extended with the Envprobe library
+        globals.
+    """
+    args.community = CommunityData()  # TODO.
+    args.environment = environment
+    args.envprobe_root = argvZero.replace("/__envprobe", "")
+    args.shell = shell
+    args.tracking = get_variable_tracking(shell)
+
+    return args
+
+
 def __main_mode(argv):
-    """
-    Implementation of Envprobe's main entry point.
-    """
+    """Implementation of Envprobe's main entry point."""
     # Instantiate the "globals" of Envprobe that interface with the env vars.
     shell, env = get_shell_and_env_always(os.environ)
 
@@ -73,16 +102,11 @@ def __main_mode(argv):
     # in the user's output!
     registered_commands = []
     register_envvar_commands(subparsers, registered_commands, shell)
+    register_snapshot_commands(subparsers, registered_commands, shell)
 
     argv = transform_subcommand_shortcut(argv, registered_commands)
     args = parser.parse_args(argv[1:])
-
-    # Inject the loaded state's manager objects into the user's request, so
-    # the command handlers can accept them.
-    args.community = CommunityData()
-    args.environment = env
-    args.envprobe_root = argv[0].replace("/__envprobe", "")
-    args.shell = shell
+    args = __inject_state_to_args(args, shell, env, argv[0])
 
     # Execute the desired action.
     if 'func' in args:
@@ -116,9 +140,7 @@ config_subcommands_description = \
 
 
 def __config_mode(argv):
-    """
-    Implementation of Envprobe's configuration entry point.
-    """
+    """Implementation of Envprobe's configuration entry point."""
     # Instantiate the "globals" of Envprobe that interface with the env vars.
     shell, env = get_shell_and_env_always(os.environ)
 
@@ -139,13 +161,7 @@ def __config_mode(argv):
     # TODO: vartypes (community?)
 
     args = parser.parse_args(argv[1:])
-
-    # Inject the loaded state's manager objects into the user's request, so
-    # the command handlers can accept them.
-    args.community = CommunityData()
-    args.environment = env
-    args.envprobe_root = argv[0].replace("/__envprobe", "")
-    args.shell = shell
+    args = __inject_state_to_args(args, shell, env, argv[0])
 
     # Execute the desired action.
     if 'func' in args:
@@ -166,9 +182,8 @@ def __config_mode(argv):
 
 
 def __dispatch_factory(to_fn):
-    """
-    This function helps in dispatching a call of `envprobe mode args...` as
-    `envprobe-mode args...`.
+    """This function helps in dispatching a call of `envprobe mode args...`
+    as `envprobe-mode args...`.
     """
     def __bound_dispatcher(argv):
         """
@@ -183,8 +198,7 @@ def __dispatch_factory(to_fn):
 
 
 def handle_mode(envprobe_root):
-    """
-    Parse the first argument to an Envprobe commnad-line invocation and
+    """Parse the first argument to an Envprobe commnad-line invocation and
     dispatch to the appropriate mode handler.
     """
     mode_parser = argparse.ArgumentParser(

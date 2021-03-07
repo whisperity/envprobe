@@ -146,6 +146,8 @@ def _handle_setting_variable(tracker, args):
 
 
 def command(args):
+    # Create our own tracking instance here because this command might write
+    # the configuration file.
     is_write_action = args.setting in [Mode.TRACK, Mode.IGNORE, Mode.RESET]
     if args.shell.is_envprobe_capable:
         local_config_file = ConfigurationFile(
@@ -157,14 +159,12 @@ def command(args):
         )
     else:
         local_config_file = None
-
     global_config_file = ConfigurationFile(
         os.path.join(get_configuration_directory(), get_tracking_file_name()),
         VariableTracking.config_schema_global,
         read_only=args.scope != Scope.GLOBAL or (args.scope == Scope.GLOBAL and
                                                  not is_write_action)
     )
-
     tracker = VariableTracking(global_config_file, local_config_file)
 
     if args.default:
@@ -200,14 +200,14 @@ def register(argparser, manage_local_config=False):
                         help="The name of the environment variable which "
                              "the tracking status is configured for, e.g. "
                              "EDITOR or PATH.")
-    target.add_argument('-d', "--default",
+    target.add_argument('-d', '--default',
                         action='store_true',
                         help="Configure the default behaviour instead of the "
                              "status of one environment variable.")
 
     setting = parser.add_argument_group("mode arguments")
     setting = setting.add_mutually_exclusive_group()
-    setting.add_argument('-t', "--track",
+    setting.add_argument('-t', '--track',
                          dest='setting',
                          action='store_const',
                          const=Mode.TRACK,
@@ -216,7 +216,7 @@ def register(argparser, manage_local_config=False):
                               "option is used, set the default for all "
                               "variables to be tracked without an explicit "
                               "ignore set.")
-    setting.add_argument('-i', "--ignore", "--no-track",
+    setting.add_argument('-i', '--ignore', '--no-track',
                          dest='setting',
                          action='store_const',
                          const=Mode.IGNORE,
@@ -225,7 +225,7 @@ def register(argparser, manage_local_config=False):
                               "option is used, set the default for all "
                               "variables to be ignored without an explicit "
                               "track set.")
-    setting.add_argument('-r', "--reset",
+    setting.add_argument('-r', '--reset',
                          dest='setting',
                          action='store_const',
                          const=Mode.RESET,
@@ -234,7 +234,7 @@ def register(argparser, manage_local_config=False):
                               "default instead. This option cannot be used "
                               "if the '--global' and '--default' options are "
                               "given.")
-    setting.add_argument('-q', "--query",
+    setting.add_argument('-q', '--query',
                          dest='setting',
                          action='store_const',
                          const=Mode.QUERY,
@@ -251,7 +251,7 @@ def register(argparser, manage_local_config=False):
         else scopeargs_description_global_only)
     scope = scope.add_mutually_exclusive_group()
     if manage_local_config:
-        scope.add_argument('-l', "--local",
+        scope.add_argument('-l', '--local',
                            dest='scope',
                            action='store_const',
                            const=Scope.LOCAL,

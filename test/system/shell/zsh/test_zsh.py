@@ -163,3 +163,46 @@ def test_add_and_remove(sh, tmp_path):
 
     retcode, _ = sh.execute_command("cd \"{0}\"".format(old_wd))
     assert(not retcode)
+
+
+def test_diff(sh):
+    retcode, result = sh.execute_command("envprobe diff", timeout=0.5)
+    assert(not retcode)
+    assert(result)
+    retcode, result = sh.execute_command("ep %", timeout=0.5)
+    assert(not retcode)
+    assert(result)
+
+    retcode, result = sh.execute_command("ep FOOBAR=xyz", timeout=0.5)
+    assert(not retcode)
+    assert(not result)
+    retcode, result = sh.execute_command("ep +DUMMY_PATH .", timeout=0.5)
+    assert(not retcode)
+    assert(not result)
+
+    retcode, result = sh.execute_command("pwd")
+    assert(not retcode)
+    pwd = result
+
+    retcode, result = sh.execute_command("ep % FOOBAR DUMMY_PATH NOT_CHANGED",
+                                         timeout=0.5)
+    assert(not retcode)
+    expected = ["(+) Added:       DUMMY_PATH",
+                "\tdefined value: ['{0}']".format(pwd),
+                "(+) Added:       FOOBAR",
+                "\tdefined value: xyz"
+                ]
+    assert(result)
+    assert(list(filter(lambda x: x, result.splitlines(False))) == expected)
+
+    retcode, result = sh.execute_command("ep ^FOOBAR", timeout=0.5)
+    assert(not retcode)
+    assert(not result)
+    retcode, result = sh.execute_command("ep ^DUMMY_PATH", timeout=0.5)
+    assert(not retcode)
+    assert(not result)
+
+    retcode, result = sh.execute_command("ep % FOOBAR DUMMY_PATH NOT_CHANGED",
+                                         timeout=0.5)
+    assert(not retcode)
+    assert(list(filter(lambda x: x, result.splitlines(False))) == [])

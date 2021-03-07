@@ -14,6 +14,8 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+from difflib import ndiff
+
 from .envvar import EnvVar
 
 
@@ -191,27 +193,22 @@ class Array(EnvVar):
         For :py:class:`Array` variables, the elements that are same in both
         `old` and `new` will be emitted with an ``=`` ("unchanged") side.
         """
-        def __deduplicate_list_keep_order(list):
-            seen = set()
-            return [x for x in list
-                    if not (x in seen or seen.add(x))]
+        if old.value == new.value:
+            return list()
 
-        old = __deduplicate_list_keep_order(old.value)
-        new = __deduplicate_list_keep_order(new.value)
-        if old == new:
-            return []
+        ret = list()
+        diff = ndiff(old.value, new.value)
 
-        ret = []
-        added = list(filter(lambda e: e not in old and e != '', new))
-        removed = list(filter(lambda e: e not in new and e != '', old))
-        kept = list(filter(lambda e: e in old and e in new and e != '',
-                           __deduplicate_list_keep_order(old + new)))
-
-        for remove in removed:
-            ret.append(('-', remove))
-        for keep in kept:
-            ret.append(('=', keep))
-        for add in added:
-            ret.append(('+', add))
+        for line in diff:
+            parts = line.split(' ', 1)
+            mode, value = parts[0], parts[1]
+            if mode == '-':
+                ret.append(('-', value))
+            elif mode == '':
+                # The line's format was " foo", indicating it's present in
+                # both lists.
+                ret.append(('=', value[1:]))
+            elif mode == '+':
+                ret.append(('+', value))
 
         return ret

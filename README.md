@@ -13,6 +13,7 @@ Envprobe was originally conceived as the tool between [shell `modules`](http://m
   - [Hook](#hook)
 - [Quick user guide](#quick-user-guide)
   - [Managing environment variables](#managing-environment-variables)
+  - [Saved snapshots](#saved-snapshots)
 
 ---
 
@@ -120,6 +121,8 @@ $ ep ^SOME_VARIABLE
 $ echo $SOME_VARIABLE
 # No result.
 
+
+
 $ fancy
 fancy: command not found!
 
@@ -140,6 +143,38 @@ PATH=/usr/local/bin:/usr/bin:/sbin:/bin:/root
 
 $ ep +PATH ..
 PATH=/:/usr/local/bin:/usr/bin:/sbin:/bin:/root
+~~~
+
+
+### Saved snapshots
+
+For easy access, some of the snapshot management commands are also offered as shortcuts.
+
+| Command                 | Shortcut                                            | Usage                         |
+|:------------------------|:----------------------------------------------------|:----------------------------------------------------------------------------|
+| `diff`                  | `%`                                                 | Show the difference between the current environment and the last saved one. |
+
+
+~~~{.bash}
+$ ep %
+# (No output, initially the environment hasn't been changed yet.)
+
+$ ep PATH
+PATH=/usr/local/bin:/usr/bin/:/sbin:/bin
+
+$ ep SOME_VARIABLE=foo
+$ ep +PATH /tmp
+$ ep -PATH /sbin
+$ ep PATH+ /home/user/bin
+
+$ ep %
+(+) Added:       SOME_VARIABLE
+        defined value: foo
+
+(!) Changed:     PATH
+        added:         /tmp
+        added:         /home/user/bin
+        removed:       /sbin
 ~~~
 
 ---
@@ -208,25 +243,8 @@ $ ep PATH
 PATH=/opt/fancy/bin:/some/unrelated/tool:/bin
 ```
 
-Usage: Accessing current environment variables
-----------------------------------------------
-
-Envprobe offers an easy interface that helps you manage environment variables
-of the current shell.
-
-(Shortcuts for the long form of actions is presented between `{` and `}`
-on the right side.)
-
-
-### Adding and removing "array-like" components (e.g. `PATH`)
-
-Currently, variables whose name include the substring `PATH` are considered
-as array variables. (This is expected to change to be more configurable as
-`envprobe`'s development furthers.)
-
-
 Usage: Saving and loading environments
--------------------------------------------
+--------------------------------------
 
 In this section, the tools for managing variable changes between shells is
 explained. This is *the core* feature of Envprobe, allowing you to quickly
@@ -239,36 +257,9 @@ on the right side.)
 ~~~
 list                List the names of saved differences.
 load                {{NAME} Load differences from a named save and apply them.
-diff                {%} Show difference of shell vs. previous save/load.
 save                {}NAME} Save changes in the environment into a named save.
 delete              Delete a named save.
 ~~~
-
-
-### Showing the difference
-
-The change of variables are recorded(*) relative to the initial state of the
-shell. This record is updated when changes are saved or loaded (more about
-it later).
-
-To view the changes of variables in the current shell, say `ep %` (in long
-form, `envprobe diff`):
-
-~~~
-+ Added:    FANCY_VARIABLE
-     value: very-fancy
-
-! Modified: PATH
-      added /opt/fancy/bin
-    removed /usr/sbin
-
-- Removed:  VISUAL
-     value: vim
-~~~
-
-> **(\*):** `recorded` in this context means a difference ledger kept **entirely
-> on the local machine**. *Envprobe* does not transmit/store your
-> configuration to/on any remote system.
 
 
 ### Saving and loading differences

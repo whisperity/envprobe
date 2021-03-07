@@ -40,14 +40,14 @@ then
 
     envprobe()
     {{
-        _ENVPROBE=1 PYTHONPATH="{LOCATION}" \
+        PYTHONPATH="{LOCATION}" \
             python3 -m envprobe \
             main "$@";
     }};
 
     envprobe-config()
     {{
-        _ENVPROBE=1 PYTHONPATH="{LOCATION}" \
+        PYTHONPATH="{LOCATION}" \
             python3 -m envprobe \
             config "$@";
     }};

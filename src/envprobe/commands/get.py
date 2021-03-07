@@ -77,7 +77,7 @@ def register(argparser, registered_command_list):
     parser.add_argument('VARIABLE',
                         type=str,
                         help="The variable to access, e.g. EDITOR or PATH.")
-    parser.add_argument('-i', "--info",
+    parser.add_argument('-i', '--info',
                         action='store_true',
                         help="Show additional detailed information for the "
                              "variable.")

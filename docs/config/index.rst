@@ -11,8 +11,8 @@ Calling ``epc`` automatically brings up the argument parser for *config mode*.
 
 .. attention::
 
-   The list of available subcommands for a mode is generated in a *context-sensitive* fashion.
-   This means that in case the current context does not allow the execution of an action, Envprobe will usually fail with an ``invalid choice`` error.
+    The list of available subcommands for a mode is generated in a *context-sensitive* fashion.
+    This means that in case the current context does not allow the execution of an action, Envprobe will usually fail with an ``invalid choice`` error.
 
 .. toctree::
    :maxdepth: 2

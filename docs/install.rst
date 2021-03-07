@@ -39,8 +39,8 @@ The easiest way to have the hook registered is by adding the invocation of Envpr
 
 .. Warning::
 
-   Envprobe's hook execution at the start of the shell involves considering the environment as-is at that moment to be the initial state used by the *saved environments* feature.
-   Because scripts loaded after Envprobe can change this state and result in otherwise useless differences picked up by Envprobe, it is **well-advised to load Envprobe last**.
+    Envprobe's hook execution at the start of the shell involves considering the environment as-is at that moment to be the initial state used by the :ref:`saved snapshots<snapshots>` feature.
+    Because scripts loaded after Envprobe can change the state of environment and result in otherwise unintended, automated changes picked up by Envprobe as if the user made them, it is **well-advised to load Envprobe last**.
 
 
 Bash
@@ -50,7 +50,7 @@ Put the following code as-is (including quotes, etc.) at the end of ``~/.bashrc`
 
 .. code-block:: bash
 
-   eval "$(~/envprobe/envprobe config hook bash $$)";
+    eval "$(~/envprobe/envprobe config hook bash $$)";
 
 Zsh
 ---
@@ -62,7 +62,7 @@ Put the following code as-is (including quotes, etc.) at the end of ``~/.zshrc``
 
 .. code-block:: bash
 
-   eval "$(~/envprobe/envprobe config hook zsh $$)";
+    eval "$(~/envprobe/envprobe config hook zsh $$)";
 
 
 Zsh with *Oh-My-Zsh*
@@ -72,7 +72,7 @@ If you are using `Oh-My-Zsh <http://ohmyz.sh>`_ to manage your Zsh, create a new
 
 .. code-block:: bash
 
-   eval "$(~/envprobe/envprobe config hook zsh $$)";
+    eval "$(~/envprobe/envprobe config hook zsh $$)";
 
 
 Testing the hook
@@ -85,8 +85,8 @@ If something similar to the following is visible on the screen (instead of a *"b
 
 .. code-block:: bash
 
-   $ ep
-   usage: envprobe [-h] ...
+    $ ep
+    usage: envprobe [-h] ...
 
 
 

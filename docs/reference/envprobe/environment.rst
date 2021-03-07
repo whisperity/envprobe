@@ -19,7 +19,7 @@ At the core of the library is the :py:class:`.Environment` class, which is insta
 Difference of environments
 ==========================
 
-The :py:func:`environment.diff` function returns for each variable instances of the following class.
+The :py:func:`environment.diff` function creates and returns a :py:class:`VariableDifference` for each changed variable.
 
 .. autoclass:: VariableDifference
    :members:
