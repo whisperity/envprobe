@@ -14,10 +14,9 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-try:
-    from contextlib import nullcontext
-except ImportError:
-    from envprobe.compatibility import nullcontext  # noqa
+from copy import deepcopy
+
+from envprobe.compatibility import nullcontext
 
 
 K_DEFAULT_SETTING = 'default'
@@ -69,10 +68,10 @@ class VariableTracking:
         """
         self._global = global_configuration \
             if global_configuration is not None \
-            else nullcontext(dict(self.config_schema_global))
+            else nullcontext(deepcopy(self.config_schema_global))
         self._local = local_configuration \
             if local_configuration is not None \
-            else nullcontext(dict(self.config_schema_local))
+            else nullcontext(deepcopy(self.config_schema_local))
 
     @property
     def global_tracking(self):

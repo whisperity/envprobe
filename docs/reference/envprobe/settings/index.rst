@@ -9,11 +9,12 @@ The :py:mod:`envprobe.settings` package implements classes that deal with handli
 .. toctree::
    :maxdepth: 1
 
+   snapshot
    variable_tracking
 
 
-Configuration storage
-=====================
+Abstract configuration files
+============================
 
 The :py:class:`ConfigurationFile` class allows accessing a *key-value mapping* (:py:class:`dict`) of configuration objects that is saved to the user's file system to a `JSON <http://json.org>`_ file.
 

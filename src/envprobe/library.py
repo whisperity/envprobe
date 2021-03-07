@@ -17,7 +17,8 @@
 import os
 
 from .environment import Environment
-from .settings import core as settings, config_file, variable_tracking
+from .settings import core as settings
+from .settings import config_file, snapshot, variable_tracking
 from .shell import get_current_shell, FakeShell
 from .vartype_heuristics import standard_vartype_pipeline
 
@@ -55,6 +56,34 @@ def get_shell_and_env_always(env_dict=None):
     env = Environment(sh, env_dict, standard_vartype_pipeline)
 
     return sh, env
+
+
+def get_snapshot(snapshot_name, read_only=True):
+    """Creates the snapshot instance for the snapshot of the given name.
+
+    Parameters
+    ----------
+    snapshot_name : str
+        The name of the snapshot to load or create.
+    read_only : bool
+        If ``True``, the file will be opened read-only and not saved at exit.
+
+    Returns
+    -------
+    .settings.snapshot.Snapshot
+        The snapshot manager object.
+        Access to the underlying file is handled automatically through this
+        instance.
+    """
+    snapshot_name = snapshot_name.lstrip('/')
+    snapshot_name = os.path.normpath(snapshot_name)
+
+    basedir = os.path.join(settings.get_configuration_directory(),
+                           snapshot.get_snapshot_directory_name())
+    return config_file.ConfigurationFile(
+        os.path.join(basedir, snapshot_name),
+        snapshot.Snapshot.config_schema,
+        read_only=read_only)
 
 
 def get_variable_tracking(shell=None):

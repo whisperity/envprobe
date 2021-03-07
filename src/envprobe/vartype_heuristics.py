@@ -72,10 +72,10 @@ def assemble_standard_type_heuristics_pipeline():
 
     # By default everything is a string.
     p += EnvVarTypeHeuristic()
-    # If the value or the name feels numbery, make it a number
+    # If the value or the name feels numbery, make it a number.
     p += NumericalValueEnvVarHeuristic()
     p += NumericalNameEnvVarHeuristic()
-    # If the path feels numbery, make it a number
+    # If the variable looks like a path, use path.
     p += PathEnvVarHeuristic()
     # Community-sourced descriptions available to the user trump the rest.
     p += CommunityTypeHeuristic()

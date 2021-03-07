@@ -19,7 +19,7 @@ from envprobe.vartypes.array import Array
 
 name = 'remove'
 description = \
-    """"Remove element value(s) from an environment variable.
+    """Remove element value(s) from an environment variable.
     This command may only be used for array variables, such as PATH.
 
 

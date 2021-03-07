@@ -14,24 +14,26 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-"""Envprobe: Easy environment variable manager with saved states on a per-shell
-basis.
-"""
-from . import community_descriptions
-from . import environment
-from . import main
-from . import shell
-from . import vartypes
-from . import vartype_heuristics
-from .library import get_shell_and_env_always, get_variable_tracking
+from envprobe.settings.snapshot import Snapshot
 
-__all__ = [
-    'community_descriptions',
-    'environment',
-    'main',
-    'shell',
-    'vartypes',
-    'vartype_heuristics',
-    'get_shell_and_env_always',
-    'get_variable_tracking'
-    ]
+
+def test_setup():
+    s = Snapshot()
+    assert(s["FOO"] is None)
+
+
+def test_set_and_get():
+    s = Snapshot()
+    s["FOO"] = {"diff object"}
+
+    assert(s["FOO"] == {"diff object"})
+    assert(s["BAR"] is None)
+
+
+def test_delete():
+    s = Snapshot()
+    s["FOO"] = 1
+    del s["FOO"]
+
+    assert(s["FOO"] is s.UNDEFINE)
+    assert(s["BAR"] is None)

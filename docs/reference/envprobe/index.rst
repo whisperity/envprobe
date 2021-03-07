@@ -23,6 +23,10 @@ Envprobe is implemented as a single Python package, named ``envprobe``.
 Miscellaneous functions
 =======================
 
+The :py:mod:`envprobe.library` module contains some miscellaneous functions that are used to tie the creation of the global objects accessing the environment and the user's state in a meaningful way.
+
 .. currentmodule:: envprobe.library
 
 .. autofunction:: get_shell_and_env_always
+.. autofunction:: get_snapshot
+.. autofunction:: get_variable_tracking
