@@ -92,13 +92,13 @@ The [complete documentation](http://envprobe.readthedocs.io/en/latest/main/index
 
 For easy access, the environment variable managing commands are also offered as shortcuts.
 
-| Command                 | Shortcut                                            | Usage                         |
-|:------------------------|:----------------------------------------------------|:------------------------------|
-| `get VARIABLE`          | `?VARIABLE` or simply `VARIABLE`                    | Print the value of `VARIABLE` |
-| `set VARIABLE VALUE   ` | `!VARIABLE`, `VARIABLE=VALUE`                       | Sets `VARIABLE` to `VALUE`    |
-| `undefine VARIABLE`     | `^VARIABLE`                                         | Undefine `VARIABLE`           |
-| `add VARIABLE VALUE`    | `+VARIABLE VALUE` (front), `VARIABLE+ VALUE` (back) | Add a `VALUE` to an array     |
-| `remove VARIABLE VALUE` | `-VARIABLE VALUE`                                   | Remove `VALUE` from an array  |
+| Command                 | Shortcut                                            | Usage                          |
+|:------------------------|:----------------------------------------------------|:-------------------------------|
+| `get VARIABLE`          | `?VARIABLE`, or simply `VARIABLE`                   | Print the value of `VARIABLE`. |
+| `set VARIABLE VALUE   ` | `!VARIABLE`, `VARIABLE=VALUE`                       | Sets `VARIABLE` to `VALUE`.    |
+| `undefine VARIABLE`     | `^VARIABLE`                                         | Undefine `VARIABLE`.           |
+| `add VARIABLE VALUE`    | `+VARIABLE VALUE` (front), `VARIABLE+ VALUE` (back) | Add a `VALUE` to an array.     |
+| `remove VARIABLE VALUE` | `-VARIABLE VALUE`                                   | Remove `VALUE` from an array.  |
 
 
 ~~~{.bash}
@@ -150,9 +150,10 @@ PATH=/:/usr/local/bin:/usr/bin:/sbin:/bin:/root
 
 For easy access, some of the snapshot management commands are also offered as shortcuts.
 
-| Command                 | Shortcut                                            | Usage                         |
-|:------------------------|:----------------------------------------------------|:----------------------------------------------------------------------------|
-| `diff`                  | `%`                                                 | Show the difference between the current environment and the last saved one. |
+| Command                                   | Shortcut                        | Usage                                                                                                                                                         |
+|:------------------------------------------|:--------------------------------|:--------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `diff [var1 var2...]`                     | `% [var1 var2...]`              | Show the difference between the current environment and the last saved one (optionally only for the variables named).                                         |
+| `save [--patch] SNAPSHOT [var1 var2...]`  | `}SNAPSHOT [-p] [var1 var2...]` | Save the changes (optionally of only the variables named) to the snapshot named `SNAPSHOT`. If `-p` is given, ask for confirmation of each individual change. |
 
 
 ~~~{.bash}
@@ -175,6 +176,15 @@ $ ep %
         added:         /tmp
         added:         /home/user/bin
         removed:       /sbin
+
+$ ep } mypath PATH
+For variable 'PATH' the element '/tmp' was added.
+For variable 'PATH' the element '/home/user/bin' was added.
+For variable 'PATH' the element '/sbin' was removed.
+
+$ ep } other_vars -p
+New variable 'SOME_VARIABLE' with value 'foo'.
+Save this change? (y/N) _
 ~~~
 
 ---
@@ -257,7 +267,6 @@ on the right side.)
 ~~~
 list                List the names of saved differences.
 load                {{NAME} Load differences from a named save and apply them.
-save                {}NAME} Save changes in the environment into a named save.
 delete              Delete a named save.
 ~~~
 
@@ -272,33 +281,13 @@ Each saved state has a distinct *name*. These saved differences are only
 available to your user on the computer, but are shared between shells, and
 kept between reboots.
 
-To save the current difference to `my_env`, execute
-
-    ep save my_env
-
 To update the current shell's variables based on what difference was written
 to `my_env`, use
 
     ep load my_env
 
 Both commands take an optional *list of variable names* (if given, only the
-variables in this list will be saved or loaded), and a toggle for *`--patch`
-mode*. In *patch mode*, each individual change has to be confirmed first on
-the Terminal.
-
-~~~
-$ ep save -p fancy
-Variable "FANCY_VARIABLE" set to value: 'very-fancy'.
-Save this change? (y/N) _
-~~~
-
-
-#### Updating saves
-
-In case the same *name* is used in multiple `save` commands, only changes to
-the same variable overwrite previous instances. The save file is automatically
-updated and appended with the new values. To completely overwrite a save,
-it must be deleted first.
+variables in this list will be saved or loaded)
 
 
 #### Inspecting a saved difference (`load --dry-run`)
@@ -427,47 +416,6 @@ To update the download of the description database, execute:
 *Note:* Depending on the size of the knowledgebase and the available Internet
 connection, the download could take up some time, and also use data. To
 conserve your resources, we advise *NOT* to update on metered connections!
-
-
-Advanced: Tracking and ignoring variables
------------------------------------------
-
-By default, Envprobe tracks the change to every variable (except a very few
-very special ones which are deliberately hidden!). There might be a case this
-is not the expected behaviour for a workflow. In this case, the `epc track`
-command can be used to fine-tune which variables should be tracked and ignored.
-
-    epc track VARIABLE         # Will set VARIABLE to be tracked.
-    epc track -i VARIABLE      # Will set VARIABLE to be ignored.
-
-If a variable is *tracked*, changes to this variable will be shown in `diff`,
-can be `save`d and `load`ed. If a variable is *ignored*, no change related to
-it is managed by Envprobe, and in case a saved state's `load` wants to change
-such a variable, it will be left without change.
-
-~~~
-$ epc track --ignore PATH
-$ ep +PATH /foo
-$ ep diff
-(empty)
-~~~
-
-If the `--global` option is specified, the change in the tracking of a variable
-will be saved for your entire user, not just the current shell.
-
-If a variable is not explicitly *tracked* nor *ignored*, the default tracking
-dictates what will happen. This default can be changed with the
-`epc default-tracking` command.
-
-    epc default-tracking --disable
-
-~~~
-$ epc track MY_VAR
-$ ep MY_VAR="foo"
-$ ep diff
-+ Added:    MY_VAR
-     value: foo
-~~~
 
 
 Extreme: Resetting or hacking *Envprobe*

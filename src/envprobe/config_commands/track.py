@@ -192,8 +192,8 @@ def register(argparser, manage_local_config=False):
             epilog=epilogue
     )
 
-    target = parser.add_argument_group()
-    target = target.add_mutually_exclusive_group(required=True)
+    target = parser.add_argument_group() \
+        .add_mutually_exclusive_group(required=True)
     target.add_argument('VARIABLE',
                         type=str,
                         nargs='?',  # Make the name optional.
@@ -205,8 +205,8 @@ def register(argparser, manage_local_config=False):
                         help="Configure the default behaviour instead of the "
                              "status of one environment variable.")
 
-    setting = parser.add_argument_group("mode arguments")
-    setting = setting.add_mutually_exclusive_group()
+    setting = parser.add_argument_group("mode arguments") \
+        .add_mutually_exclusive_group()
     setting.add_argument('-t', '--track',
                          dest='setting',
                          action='store_const',
@@ -248,8 +248,7 @@ def register(argparser, manage_local_config=False):
         "scope arguments",
         description=scopeargs_description_local_and_global
         if manage_local_config
-        else scopeargs_description_global_only)
-    scope = scope.add_mutually_exclusive_group()
+        else scopeargs_description_global_only).add_mutually_exclusive_group()
     if manage_local_config:
         scope.add_argument('-l', '--local',
                            dest='scope',

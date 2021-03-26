@@ -20,6 +20,10 @@ from envprobe.vartypes.numeric import Numeric
 
 
 def test_init_and_load():
+    default = Numeric("default")
+    assert(default.value == 0)
+    assert(default.raw() == "0")
+
     n = Numeric("test_int", 42)
     assert(n.is_integer)
     assert(not n.is_floating)

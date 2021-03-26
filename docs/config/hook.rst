@@ -4,12 +4,6 @@
 Generating the hook (``hook``)
 ==============================
 
-.. note::
-
-    This command is only available if Envprobe has not been
-    :ref:`hooked<install_hook>` in the current shell.
-
-
 .. py:function:: hook(SHELL, PID)
 
     Print the shell script that is used to hook and set up Envprobe to the current shell.

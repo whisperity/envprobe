@@ -18,7 +18,7 @@
 `envprobe (main)` that are related to interfacing with the environment
 variables.
 """
-from . import add, diff, get, remove, undefine
+from . import add, diff, get, load, remove, save, undefine
 from . import set as set_command
 
 
@@ -40,6 +40,6 @@ def register_snapshot_commands(argparser, registered_command_list, shell):
     # list.
     if shell.is_envprobe_capable and shell.manages_environment_variables:
         diff.register(argparser, registered_command_list)
-        # load.
-        # save.
+        load.register(argparser, registered_command_list)
+        save.register(argparser, registered_command_list)
     # delete.

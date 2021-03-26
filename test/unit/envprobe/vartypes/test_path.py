@@ -157,14 +157,14 @@ def test_apply_diff(cwd_to_root):
     a.apply_diff([('=', "Foo"), ('-', "Bar"), ('+', "Baz")])
     assert(a.value == ["/Baz", "/Foo"])
 
-    a.apply_diff([('-', "Baz"), ('+', "/tmp/Baz")])
-    assert(a.value == ["/tmp/Baz", "/Foo"])
+    a.apply_diff([('-', "Baz"), ('+', "/xxx/Baz")])
+    assert(a.value == ["/xxx/Baz", "/Foo"])
 
     a.apply_diff([("+", "Qux")])
-    assert(a.value == ["/Qux", "/tmp/Baz", "/Foo"])
+    assert(a.value == ["/Qux", "/xxx/Baz", "/Foo"])
 
     a.apply_diff([])
-    assert(a.value == ["/Qux", "/tmp/Baz", "/Foo"])
+    assert(a.value == ["/Qux", "/xxx/Baz", "/Foo"])
 
     a.apply_diff([('-', "NonexistentValue")])
-    assert(a.value == ["/Qux", "/tmp/Baz", "/Foo"])
+    assert(a.value == ["/Qux", "/xxx/Baz", "/Foo"])

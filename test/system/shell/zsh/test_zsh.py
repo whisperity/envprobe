@@ -27,7 +27,13 @@ def sh():
         yield sh
 
 
-def test_envprobe_loaded(sh):
+def test_envprobe_loaded(sh, tmp_path):
+    retcode, _ = sh.execute_command("export XDG_DATA_HOME=\"{0}/data\" "
+                                    "XDG_CONFIG_HOME=\"{0}/config\" "
+                                    "XDG_RUNTIME_DIR=\"{0}/runtime\""
+                                    .format(os.path.dirname(tmp_path)))
+    assert(not retcode)
+
     retcode, _ = sh.execute_command("envprobe --help", timeout=1)
     assert(not retcode)
 
@@ -206,3 +212,40 @@ def test_diff(sh):
                                          timeout=0.5)
     assert(not retcode)
     assert(list(filter(lambda x: x, result.splitlines(False))) == [])
+
+
+def test_save(sh):
+    retcode, result = sh.execute_command("pwd")
+    assert(not retcode)
+    old_wd = result
+    retcode, _ = sh.execute_command("cd /")
+    assert(not retcode)
+
+    retcode, result = sh.execute_command("ep +DUMMY_PATH Foo", timeout=0.5)
+    assert(not retcode)
+    assert(not result)
+
+    retcode, result = sh.execute_command("ep save dummy_path DUMMY_PATH",
+                                         timeout=0.5)
+    assert(not retcode)
+    assert(list(filter(lambda x: x, result.splitlines(False))) ==
+           ["New variable 'DUMMY_PATH' with value '['/Foo']'."])
+
+    retcode, result = sh.execute_command("ep +DUMMY_PATH Bar", timeout=0.5)
+    assert(not retcode)
+    assert(not result)
+
+    # Simulate oversaving. This will save both /Foo and /Bar to the save file,
+    # hopefully. Testing this will happen with the testing of load().
+    retcode, result = sh.execute_command("ep save dummy_path DUMMY_PATH",
+                                         timeout=0.5)
+    assert(not retcode)
+    assert(list(filter(lambda x: x, result.splitlines(False))) ==
+           ["For variable 'DUMMY_PATH' the element '/Bar' was added."])
+
+    retcode, _ = sh.execute_command("cd \"{0}\"".format(old_wd))
+    assert(not retcode)
+
+    retcode, result = sh.execute_command("ep ^DUMMY_PATH", timeout=0.5)
+    assert(not retcode)
+    assert(not result)

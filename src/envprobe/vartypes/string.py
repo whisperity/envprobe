@@ -20,7 +20,7 @@ from .envvar import EnvVar, register_type
 class String(EnvVar):
     """The standard type of environment variables."""
 
-    def __init__(self, name, raw_value):
+    def __init__(self, name, raw_value=""):
         """Create a new :py:class:`String` variable."""
         super().__init__(name, raw_value)
         self.value = raw_value

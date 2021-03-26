@@ -55,7 +55,7 @@ def _register_mock_shell(rand):
 @pytest.fixture
 def mock_shell(scope='module'):
     """Generate a randomly named `MockShell` and register it."""
-    rand_str = ''.join(random.choice(string.ascii_lowercase) for i in range(8))
+    rand_str = ''.join(random.choice(string.ascii_lowercase) for _ in range(8))
     _register_mock_shell(rand_str)
     yield rand_str
 
@@ -78,7 +78,7 @@ def dummy_shell(mock_shell, tmp_path):
 
 def _register_mock_variable(rand):
     class MockVariable(EnvVar):
-        def __init__(self, variable, value):
+        def __init__(self, variable, value=""):
             super().__init__(variable, value)
             self.value = value
 
@@ -222,3 +222,28 @@ def test_apply_change(dummy_shell, mock_envvar, dummy_env):
     # The diff is: INIT_PID is NOT part of stamped, but part of current.
     assert(len(diff) == 1 and "INIT_PID" in diff)
     assert(diff["INIT_PID"].kind == VDK.ADDED)
+
+
+def test_diff(dummy_shell, mock_envvar, dummy_env):
+    shell, osenv = dummy_shell
+    MockVar, MockHeuristics = mock_envvar
+    dummy_env.stamp()
+    assert(not dummy_env.diff())
+
+    var = MockVar("X", 8)
+    dummy_env.set_variable(var)
+
+    user_var, _ = dummy_env["USER"]
+    assert(type(user_var) is MockVar)
+    dummy_env.set_variable(user_var, remove=True)
+
+    init_pid_var, _ = dummy_env["INIT_PID"]
+    init_pid_var.value = 42
+    dummy_env.set_variable(init_pid_var)
+
+    diff = dummy_env.diff()
+    assert(len(diff) == 3)
+
+    assert(diff["USER"].diff_actions == [('-', "envprobe")])
+    assert(diff["X"].diff_actions == [('+', 8)])
+    assert(diff["INIT_PID"].diff_actions == [('-', 1), ('+', 42)])

@@ -100,7 +100,7 @@ def __main_mode(argv):
 
     # The order of the commands here also specifies the order they are shown
     # in the user's output!
-    registered_commands = []
+    registered_commands = list()
     register_envvar_commands(subparsers, registered_commands, shell)
     register_snapshot_commands(subparsers, registered_commands, shell)
 

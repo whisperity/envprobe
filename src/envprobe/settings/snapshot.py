@@ -34,6 +34,17 @@ def get_snapshot_directory_name():
     return "snapshots"
 
 
+def get_snapshot_file_name(snapshot_name):
+    """Returns the expected name of the snapshot file, given it's logical name.
+
+    Warning
+    -------
+    This method only returns the **filename** for the snapshot, not its
+    location or full path.
+    """
+    return snapshot_name + ".json"
+
+
 class Snapshot:
     """Represents a persisted configuration file of the user which stores the
     state of some environment variables.
@@ -49,7 +60,7 @@ class Snapshot:
     This value should **always** be **identity-compared** with the ``is``
     keyword.
 
-    :meta hide-value:
+    :meta hide-value:  (Do not show the "None" initialisation in the docs!)
     """
 
     def __init__(self, configuration=None):
@@ -72,9 +83,11 @@ class Snapshot:
 
         Returns
         -------
-        diff_actions : TODO!
+        diff_actions : list((char, str))
             The representation of the diff actions to be taken for the variable
             to have the value in the saved snapshot.
+
+            See :py:meth:`envprobe.vartypes.EnvVar.diff` for the format.
         :py:attr:`UNDEFINE`
             Returned if the variable was marked to be undefined.
         """
@@ -84,16 +97,38 @@ class Snapshot:
             return conf[K_VARIABLES].get(variable_name, None)
 
     def __setitem__(self, variable_name, difference):
-        """Sets the stored action of the given variable to the new value."""
+        """Sets the stored action of the given variable to the new value.
+
+        Parameters
+        ----------
+        variable_name : str
+            The name of the variable to set.
+        difference : list((char, str))
+            The difference actions to save into the snapshot file.
+
+            See :py:meth:`envprobe.vartypes.EnvVar.diff` for the format.
+
+        Warning
+        -------
+        :py:meth:`__setitem__` **overwrites** the information that is stored
+        in the snapshot.
+        In most cases, :py:meth:`envprobe.vartypes.EnvVar.merge_diff` should be
+        used to first create a diff that appends to the current one, and save
+        that result.
+        """
         with self._config as conf:
             if variable_name in conf[K_UNSETS]:
                 del conf[K_UNSETS][variable_name]
-            # TODO: Merge the difference here, if needed (e.g. arrays, see #2)
             conf[K_VARIABLES][variable_name] = difference
 
     def __delitem__(self, variable_name):
         """Marks the given variable to be undefined when the snapshot is
         loaded.
+
+        Parameters
+        ----------
+        variable_name : str
+            The name of the variable to mark for undefinition.
         """
         with self._config as conf:
             if variable_name in conf[K_VARIABLES]:

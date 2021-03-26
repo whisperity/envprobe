@@ -164,21 +164,45 @@ class LockedFileHandle(AbstractContextManager):
         self.release()
 
 
-class JSONExtendedEncoder(json.JSONEncoder):
-    def default(self, obj):
-        """Allows encoding additional Python types normally not supported."""
-        if isinstance(obj, set):
-            return {"__MAGIC_SET__": True,
-                    "_elements": list(obj)
-                    }
-        return super().default(self, obj)
+def json_extended_encoder(obj):
+    """Allows encoding additional Python types normally not supported or using
+    a different representation.
+    """
+    if isinstance(obj, list):
+        return [json_extended_encoder(e) for e in obj]
+    if isinstance(obj, dict):
+        return {k: json_extended_encoder(v) for k, v in obj.items()}
+    if isinstance(obj, set):
+        return {"__TYPE__": 'S',
+                '_': list(map(json_extended_encoder, obj))
+                }
+    if isinstance(obj, tuple):
+        # Sadly, json.JSONEncoder subclassing default() has a "bug", and
+        # doesn't call default() in a subclass for types it can already encode.
+        # (See http://bugs.python.org/issue30343.)
+        return {"__TYPE__": 'T',
+                '_': list(map(json_extended_encoder, obj))
+                }
+
+    return obj
 
 
-def json_extended_decoder_hook(dct):
-    """Allows decoding additional Python types normally not supported."""
-    if "__MAGIC_SET__" in dct:
-        return set(dct["_elements"])
-    return dct
+def json_extended_decoder(obj):
+    """Allows decoding additional Python types normally not supported or using
+    a different representation.
+    """
+    if isinstance(obj, list):
+        return [json_extended_decoder(e) for e in obj]
+    if isinstance(obj, dict):
+        type_id = obj.get("__TYPE__", None)
+        if type_id == 'S':
+            return set(obj['_'])
+        if type_id == 'T':
+            return tuple(obj['_'])
+
+        return {k: json_extended_decoder(v) for k, v in obj.items()}
+
+    return obj
 
 
 class ConfigurationFile(AbstractContextManager):
@@ -255,7 +279,8 @@ class ConfigurationFile(AbstractContextManager):
     def _load_data(self, fd):
         """Actually load the data from the `fd` file."""
         fd.seek(0)
-        data = json.load(fd, object_hook=json_extended_decoder_hook)
+        data = json.load(fd)
+        data = json_extended_decoder(data)
         self._data.update(data)  # Merge the changes with the defaults.
 
         self._last_loaded_data = deepcopy(self._data)
@@ -323,8 +348,8 @@ class ConfigurationFile(AbstractContextManager):
         fd.truncate(0)
 
         try:
-            json.dump(self._data, fd, indent=2, sort_keys=True,
-                      cls=JSONExtendedEncoder)
+            data_to_dump = json_extended_encoder(self._data)
+            json.dump(data_to_dump, fd, indent=2, sort_keys=True)
             self._last_loaded_data = deepcopy(self._data)
         except Exception:
             # Restore the last good state in the file.
@@ -349,6 +374,9 @@ class ConfigurationFile(AbstractContextManager):
         as the context keeps the lock on the file active throughout.
         """
         self._try_create_file()
+
+        # TODO: Allow multiple enter calls, and make sure the lock is only
+        # open once.
 
         self._in_context = LockedFileHandle(self._path,
                                             'r' if self._read_only else 'r+')

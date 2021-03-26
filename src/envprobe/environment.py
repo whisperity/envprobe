@@ -85,7 +85,7 @@ class HeuristicStack:
         >>> 'string'
     """
     def __init__(self):
-        self._elements = []
+        self._elements = list()
 
     def __add__(self, heuristic):
         """Add the `heuristic` to the top of the stack.
@@ -242,7 +242,7 @@ class VariableDifference:
         self.old_value = old_value
         self.new_value = new_value
         self.diff_actions = difference_actions if difference_actions \
-            else []
+            else list()
 
     @property
     def is_simple_change(self):
@@ -320,22 +320,19 @@ class Environment:
         """
         if not (self._shell.is_envprobe_capable and
                 self._shell.manages_environment_variables):
-            self._stamped_environment = {}
+            self._stamped_environment = dict()
             return
 
         try:
             with open(self._shell.state_file, 'rb') as f:
                 self._stamped_environment = pickle.load(f)  # nosec: pickle
         except OSError:
-            self._stamped_environment = {}
+            self._stamped_environment = dict()
 
     def stamp(self):
         """Stamp the :py:attr:`current_environment`, making it become the
         :py:attr:`stamped_environment`.
         """
-        # TODO: Please implement a better logic at stamping/saving, that only
-        #       stamps (saves) the difference as already handled, not the
-        #       ENTIRE shell.
         self._stamped_environment = deepcopy(self._current_environment)
 
     def save(self):
@@ -487,9 +484,12 @@ class Environment:
 
         def __create_difference(kind, var_name):
             try:
+                old_exists = var_name in self._stamped_environment
                 old = create_environment_variable(var_name,
                                                   self.stamped_environment,
                                                   self.type_heuristics)
+
+                new_exists = var_name in self._current_environment
                 new = create_environment_variable(var_name,
                                                   self.current_environment,
                                                   self.type_heuristics)
@@ -498,10 +498,7 @@ class Environment:
                 # was deemed not to be managed. Ignore.
                 return
 
-            if old is None or new is None:
-                # If the saved (persisted) or the current environment does not
-                # have the variable in it, it cannot or should not be
-                # serialised anyways, so we ignore it.
+            if old.value == new.value:
                 return
 
             if old.value != new.value:
@@ -510,7 +507,9 @@ class Environment:
                         var_name,
                         old.value,
                         new.value,
-                        type(old).diff(old, new))
+                        type(old).diff(
+                            old if old_exists else None,
+                            new if new_exists else None))
 
         def __handle_elements(kind, iterable):
             for e in iter(iterable):

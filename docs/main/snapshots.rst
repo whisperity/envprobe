@@ -16,11 +16,6 @@ A recurring theme in this section is the mention of *current values* versus the 
 Initially, when Envprobe is loaded into a shell, the *current values* at the time of loading becomes the first *saved state* itself.
 
 
-.. Attention::
-
-   This feature is yet to be implemented.
-
-
 Difference of current environment (``diff``, ``%``)
 ===================================================
 
@@ -35,7 +30,7 @@ Difference of current environment (``diff``, ``%``)
     The initial saved state is generated when :ref:`Envprobe is loaded<config_hook>`.)
 
     :param VARIABLE: The names of environment variables to show the diff for.
-                     If empty, all variables which changed values are shown.
+                     If empty, all :ref:`tracked<snapshots_tracking>` variables which changed values are shown.
     :param format:   The output format to generate.
 
                      * ``-n``/``--normal``: Generate a human-readable output.
@@ -45,7 +40,7 @@ Difference of current environment (``diff``, ``%``)
     :type format: choice
 
     :Possible invocations:
-        - ``envprobe diff [VARIABLE]``
+        - ``ep diff [VARIABLE]``
         - ``ep % [VARIABLE]``
 
     :Examples:
@@ -75,7 +70,7 @@ Difference of current environment (``diff``, ``%``)
                     removed:       /bar
 
         .. code-block:: diff
-           :caption: *Unified diff* output format for the above code example, as if ``ep % -u`` (or ``envprobe diff --unified``) was called.
+           :caption: *Unified diff* output format for the above code example, as if ``ep % -u`` (or ``ep diff --unified``) was called.
 
            --- /dev/null
            +++ FOO
@@ -94,6 +89,54 @@ Difference of current environment (``diff``, ``%``)
            -/bar
            +/mnt
 
+
+Save the values/changes to a snaphot (``save``, ``}``)
+======================================================
+
+.. py:function:: save(SNAPSHOT, VARIABLE..., patch=False)
+
+    .. note::
+
+        This command is only available if Envprobe has been :ref:`hooked<install_hook>` in the current shell.
+
+    Create or update a named snapshot which will contain the values of environment variables.
+
+    :param SNAPSHOT: The name of the save to create.
+    :param VARIABLE: The names of the environment variables which values should be saved.
+                     If empty, all :ref:`tracked<snapshots_tracking>` variables which changed values will be saved.
+    :param patch:    If ``-p``/``--patch`` is specified, the user is asked about individual change interactively.
+    :type patch:     bool
+
+    :Possible invocations:
+        - ``ep save [--patch] SNAPSHOT [VARIABLE]``
+        - ``ep } SNAPSHOT [-p] [VARIABLE]``
+
+    :Examples:
+        .. code-block:: bash
+
+            $ ep +PATH /root
+            $ ep save rootpath PATH
+            For variable 'PATH' the element '/root' was added.
+
+            $ ep FOO=Bar
+            $ ep } foobar -p
+            New variable 'FOO' with value 'bar'.
+            Save this change? (y/N) _
+
+
+Load a snapshot (``load``, ``{``)
+=================================
+
+.. py:function:: load(VARIABLE..., format="normal")
+
+    .. note::
+
+        This command is only available if Envprobe has been :ref:`hooked<install_hook>` in the current shell.
+
+    TODO: Text here.
+
+
+.. _snapshots_tracking:
 
 Variable tracking
 =================

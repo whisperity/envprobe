@@ -27,12 +27,12 @@ class FakeShell2(FakeShell):
         self._cfg_dir = cfg_dir
 
     @property
-    def is_envprobe_capable(self):
-        return True
-
-    @property
     def configuration_directory(self):
         return self._cfg_dir
+
+    @property
+    def is_envprobe_capable(self):
+        return True
 
 
 @pytest.fixture()

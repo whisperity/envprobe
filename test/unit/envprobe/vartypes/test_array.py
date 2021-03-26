@@ -21,6 +21,10 @@ from envprobe.vartypes.semi_separated import SemicolonSeparatedArray
 
 
 def test_init_and_load():
+    default = ColonSeparatedArray("default")
+    assert(default.value == [])
+    assert(default.raw() == "")
+
     a = ColonSeparatedArray("test_array", "Foo:Bar")
     assert(a.separator == ':')
     assert(a.value == ["Foo", "Bar"])
@@ -217,3 +221,7 @@ def test_merge_diff():
     assert(ColonSeparatedArray.merge_diff(
         ColonSeparatedArray.merge_diff(diff_1, diff_2), diff_3) ==
            [('-', 'Foo')])
+
+    diff_4 = ["Foo"]
+    assert(ColonSeparatedArray.merge_diff(diff_4, diff_1) ==
+           [('+', "Foo"), ('+', "Bar")])

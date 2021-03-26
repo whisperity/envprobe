@@ -41,8 +41,8 @@ Changing the tracking status of variables (``track``)
     :type scope: choice
 
     :Possible invocations:
-        - ``envprobe config track VARIABLE ...``
-        - ``epc track VARIABLE ...``
+        - ``epc track VARIABLE [mode] [scope]``
+        - ``epc track --default [mode] [scope]``
 
     :Examples:
         .. code-block:: bash

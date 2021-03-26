@@ -38,7 +38,7 @@ class Path(ColonSeparatedArray):
     unexpanded, however, relative references (``a/../b`` to ``b``) are removed
     and the current working directory (:py:func:`os.getcwd`) is prepended.
     """
-    def __init__(self, name, raw_value):
+    def __init__(self, name, raw_value=""):
         """Create a :py:class:`Path` from the given `raw_value`."""
         super().__init__(name, raw_value)
 

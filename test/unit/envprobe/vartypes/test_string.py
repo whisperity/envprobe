@@ -20,6 +20,10 @@ from envprobe.vartypes.string import String
 
 
 def test_init_and_load():
+    default = String("default")
+    assert(default.value == "")
+    assert(default.raw() == "")
+
     s = String("test_string", "foo")
     assert(s.value == "foo")
     assert(s.raw() == "foo")

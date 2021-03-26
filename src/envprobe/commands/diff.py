@@ -105,12 +105,10 @@ class Format(Enum):
 
 def command(args):
     diff = args.environment.diff()
-    if args.VARIABLE:
-        variables_to_diff = set(args.VARIABLE) & set(diff.keys())
-    else:
-        variables_to_diff = set(diff.keys())
+    variables = set(args.VARIABLE) & set(diff.keys()) if args.VARIABLE \
+        else set(diff.keys())
 
-    for variable in sorted(variables_to_diff):
+    for variable in sorted(variables):
         if not args.tracking.is_tracked(variable):
             continue
 

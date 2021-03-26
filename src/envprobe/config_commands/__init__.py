@@ -23,9 +23,6 @@ from . import hook, track
 
 def register_shell_commands(argparser, shell):
     """Registers the commands related to shell management."""
-    if shell.is_envprobe_capable:
-        return
-
     hook.register(argparser)
 
 

@@ -88,3 +88,12 @@ This page contains excerpts of Envprobe's usage that detail typical everyday tas
                 added:         /tmp
                 added:         /home/user/bin
                 removed:       /sbin
+
+        $ ep } mypath PATH
+        For variable 'PATH' the element '/tmp' was added.
+        For variable 'PATH' the element '/home/user/bin' was added.
+        For variable 'PATH' the element '/sbin' was removed.
+
+        $ ep } other_vars -p
+        New variable 'SOME_VARIABLE' with value 'foo'.
+        Save this change? (y/N) _

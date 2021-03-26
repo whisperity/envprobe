@@ -22,7 +22,7 @@ class Numeric(EnvVar):
     :py:class:`float`) value.
     """
 
-    def __init__(self, name, raw_value):
+    def __init__(self, name, raw_value="0"):
         """Create a new :py:class:`Numeric` variable by converting
         `raw_value`."""
         super().__init__(name, raw_value)

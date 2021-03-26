@@ -30,7 +30,7 @@ class Array(EnvVar):
     are implemented.
     """
 
-    def __init__(self, name, raw_value, separator):
+    def __init__(self, name, separator, raw_value):
         """Create a new array with the given `separator` by splitting
         `raw_value`.
         """
@@ -242,6 +242,17 @@ class Array(EnvVar):
         the
         """
         removals, appends = list(), list()
+
+        def _make_positive_tuple(entry):
+            """Converts the diff that sets an array variable to a definite
+            value into a list of append ('+' mode) tuples.
+            """
+            if not isinstance(entry, tuple):
+                return ('+', entry)
+            return entry
+
+        diff_a = list(map(_make_positive_tuple, diff_a))
+        diff_b = list(map(_make_positive_tuple, diff_b))
 
         for mode, value in diff_a + diff_b:
             if mode == '-':

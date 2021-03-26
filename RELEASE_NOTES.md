@@ -16,6 +16,7 @@ Bug fixes and performance improvements :beetle:
 -----------------------------------------------
 
  * Fixed an issue with invalid control code generation when a variable's value contained spaces (#12).
+ * Fixed saving changes to a PATH-like variable and then saving some more changes to it destroying the original saved values (#2).
 
 
 Backwards incompatible and other game-breaking changes :warning:
@@ -28,3 +29,4 @@ Backwards incompatible and other game-breaking changes :warning:
    Resetting a particular variable's behaviour to the default (previously done by `epc track --default`) is done by using `epc track --reset`.
  * Envprobe's user-level configuration files have been moved to `~/.config/envprobe` by default.
  * The internals of the implementation have been almost completely reworked, which means everything that relied upon Envprobe on the Python scripting level is surely broken!
+ * The format of the user configuration files have changed in an incompatible way, too.

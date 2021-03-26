@@ -246,12 +246,14 @@ def test_nonlocal_file(tmp):
 def test_extended_encode_decode(tmp):
     a_list = [1, 2, 3, 'a', 'b', 'c', "Envprobe!"]
     a_set = set(a_list)
+    a_tuple = tuple(a_list)
 
     c = ConfigurationFile("extended.json")
     c.load()
 
     c["mylist"] = a_list
     c["myset"] = a_set
+    c["mytuple"] = a_tuple
 
     c.save()
 
@@ -259,6 +261,7 @@ def test_extended_encode_decode(tmp):
     assert(not len(c))
 
     c.load()
-    assert(len(c) == 2)
+    assert(len(c) == 3)
     assert(c["mylist"] == a_list)
     assert(c["myset"] == a_set)
+    assert(c["mytuple"] == a_tuple)

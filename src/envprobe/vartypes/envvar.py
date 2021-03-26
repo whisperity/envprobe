@@ -114,9 +114,9 @@ class EnvVar(metaclass=ABCMeta):
 
         Parameters
         ----------
-        old : EnvVar
+        old : EnvVar or None
             The "left" or "baseline" side of the diff.
-        new : EnvVar
+        new : EnvVar or None
             The "right" or "new" side of the diff.
 
         Returns
@@ -148,6 +148,16 @@ class EnvVar(metaclass=ABCMeta):
         be provided in the overridden method :py:meth:`_diff` in the
         subclasses.
         """
+        if old is None:
+            # If the old variable did not exist, only return the new side.
+            diff = type(new)._diff(type(new)("__NONE__"), new)
+            return list(filter(lambda da: da[0] == '+', diff))
+        if new is None:
+            # If the new variable doesn't exist, only return the removal of
+            # the old.
+            diff = type(old)._diff(old, type(old)("__NONE__"))
+            return list(filter(lambda da: da[0] == '-', diff))
+
         if type(old) != type(new):
             raise TypeError("Only variables of the same type can be "
                             "differentiated.")
