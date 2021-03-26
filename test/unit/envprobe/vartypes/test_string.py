@@ -14,6 +14,8 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+import pytest
+
 from envprobe.vartypes.string import String
 
 
@@ -70,3 +72,36 @@ def test_diff_remove():
     diff = String.diff(s2, s1)
     assert(len(diff) == 1)
     assert(diff[0] == ('-', "bar"))
+
+
+def test_apply_diff():
+    s1 = String("test_string", "")
+    s1.apply_diff([('-', "bar"), ('+', "foo")])
+    assert(s1.value == "foo")
+
+    with pytest.raises(ValueError) as exc_info:
+        s1.apply_diff([])
+    assert("Bad diff" in str(exc_info.value))
+
+    with pytest.raises(ValueError) as exc_info:
+        s1.apply_diff([('+', "foo"), ('+', "something")])
+    assert("Bad diff" in str(exc_info.value))
+
+
+def test_merge_diff():
+    assert(String.merge_diff([], []) == [])
+
+    assert(String.merge_diff([('-', "Foo")], []) == [])
+
+    assert(String.merge_diff([], [('-', "Foo")]) == [])
+
+    assert(String.merge_diff([('+', "A")], []) == [('+', "A")])
+
+    assert(String.merge_diff([('+', "A")], [('+', "B")]) == [('+', "B")])
+
+    assert(String.merge_diff([('-', "Foo"), ('+', "Bar")],
+                             [('-', "Baz"), ('+', "Qux")]) == [('+', "Qux")])
+
+    with pytest.raises(ValueError) as exc_info:
+        String.merge_diff([('+', "Foo"), ('+', "Bar")], [])
+    assert("Bad diff" in str(exc_info.value))

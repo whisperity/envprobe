@@ -67,3 +67,40 @@ def test_no_diff():
     n = Numeric("test_int", 1)
     diff = Numeric.diff(n, n)
     assert(not diff)
+
+
+def test_apply_diff():
+    n1 = Numeric("test_number", 0)
+    n1.apply_diff([('-', 2), ('+', 4)])
+    assert(n1.value == 4)
+
+    with pytest.raises(ValueError) as exc_info:
+        n1.apply_diff([])
+    assert("Bad diff" in str(exc_info.value))
+
+    with pytest.raises(ValueError) as exc_info:
+        n1.apply_diff([('+', 5), ('+', 10)])
+    assert("Bad diff" in str(exc_info.value))
+
+    with pytest.raises(ValueError) as exc_info:
+        n1.apply_diff([('+', "foo")])
+    assert("could not convert" in str(exc_info.value))
+
+
+def test_merge_diff():
+    assert(Numeric.merge_diff([], []) == [])
+
+    assert(Numeric.merge_diff([('-', 1)], []) == [])
+
+    assert(Numeric.merge_diff([], [('-', 1)]) == [])
+
+    assert(Numeric.merge_diff([('+', 1)], []) == [('+', 1)])
+
+    assert(Numeric.merge_diff([('+', 1)], [('+', 2)]) == [('+', 2)])
+
+    assert(Numeric.merge_diff([('-', 1), ('+', 2)],
+                              [('-', 3), ('+', 4)]) == [('+', 4)])
+
+    with pytest.raises(ValueError) as exc_info:
+        Numeric.merge_diff([('+', 1), ('+', 2)], [])
+    assert("Bad diff" in str(exc_info.value))

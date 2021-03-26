@@ -186,3 +186,34 @@ def test_semicolon():
     a = SemicolonSeparatedArray("test_array_semi", "Foo:Bar;Baz")
     assert(len(a) == 2)
     assert(a.value == ["Foo:Bar", "Baz"])
+
+
+def test_apply_diff():
+    a = ColonSeparatedArray("test_array", "Foo:Bar")
+    a.apply_diff([('=', "Foo"), ('-', "Bar"), ('+', "Baz")])
+    assert(a.value == ["Foo", "Baz"])
+
+    a.apply_diff([("+", "Qux")])
+    assert(a.value == ["Foo", "Baz", "Qux"])
+
+    a.apply_diff([])
+    assert(a.value == ["Foo", "Baz", "Qux"])
+
+    a.apply_diff([('-', "NonexistentValue")])
+    assert(a.value == ["Foo", "Baz", "Qux"])
+
+
+def test_merge_diff():
+    diff_1 = [('=', "Foo"), ('+', "Bar")]
+    assert(ColonSeparatedArray.merge_diff(diff_1, []) == [('+', "Bar")])
+    assert(ColonSeparatedArray.merge_diff([], diff_1) == [('+', "Bar")])
+
+    diff_2 = [('-', "Foo"), ('+', "Bar")]
+    assert(ColonSeparatedArray.merge_diff(diff_1, diff_2) ==
+           [('-', "Foo"), ('+', "Bar")])
+
+    diff_3 = [('=', "Foo"), ('-', "Bar")]
+    assert(ColonSeparatedArray.merge_diff(diff_1, diff_3) == [])
+    assert(ColonSeparatedArray.merge_diff(
+        ColonSeparatedArray.merge_diff(diff_1, diff_2), diff_3) ==
+           [('-', 'Foo')])

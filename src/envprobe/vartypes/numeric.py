@@ -29,7 +29,7 @@ class Numeric(EnvVar):
         self.value = raw_value
 
     @classmethod
-    def type_description(cld):
+    def type_description(cls):
         """Contains a value that must be an integer or floating-point number.
         """
         return "Contains a value that must be an integer or floating-point " \

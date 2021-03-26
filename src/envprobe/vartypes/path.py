@@ -56,5 +56,23 @@ class Path(ColonSeparatedArray):
         return "A list of directories (and sometimes files) separated by :, " \
                "and automatically expanded to absolute paths."""
 
+    def apply_diff(self, diff):
+        """Applies the given `diff` actions.
+
+        For :py:class:`Path` variables, the diff application is element-wise.
+        Elements that do not exist but are meant to be removed are ignored.
+        New elements are added at the **front** of the array.
+        """
+        if not diff:
+            return
+
+        for mode, value in diff:
+            if mode == '-':
+                self.remove_value(value)
+            elif mode == '=':
+                continue
+            elif mode == '+':
+                self.insert_at(0, value)
+
 
 register_type('path', Path)

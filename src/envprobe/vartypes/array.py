@@ -31,7 +31,9 @@ class Array(EnvVar):
     """
 
     def __init__(self, name, raw_value, separator):
-        """Create a new array with the given :py:attr:`separator`."""
+        """Create a new array with the given `separator` by splitting
+        `raw_value`.
+        """
         super().__init__(name, raw_value)
         self._separator = separator
         self.value = raw_value
@@ -212,3 +214,50 @@ class Array(EnvVar):
                 ret.append(('+', value))
 
         return ret
+
+    def apply_diff(self, diff):
+        """Applies the given `diff` actions.
+
+        For :py:class:`Array` variables, the diff application is element-wise.
+        Elements that do not exist but are meant to be removed are ignored.
+        New elements are added at the **back** of the array.
+        """
+        if not diff:
+            return
+
+        for mode, value in diff:
+            if mode == '-':
+                self.remove_value(value)
+            elif mode == '=':
+                continue
+            elif mode == '+':
+                self.insert_at(-1, value)
+
+    @classmethod
+    def merge_diff(cls, diff_a, diff_b):
+        """Merges the two diffs into a diff that simulates applying `diff_a`
+        first and then `diff_b`.
+
+        For :py:class:`Array` variables, the diff merging is element-wise, and
+        the
+        """
+        removals, appends = list(), list()
+
+        for mode, value in diff_a + diff_b:
+            if mode == '-':
+                if value not in removals:
+                    removals.append(value)
+            elif mode == '=':
+                continue
+            elif mode == '+':
+                if value not in appends:
+                    appends.append(value)
+
+        removed_and_added = set(removals) & set(appends)
+        removals = list(map(lambda x: ('-', x),
+                            filter(lambda x: x not in removed_and_added,
+                                   removals)))
+        appends = list(map(lambda x: ('+', x),
+                           filter(lambda x: x not in removed_and_added,
+                                  appends)))
+        return removals + appends

@@ -145,7 +145,7 @@ class EnvVar(metaclass=ABCMeta):
         Note
         ----
         The implementation for the actual calculating of the difference should
-        be provided in the overridden method :py:func:`_diff` in the
+        be provided in the overridden method :py:meth:`_diff` in the
         subclasses.
         """
         if type(old) != type(new):
@@ -157,6 +157,66 @@ class EnvVar(metaclass=ABCMeta):
                             "differentiated.")
 
         return type(old)._diff(old, new)
+
+    def apply_diff(self, diff):
+        """Applies the given difference to the value of the instance.
+
+        Parameters
+        ----------
+        diff : list(char, str)
+            A difference action list, as returned by :py:meth:`EnvVar.diff`.
+
+        Raises
+        ------
+        ValueError
+            If the diff is invalid or non-applicable.
+
+        Note
+        ----
+        In most cases, the ``-`` (*remove*) side of the diff is ignored when
+        applying.
+        """
+        positive_actions = list(filter(lambda d: d[0] == '+', diff))
+        if len(positive_actions) != 1:
+            raise ValueError("Bad diff: none or multiple '+' actions found!")
+
+        self.value = positive_actions[0][1]
+
+    @classmethod
+    def merge_diff(cls, diff_a, diff_b):
+        """Creates a merged diff from two diffs that simulates the transitive
+        application of the first and the second diff in order.
+
+        Parameters
+        ----------
+        diff_a : list(char, str)
+            The difference actions to apply first, as returned by
+            :py:meth:`EnvVar.diff`.
+        diff_b : list(char, str)
+            The difference actions to apply second, in the same format.
+
+        Returns
+        -------
+        list(char, str)
+            The merged difference actions' list. The format is kept.
+
+        Raises
+        ------
+        ValueError
+            If the diff is invalid or non-applicable.
+        """
+        positive_actions_a = list(filter(lambda d: d[0] == '+', diff_a))
+        positive_actions_b = list(filter(lambda d: d[0] == '+', diff_b))
+
+        if len(positive_actions_a) > 1:
+            raise ValueError("Bad diff: multiple '+' actions in 'diff_a'!")
+        if len(positive_actions_b) > 1:
+            raise ValueError("Bad diff: multiple '+' actions in 'diff_b'!")
+
+        if positive_actions_b:
+            return positive_actions_b
+        else:
+            return positive_actions_a
 
 
 def register_type(kind, clazz):

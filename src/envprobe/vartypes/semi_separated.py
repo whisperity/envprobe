@@ -20,7 +20,9 @@ from .envvar import register_type
 
 class SemicolonSeparatedArray(Array):
     """A helper class that binds the array's :py:attr:`separator` to ``;``."""
+
     def __init__(self, name, raw_value):
+        """"""
         super().__init__(name, raw_value, ';')
 
     @classmethod
