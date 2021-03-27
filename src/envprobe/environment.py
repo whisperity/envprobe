@@ -371,6 +371,25 @@ class Environment:
             self.load()
         return self._stamped_environment
 
+    def get_stamped_variable(self, variable_name):
+        """Retrieve a :py:class:`.vartypes.EnvVar` environment variable from
+        the :py:attr:`stamped_environment`'s values.
+
+        Returns
+        -------
+        env_var : .vartypes.EnvVar
+            The typed environment variable object.
+            This object is always constructed, if there is no value associated
+            with it then to a default empty state.
+        is_defined : bool
+            ``True`` if the variable was actually **defined** in the
+            environment.
+        """
+        return create_environment_variable(variable_name,
+                                           self.stamped_environment,
+                                           self.type_heuristics), \
+            variable_name in self.stamped_environment
+
     def __getitem__(self, variable_name):
         """Retrieve a :py:class:`.vartypes.EnvVar` environment variable from
         the :py:attr:`current_environment`'s values.

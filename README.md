@@ -150,10 +150,11 @@ PATH=/:/usr/local/bin:/usr/bin:/sbin:/bin:/root
 
 For easy access, some of the snapshot management commands are also offered as shortcuts.
 
-| Command                                   | Shortcut                        | Usage                                                                                                                                                         |
-|:------------------------------------------|:--------------------------------|:--------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `diff [var1 var2...]`                     | `% [var1 var2...]`              | Show the difference between the current environment and the last saved one (optionally only for the variables named).                                         |
-| `save [--patch] SNAPSHOT [var1 var2...]`  | `}SNAPSHOT [-p] [var1 var2...]` | Save the changes (optionally of only the variables named) to the snapshot named `SNAPSHOT`. If `-p` is given, ask for confirmation of each individual change. |
+| Command                                   | Shortcut                        | Usage                                                                                                                                                           |
+|:------------------------------------------|:--------------------------------|:----------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `diff [var1 var2...]`                     | `% [var1 var2...]`              | Show the difference between the current environment and the last saved one (optionally only for the variables named).                                           |
+| `save [--patch] SNAPSHOT [var1 var2...]`  | `}SNAPSHOT [-p] [var1 var2...]` | Save the changes (optionally of only the variables named) to the snapshot named `SNAPSHOT`. If `-p` is given, ask for confirmation of each individual change.   |
+| `load [--patch] SNAPSHOT [var1 var2...]`  | `{SNAPSHOT [-p] [var1 var2...]` | Load the changes (optionally to only the variables names) from the snapshot named `SNAPSHOT`. If `-p` is given, ask for confirmation of each individual change. |
 
 
 ~~~{.bash}
@@ -185,6 +186,24 @@ For variable 'PATH' the element '/sbin' was removed.
 $ ep } other_vars -p
 New variable 'SOME_VARIABLE' with value 'foo'.
 Save this change? (y/N) _
+
+
+
+$ ep load custompaths
+For variable 'PATH' the element '/srv/custom/bin' will be added.
+
+$ ep PATH
+PATH=/srv/custom/bin:/tmp:/home/user/bin
+
+$ ep { foobar -n
+New variable 'FOO' will be created with value 'bar'.
+
+$ ep FOO
+FOO is not defined
+
+$ ep { foobar -p
+New variable 'FOO' will be created with value 'bar'.
+Load and apply this change? (y/N) _
 ~~~
 
 ---
@@ -229,30 +248,6 @@ the lines above enabled `envprobe` for you.
 
 
 
-Overview example
-----------------
-
-In one shell:
-
-```bash
-$ ep save fancy
-```
-
-Then, in another shell:
-
-```bash
-$ ep +PATH /some/unrelated/tool
-$ unrelated-tool
-Unrelated: works!
-
-$ ep load fancy
-$ fancy
-Fancy tool works! --too!--
-
-$ ep PATH
-PATH=/opt/fancy/bin:/some/unrelated/tool:/bin
-```
-
 Usage: Saving and loading environments
 --------------------------------------
 
@@ -266,51 +261,8 @@ on the right side.)
 
 ~~~
 list                List the names of saved differences.
-load                {{NAME} Load differences from a named save and apply them.
 delete              Delete a named save.
 ~~~
-
-
-### Saving and loading differences
-
-The `save` and `load` commands (shortcut letters: `}` and `{`) are used to
-write the difference of environment variables to a persisted "state save file",
-and to apply such states onto the current shell.
-
-Each saved state has a distinct *name*. These saved differences are only
-available to your user on the computer, but are shared between shells, and
-kept between reboots.
-
-To update the current shell's variables based on what difference was written
-to `my_env`, use
-
-    ep load my_env
-
-Both commands take an optional *list of variable names* (if given, only the
-variables in this list will be saved or loaded)
-
-
-#### Inspecting a saved difference (`load --dry-run`)
-
-To see what variable changes would take effect if a saved state was applied,
-specify `--dry-run`.
-
-~~~
-In variable "PATH", the value (component) '/opt/fancy/bin' will be added.
-In variable "PATH", the value (component) '/usr/bin' will be removed.
-New variable "FANCY_VARIABLE" will be set to value: 'very-fancy'.
-Variable "VISUAL" will be unset (from value: 'vim')
-~~~
-
-> *Note:* In traditional differences and version control systems, the
-> difference is a change from a previous value to a new one. To aid easier
-> management of environment, the "previous value" side is only emitted for
-> the user's clarity &mdash; it is **NOT** taken into account when saving
-> and applying a difference.
->
-> In the above example, `VISUAL` will be unset when the saved difference is
-> applied even if its value is not `vim`, although at the time of saving
-> the difference, it was.
 
 
 ### Listing and deleting differences

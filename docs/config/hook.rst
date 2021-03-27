@@ -41,5 +41,5 @@ Generating the hook (``hook``)
         The output of this command is not directly useful for any particular purpose other than to execute the resulting script (commonly by calling ``eval`` on it) in the context of a running shell.
         See :ref:`the install guide<install_hook>` on how to set up that all running shells are with Envprobe installed.
 
-.. [1] While the shorthand ``epc`` is used for commands in the ``envprobe config`` mode (see :ref:`config mode<config>`), the ``hook`` command is special, as it is not available once a shell has been hooked.
-     Thus, the full command must be typed out.
+.. [1] While the shorthand ``epc`` is used for commands in the ``envprobe config`` mode (see :ref:`config mode<config>`), the ``hook`` command is special, as it is meant to be available before the shell has been hooked.
+     Thus, the full command name (``envprobe config ...``) must be spelled, as the shorthand is not available.

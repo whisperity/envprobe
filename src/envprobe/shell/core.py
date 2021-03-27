@@ -171,7 +171,6 @@ class Shell(metaclass=ABCMeta):
         the overriden method :py:func:`_unset_environment_variable` instead.
         """
         if not self.manages_environment_variables:
-            # TODO: Turn this into a meaningful exception type.
             raise CapabilityError("Can't manage environment variables")
         return self._unset_environment_variable(env_var)
 

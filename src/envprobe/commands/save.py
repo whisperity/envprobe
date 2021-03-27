@@ -37,6 +37,9 @@ def command(args):
     if not variables:
         return
 
+    def actually_do_something():
+        return not args.patch or prompt()
+
     snapshot = get_snapshot(args.SNAPSHOT, read_only=False)
     for variable in sorted(variables):
         if not args.tracking.is_tracked(variable):
@@ -48,7 +51,7 @@ def command(args):
             # If a variable is new, save the current (existing) value.
             print("New variable '{0}' with value '{1}'."
                   .format(variable, vdiff.new_value))
-            if not args.patch or prompt():
+            if actually_do_something():
                 snapshot[variable] = vdiff.new_value
 
                 # apply_change() marks a change to be saved in the pristine
@@ -58,7 +61,7 @@ def command(args):
             # If a variable is unset, save this fact.
             print("Variable '{0}' (from value '{1}') undefined."
                   .format(variable, vdiff.old_value))
-            if not args.patch or prompt():
+            if actually_do_something():
                 del snapshot[variable]
                 args.environment.apply_change(var, remove=True)
         elif vdiff.is_simple_change:
@@ -66,7 +69,7 @@ def command(args):
             # interested in persisting the new value.
             print("Variable '{0}' changed from '{1}' to '{2}'."
                   .format(variable, vdiff.old_value, vdiff.new_value))
-            if not args.patch or prompt():
+            if actually_do_something():
                 snapshot[variable] = vdiff.new_value
                 args.environment.apply_change(var)
         else:
@@ -88,7 +91,7 @@ def command(args):
                     print("For variable '{0}' the element '{1}' was "
                           "added.".format(variable, value))
 
-                if not args.patch or prompt():
+                if actually_do_something():
                     current_diff.append((mode, value))
 
             # Ensure that only the changes to be saved by the user are applied
@@ -117,7 +120,7 @@ def register(argparser, registered_command_list):
     parser.add_argument('VARIABLE',
                         type=str,
                         nargs='*',
-                        help="Saves the values of the specified variable(s), "
+                        help="Save the values of the specified variable(s), "
                              "e.g. PATH, only.")
     parser.add_argument('-p', '--patch',
                         action='store_true',

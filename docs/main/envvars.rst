@@ -184,24 +184,23 @@ Traditionally, extending a variable such as ``PATH`` with your current working d
             PATH=/opt/fancy/bin:/usr/local/bin:/usr/bin:/sbin:/bin
 
         .. code-block:: bash
-           :caption: Using ``--position`` to control where the values will be added to.
-               Note the ``^1`` markers indicating what the individual variables' positions are understood as.
+            :caption: Using ``--position`` to control where the values will be added to.
+                Note the ``^1`` markers indicating what the individual variables' positions are understood as.
 
-           $ ep SOME_ARRAY
-           SOME_ARRAY=Foo:Bar:Baz
-           #          ^0  ^1  ^2
-           #          -3^ -2^ -1^
+            $ ep SOME_ARRAY
+            SOME_ARRAY=Foo:Bar:Baz
+            #          ^0  ^1  ^2
+            #          -3^ -2^ -1^
 
-           $ ep add --position 1 SOME_ARRAY BLAH
-           $ ep SOME_ARRAY
-           SOME_ARRAY=Foo:BLAH:Bar:Baz
-           #          ^0  ^1   ^2  ^3
-           #          -4^ -3^  -2^ -1^
+            $ ep add --position 1 SOME_ARRAY BLAH
+            $ ep SOME_ARRAY
+            SOME_ARRAY=Foo:BLAH:Bar:Baz
+            #          ^0  ^1   ^2  ^3
+            #          -4^ -3^  -2^ -1^
 
-           $ ep add --position -2 SOME_ARRAY FIZZ
-           $ ep SOME_ARRAY
-           SOME_ARRAY=Foo:BLAH:FIZZ:Bar:Baz
-
+            $ ep add --position -2 SOME_ARRAY FIZZ
+            $ ep SOME_ARRAY
+            SOME_ARRAY=Foo:BLAH:FIZZ:Bar:Baz
 
         .. code-block:: bash
 
@@ -215,7 +214,7 @@ Traditionally, extending a variable such as ``PATH`` with your current working d
 
     .. note::
         The ``add`` command only works with environment variables that are :py:class:`Array<envprobe.vartypes.array.Array>`.
-        In case Envprobe did not correctly resolve the type of the variable, see ... on how to set the type.
+        In case Envprobe did not correctly resolve the type of the variable, see TODO: ... on how to set the type.
 
         .. hint::
 
@@ -252,20 +251,20 @@ Removing from arrays (``remove``, ``-``)
             PATH=/usr/local/bin:/usr/bin:/sbin:/bin
 
         .. code-block:: bash
-           :caption: **All** occurrences are removed.
-               The following array has ``/bin`` in it *7* times.
+            :caption: **All** occurrences are removed.
+                The following array has ``/bin`` in it *7* times.
 
-           $ ep PATH
-           PATH=/bin:/bin:/bin:/usr/local/bin:/bin:/usr/bin:/sbin:/bin:/bin:/bin
+            $ ep PATH
+            PATH=/bin:/bin:/bin:/usr/local/bin:/bin:/usr/bin:/sbin:/bin:/bin:/bin
 
-           $ ep -PATH /bin
+            $ ep -PATH /bin
 
-           $ ep PATH
-           PATH=/usr/local/bin:/usr/bin:/sbin
+            $ ep PATH
+            PATH=/usr/local/bin:/usr/bin:/sbin
 
     .. note::
         The ``remove`` command only works with environment variables that are :py:class:`Array<envprobe.vartypes.array.Array>`.
-        In case Envprobe did not correctly resolve the type of the variable, see ... on how to set the type.
+        In case Envprobe did not correctly resolve the type of the variable, see TODO: ... on how to set the type.
 
         .. hint::
 

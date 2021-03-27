@@ -29,10 +29,6 @@ Envprobe was conceived to be the tool between some already existing ones that al
 Envprobe provides the environment variable modification experience inside the current shell, with no need of manually writing configuration files.
 You can change your environments on the fly and if the setup works, Envprobe can save the configuration for you, and load it later.
 
-.. Attention::
-
-    The saving and loading feature are yet to be migrated from the previous version!
-
 
 Documentation
 =============

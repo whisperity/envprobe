@@ -78,6 +78,11 @@ class Snapshot:
         self._config = configuration if configuration is not None \
             else nullcontext(deepcopy(self.config_schema))
 
+    def keys(self):
+        """Returns the variable names that are affected by the snapshot."""
+        with self._config as conf:
+            return set(conf[K_UNSETS]) | set(conf[K_VARIABLES].keys())
+
     def __getitem__(self, variable_name):
         """Retrieve the stored actions for the given variable.
 

@@ -105,6 +105,24 @@ def test_save(capfd, args):
     assert(snapshot["PATH"] == [('-', "/Bar"), ('+', "/Baz")])
 
 
+def test_save_tracking(capfd, args):
+    args.tracking._ignore("FOO")
+    args.tracking._ignore("NEW_VAR")
+    args.tracking._ignore("NUM")
+    args.tracking._ignore("PATH")
+
+    args.VARIABLE = None
+    args.SNAPSHOT = "should_be_empty"
+    command(args)
+
+    stdout, stderr = capfd.readouterr()
+    assert(not stdout)
+    assert(not stderr)
+
+    snapshot = get_snapshot("should_be_empty", read_only=True)
+    assert(not snapshot.keys())
+
+
 def test_save_definition_overwrite(capfd, args):
     args.VARIABLE = ["NEW_VAR"]
     args.SNAPSHOT = "test_overwrite"

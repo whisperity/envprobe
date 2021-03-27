@@ -97,3 +97,21 @@ This page contains excerpts of Envprobe's usage that detail typical everyday tas
         $ ep } other_vars -p
         New variable 'SOME_VARIABLE' with value 'foo'.
         Save this change? (y/N) _
+
+
+
+        $ ep load custompaths
+        For variable 'PATH' the element '/srv/custom/bin' will be added.
+
+        $ ep PATH
+        PATH=/srv/custom/bin:/tmp:/home/user/bin
+
+        $ ep { foobar -n
+        New variable 'FOO' will be created with value 'bar'.
+
+        $ ep FOO
+        FOO is not defined
+
+        $ ep { foobar -p
+        New variable 'FOO' will be created with value 'bar'.
+        Load and apply this change? (y/N) _

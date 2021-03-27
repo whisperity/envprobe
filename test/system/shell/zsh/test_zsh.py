@@ -249,3 +249,23 @@ def test_save(sh):
     retcode, result = sh.execute_command("ep ^DUMMY_PATH", timeout=0.5)
     assert(not retcode)
     assert(not result)
+
+
+def test_load(sh):
+    retcode, result = sh.execute_command("ep set DUMMY_PATH /", timeout=0.5)
+    assert(not retcode)
+    assert(not result)
+
+    retcode, result = sh.execute_command("ep load dummy_path", timeout=0.5)
+    assert(not retcode)
+    assert(list(filter(lambda x: x, result.splitlines(False))) ==
+           ["For variable 'DUMMY_PATH' the element '/Foo' will be added.",
+            "For variable 'DUMMY_PATH' the element '/Bar' will be added."])
+
+    retcode, result = sh.execute_command("ep \'?DUMMY_PATH\'", timeout=0.5)
+    assert(not retcode)
+    assert(result == "DUMMY_PATH=/Foo:/Bar:/")
+
+    retcode, result = sh.execute_command("ep ^DUMMY_PATH", timeout=0.5)
+    assert(not retcode)
+    assert(not result)

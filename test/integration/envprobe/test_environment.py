@@ -138,6 +138,20 @@ def test___getitem__(dummy_env):
     assert(not not_existing)
 
 
+def test_get_stamped_variable(dummy_env):
+    dummy_env.stamp()
+
+    existing_var, existing = dummy_env.get_stamped_variable("USER")
+    assert(existing_var.name == "USER")
+    assert(existing_var.value == "envprobe")
+    assert(existing)
+
+    not_existing_var, not_existing = dummy_env.get_stamped_variable("TEST")
+    assert(not_existing_var.name == "TEST")
+    assert(not_existing_var.value == "")
+    assert(not not_existing)
+
+
 def test_save_stamp(dummy_shell, dummy_env):
     shell, osenv = dummy_shell
     dummy_env.stamp()

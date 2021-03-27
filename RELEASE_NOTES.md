@@ -6,7 +6,7 @@ Release notes for Envprobe `v1.0`
 New features and enhancements :newspaper:
 -----------------------------------------
 
- * There's a shorter and more concise README, and a better and longer full Documentation available.
+ * There's a shorter and more concise [README](/README.md), and a better and longer full [Documentation](/docs/index.rst) available.
  * *Envprobe* is now designed with offering most of the low-level functionality as a Python library, with the user-facing commands simply bolted on top.
    The internal details have been highly refactored and better documented.
  * There is now an automated CI system and testing! (#8)
@@ -17,6 +17,7 @@ Bug fixes and performance improvements :beetle:
 
  * Fixed an issue with invalid control code generation when a variable's value contained spaces (#12).
  * Fixed saving changes to a PATH-like variable and then saving some more changes to it destroying the original saved values (#2).
+ * Fixed the issue with saving or loading a snapshot resulted in the entire environment considered "stamped" (i.e. no more diffs between the current state and the known state), as opposed to only the changes that affected the variables actually saved or loaded. (#14)
 
 
 Backwards incompatible and other game-breaking changes :warning:

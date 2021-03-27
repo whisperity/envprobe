@@ -1,3 +1,1 @@
-"""
-Dummy file for PyUnit to find where the import root is.
-"""
+"""Dummy file for PyUnit to find where the import root is."""

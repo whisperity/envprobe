@@ -70,28 +70,28 @@ Difference of current environment (``diff``, ``%``)
                     removed:       /bar
 
         .. code-block:: diff
-           :caption: *Unified diff* output format for the above code example, as if ``ep % -u`` (or ``ep diff --unified``) was called.
+            :caption: *Unified diff* output format for the above code example, as if ``ep % -u`` (or ``ep diff --unified``) was called.
 
-           --- /dev/null
-           +++ FOO
-           @@ -0,0 +1,1 @@
-           +Bar
+            --- /dev/null
+            +++ FOO
+            @@ -0,0 +1,1 @@
+            +Bar
 
-           --- NUM
-           +++ /dev/null
-           @@ -1,1 +0,0 @@
-           -8
+            --- NUM
+            +++ /dev/null
+            @@ -1,1 +0,0 @@
+            -8
 
-           --- PATH
-           +++ PATH
-           @@ -1,2 +1,2 @@
-            /foo
-           -/bar
-           +/mnt
+            --- PATH
+            +++ PATH
+            @@ -1,2 +1,2 @@
+             /foo
+            -/bar
+            +/mnt
 
 
-Save the values/changes to a snaphot (``save``, ``}``)
-======================================================
+Save the values/changes to a snapshot (``save``, ``}``)
+=======================================================
 
 .. py:function:: save(SNAPSHOT, VARIABLE..., patch=False)
 
@@ -101,7 +101,7 @@ Save the values/changes to a snaphot (``save``, ``}``)
 
     Create or update a named snapshot which will contain the values of environment variables.
 
-    :param SNAPSHOT: The name of the save to create.
+    :param SNAPSHOT: The name of the snapshot to create.
     :param VARIABLE: The names of the environment variables which values should be saved.
                      If empty, all :ref:`tracked<snapshots_tracking>` variables which changed values will be saved.
     :param patch:    If ``-p``/``--patch`` is specified, the user is asked about individual change interactively.
@@ -127,13 +127,50 @@ Save the values/changes to a snaphot (``save``, ``}``)
 Load a snapshot (``load``, ``{``)
 =================================
 
-.. py:function:: load(VARIABLE..., format="normal")
+.. py:function:: load(SNAPSHOT, VARIABLE..., dry_run=False, patch=False)
 
     .. note::
 
         This command is only available if Envprobe has been :ref:`hooked<install_hook>` in the current shell.
 
     TODO: Text here.
+
+    :param SNAPSHOT: The name of the snapshot to load from.
+    :param VARIABLE: The names of the environment variables which values should be updated.
+                     If empty, all :ref:`tracked<snapshots_tracking>` variables in the snapshot will be loaded.
+    :param patch:    If ``-p``/``--patch`` is specified, the user is asked about individual change interactively.
+    :type patch:     bool
+    :param dry_run:  If ``-n``/``--dry-run`` is specified, only the would-be loaded changes are printed to the standard output, but no actual change is made to the variables.
+    :type dry_run:   bool
+
+    :Possible invocations:
+        - ``ep load [--dry-run] [--patch] SNAPSHOT [VARIABLE]``
+        - ``ep { SNAPSHOT [-n] [-p] [VARIABLE]``
+
+    :Examples:
+        .. code-block:: bash
+
+            $ ep PATH
+            PATH=/bin
+
+            $ ep load rootpath PATH
+            For variable 'PATH' the element '/root' will be added.
+
+            $ ep PATH
+            PATH=/root:/bin
+
+            $ ep FOO
+            FOO is not defined
+
+            $ ep { foobar -n
+            New variable 'FOO' will be created with value 'bar'.
+
+            $ ep FOO
+            FOO is not defined
+
+            $ ep { foobar -p
+            New variable 'FOO' will be created with value 'bar'.
+            Load and apply this change? (y/N) _
 
 
 .. _snapshots_tracking:

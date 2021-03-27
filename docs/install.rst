@@ -15,18 +15,18 @@ Extract the downloaded files to any location comfortable.
 In the documentation, we will use ``~/envprobe`` as the location where Envprobe is installed to.
 
 .. code-block:: bash
-   :caption: Downloading via *Git*
+    :caption: Downloading via *Git*
 
-   git clone http://github.com/whisperity/envprobe.git ~/envprobe \
-       --origin upstream --single-branch --branch master --depth 1
+    git clone http://github.com/whisperity/envprobe.git ~/envprobe \
+        --origin upstream --single-branch --branch master --depth 1
 
 
 .. code-block:: bash
-   :caption: Downloading the current version from GitHub as a release
+    :caption: Downloading the current version from GitHub as a release
 
-   mkdir ~/envprobe
-   wget http://github.com/whisperity/envprobe/tarball/master -O envprobe.tar.gz
-   tar xzf envprobe.tar.gz --strip-components=1 -C ~/envprobe/
+    mkdir ~/envprobe
+    wget http://github.com/whisperity/envprobe/tarball/master -O envprobe.tar.gz
+    tar xzf envprobe.tar.gz --strip-components=1 -C ~/envprobe/
 
 .. _install_hook:
 

@@ -20,6 +20,7 @@ from envprobe.settings.snapshot import Snapshot
 def test_setup():
     s = Snapshot()
     assert(s["FOO"] is None)
+    assert(not s.keys())
 
 
 def test_set_and_get():
@@ -28,6 +29,7 @@ def test_set_and_get():
 
     assert(s["FOO"] == {"diff object"})
     assert(s["BAR"] is None)
+    assert(s.keys() == {"FOO"})
 
 
 def test_delete():
@@ -37,3 +39,4 @@ def test_delete():
 
     assert(s["FOO"] is s.UNDEFINE)
     assert(s["BAR"] is None)
+    assert(s.keys() == {"FOO"})
