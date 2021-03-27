@@ -171,7 +171,8 @@ def __config_mode(argv):
     # The order of the commands here also specifies the order they are shown
     # in the user's output!
     commands = ["hook",
-                "track"]
+                "track",
+                "consume"]
     # TODO: vartypes (community?)
 
     if len(argv) > 2 and argv[1] in commands:

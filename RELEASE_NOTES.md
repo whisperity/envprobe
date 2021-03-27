@@ -10,6 +10,7 @@ New features and enhancements :newspaper:
  * *Envprobe* is now designed with offering most of the low-level functionality as a Python library, with the user-facing commands simply bolted on top.
    The internal details have been highly refactored and better documented.
  * There is now an automated CI system and testing! (#8)
+ * Envprobe will now use the most temporary location possible to store the temporary files needed for operation, and will try its best to clean up after itself. (#11)
 
 
 Bug fixes and performance improvements :beetle:
@@ -18,6 +19,7 @@ Bug fixes and performance improvements :beetle:
  * Fixed an issue with invalid control code generation when a variable's value contained spaces (#12).
  * Fixed saving changes to a PATH-like variable and then saving some more changes to it destroying the original saved values (#2).
  * Fixed the issue with saving or loading a snapshot resulted in the entire environment considered "stamped" (i.e. no more diffs between the current state and the known state), as opposed to only the changes that affected the variables actually saved or loaded. (#14)
+ * Improved the handling of the control file to be done in Python, breaking our reliance on `/bin/cat` and `/bin/rm` (i.e. `/bin` being in `PATH`) being available. (#15)
 
 
 Backwards incompatible and other game-breaking changes :warning:

@@ -108,7 +108,7 @@ def command(args):
 
 
 def register(argparser, shell):
-    if not shell.is_envprobe_capable and shell.manages_environment_variables:
+    if not (shell.is_envprobe_capable and shell.manages_environment_variables):
         return
 
     parser = argparser.add_parser(

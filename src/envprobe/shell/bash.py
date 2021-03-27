@@ -25,6 +25,7 @@ class Bash(BashLike):
         super().__init__(pid, config_dir, "control.sh")
 
     def get_shell_hook(self, envprobe_callback_location):
+        # TODO: Make the calls work without setting PYTHONPATH!
         return """
 # If Envprobe isn't registered already.
 if [[ ! "$PROMPT_COMMAND" =~ "__envprobe" ]];
@@ -57,13 +58,32 @@ then
     {{
         local original_retcode="$?";
         echo "[Debug] Executing Envprobe Bash hook..." >&2;
-        if [[ -f "{CONTROL_FILE}" ]]; then
-            source "{CONTROL_FILE}";
-            cat "{CONTROL_FILE}" >&2; echo >&2;
-            rm "{CONTROL_FILE}";
-        fi;
+
+        local CONTROL="$(envprobe-config consume)";
+        echo "$CONTROL" >&2;
+        eval "$CONTROL";
+
         return $original_retcode;
     }};
+
+    # The exit hook.
+    __envprobe__kill()
+    {{
+        eval "$(envprobe-config consume --detach)";
+
+        # Fire the user's original EXIT-trap we saved when hooking.
+        eval "$ENVPROBE_ORIGINAL_EXIT_TRAP";
+        unset ENVPROBE_ORIGINAL_EXIT_TRAP;
+    }};
+
+    export ENVPROBE_ORIGINAL_EXIT_TRAP="$(trap -p EXIT)";
+    if [[ ! -z "$ENVPROBE_ORIGINAL_EXIT_TRAP" ]];
+    then
+        # Store the original trap command's configuration, if any.
+        export ENVPROBE_ORIGINAL_EXIT_TRAP="${{ENVPROBE_ORIGINAL_EXIT_TRAP//trap -- \\'/}}";  # noqa: E501
+        export ENVPROBE_ORIGINAL_EXIT_TRAP="${{ENVPROBE_ORIGINAL_EXIT_TRAP//\\' EXIT/}}";     # noqa: E501
+    fi;
+    trap __envprobe__kill EXIT;
 
     # Register the hook.
     echo "Envprobe loaded successfully. :)";
@@ -72,8 +92,34 @@ fi
 """.format(PID=self.shell_pid,
            LOCATION=envprobe_callback_location,
            CONFIG=self.configuration_directory,
-           CONTROL_FILE=self.control_file,
            TYPE=self.shell_type)
+
+    def get_shell_unhook(self):
+        return """
+# If Envprobe has been registered.
+if [[ "$PROMPT_COMMAND" =~ "__envprobe" ]];
+then
+    # Unset the internal variables.
+    unset ENVPROBE_CONFIG;
+    unset ENVPROBE_SHELL_PID;
+    unset ENVPROBE_SHELL_TYPE;
+
+    # Destroy the convenience aliases.
+    unalias ep;
+    unalias epc;
+
+    unset -f envprobe;
+    unset -f envprobe-config;
+
+    # The prompt hook and the exit hook.
+    unset -f __envprobe;
+    unset -f __envprobe__kill;
+
+    # Unregister the prompt hook.
+    echo "Envprobe unloaded successfully. Bye! :(";
+    PROMPT_COMMAND=${{PROMPT_COMMAND//__envprobe;/}}
+fi
+""".format()
 
 
 register_type('bash', Bash)

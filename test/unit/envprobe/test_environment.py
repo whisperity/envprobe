@@ -40,6 +40,9 @@ class MockShell(Shell):
     def get_shell_hook(self):
         pass
 
+    def get_shell_unhook(self):
+        pass
+
     @property
     def manages_environment_variables(self):
         return False

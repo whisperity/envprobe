@@ -115,6 +115,15 @@ class Shell(metaclass=ABCMeta):
         """
         pass
 
+    @abstractmethod
+    def get_shell_unhook(self):
+        """Create the shell code that detaches/unhooks Envprobe.
+
+        This code should be evaluated inside the context of an existing shell
+        process as an inverse operation of :py:func:`get_shell_hook`.
+        """
+        pass
+
     @property
     @abstractmethod
     def manages_environment_variables(self):
@@ -203,6 +212,9 @@ class FakeShell(Shell):
         return False
 
     def get_shell_hook(self, envprobe_callback_location):
+        return ""
+
+    def get_shell_unhook(self):
         return ""
 
     @property

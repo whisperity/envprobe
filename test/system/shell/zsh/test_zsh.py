@@ -14,6 +14,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+from glob import glob
 import os
 import pytest
 
@@ -38,7 +39,7 @@ def test_envprobe_loaded(sh, tmp_path):
     assert(not retcode)
 
     _, hook_text = sh.execute_command("envprobe config hook zsh $$",
-                                      timeout=0.5)
+                                      timeout=2)
     assert("envprobe" in hook_text)
     assert("precmd_functions" in hook_text)
 
@@ -47,7 +48,7 @@ def test_envprobe_loaded(sh, tmp_path):
 EOF
 )""".format(hook_text))
 
-    retcode, _ = sh.execute_command("eval \"$_HOOK\"", timeout=0.5)
+    retcode, _ = sh.execute_command("eval \"$_HOOK\"", timeout=2)
     assert(not retcode)
 
 
@@ -269,3 +270,22 @@ def test_load(sh):
     retcode, result = sh.execute_command("ep ^DUMMY_PATH", timeout=0.5)
     assert(not retcode)
     assert(not result)
+
+
+def test_exit(sh):
+    retcode, result = sh.execute_command("echo $XDG_RUNTIME_DIR")
+    assert(not retcode)
+    tempdir = result
+
+    assert(any(str(sh.pid) in f for f in glob(os.path.join(tempdir, "**"),
+                                              recursive=True)))
+
+    try:
+        retcode, result = sh.execute_command("exit")
+    except ValueError:
+        # Ignore the error. The shell exited, of course we could not gather a
+        # return status.
+        pass
+
+    assert(not all(str(sh.pid) in f for f in glob(os.path.join(tempdir, "**"),
+                                                  recursive=True)))

@@ -37,7 +37,10 @@ def _register_mock_shell(rand):
             return True
 
         def get_shell_hook(self, envprobe_callback_location):
-            return ""
+            pass
+
+        def get_shell_unhook(self):
+            pass
 
         @property
         def manages_environment_variables(self):
