@@ -100,7 +100,7 @@ However, due to Envprobe being a straightforward tool, other distributions are e
    :format: html
 
 +--------------------------------------+-----------------------------------+--------------------------------------------------------------+
-| Operating system                     |         Required dependencies     | Shells supported                                             |
+| **Operating system**                 |       **Required dependencies**   | **Shells supported**                                         |
 +--------------------------------------+-----------------------------------+--------------------------------------------------------------+
 | Ubuntu 18.04 LTS (*Bionic Beaver*)   |    Python :raw-html:`&ge;` 3.6    | Bash (:raw-html:`&ge;` 4.4), Zsh (:raw-html:`&ge;` 5.4)      |
 +--------------------------------------+-----------------------------------+--------------------------------------------------------------+

@@ -33,8 +33,8 @@ def get_shell_and_env_always(env_dict=None):
         The raw mapping of environment variables to their values, as in
         :py:data:`os.environ`.
 
-    Return
-    ------
+    Returns
+    -------
     shell : .shell.Shell
         The shell which use can be deduced from the current environment (by
         calling :py:func:`.shell.get_current_shell`).

@@ -104,8 +104,8 @@ class LockedFileHandle(AbstractContextManager):
     def acquire(self):
         """Acquires the lock.
 
-        Return
-        ------
+        Returns
+        -------
         file object
             The opened file handle, as if :py:func:`open` was called.
 
@@ -362,8 +362,8 @@ class ConfigurationFile(AbstractContextManager):
         """Acquires the backing file, read its contents, and return a context
         where the `ConfigurationFile` can be used.
 
-        Return
-        ------
+        Returns
+        -------
         ConfigurationFile
             The `self` instance.
 

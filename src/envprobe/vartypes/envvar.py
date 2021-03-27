@@ -279,8 +279,8 @@ def get_class(kind):
     kind : str
         The name of the environment variable type, as registered.
 
-    Return
-    ------
+    Returns
+    -------
     class
         The class implementation.
 
@@ -301,8 +301,8 @@ def get_kind(clazz):
     clazz : class
         The implementation `class` object.
 
-    Return
-    ------
+    Returns
+    -------
     str
         The registered name for the implementation.
 
@@ -318,8 +318,8 @@ def get_known_kinds():
     """Get the list of dynamically registered and loaded :py:class:`EnvVar`
     implementations.
 
-    Return
-    ------
+    Returns
+    -------
     list(str)
         The names.
     """
@@ -378,7 +378,10 @@ def load_all():
     This method does not throw if a module does not actually register anything.
     """
     for f in os.listdir(os.path.dirname(__loader__.path)):
+        module_name = f.split('.')[0]
+        if not (module_name and f.endswith('.py')):
+            continue
         try:
-            load(f.split('.')[0])
+            load(module_name)
         except NotImplementedError:
             pass

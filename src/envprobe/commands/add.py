@@ -75,7 +75,10 @@ def command(args):
     args.shell.set_environment_variable(env_var)
 
 
-def register(argparser, registered_command_list):
+def register(argparser, shell):
+    if not shell.is_envprobe_capable and shell.manages_environment_variables:
+        return
+
     parser = argparser.add_parser(
             name=name,
             description=description,
@@ -99,4 +102,3 @@ def register(argparser, registered_command_list):
                         help=position_help)
 
     parser.set_defaults(func=command)
-    registered_command_list.append(name)

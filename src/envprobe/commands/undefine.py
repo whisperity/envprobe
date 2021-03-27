@@ -41,7 +41,10 @@ def command(args):
     args.shell.unset_environment_variable(env_var)
 
 
-def register(argparser, registered_command_list):
+def register(argparser, shell):
+    if not shell.is_envprobe_capable and shell.manages_environment_variables:
+        return
+
     parser = argparser.add_parser(
             name=name,
             description=description,
@@ -53,4 +56,3 @@ def register(argparser, registered_command_list):
                         help="The variable to undefine, e.g. EDITOR. "
                              "(Note: We do *NOT* recommend undefining PATH!)")
     parser.set_defaults(func=command)
-    registered_command_list.append(name)

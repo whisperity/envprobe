@@ -58,7 +58,7 @@ def command(args):
     print(shell.get_shell_hook(args.envprobe_root))
 
 
-def register(argparser):
+def register(argparser, shell):
     load_all()  # Retrieve all shells from the module so we have them.
 
     parser = argparser.add_parser(

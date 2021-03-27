@@ -18,7 +18,6 @@ The ``main`` mode is also unique in offering *shortcuts* to further lessen the a
     This means that in case the current context does not allow the execution of an action, Envprobe will usually fail with an ``invalid choice`` error.
 
 .. toctree::
-   :maxdepth: 2
 
    envvars
    snapshots

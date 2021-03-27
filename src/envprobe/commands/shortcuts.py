@@ -14,9 +14,8 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-"""
-Implements a logic that maps shortcut calls of envprobe (such as "ep A=b") to
-expanded command invocations.
+"""Implements a logic that maps shortcut calls of envprobe (such as "ep A=b")
+to expanded command invocations.
 """
 
 # Map certain shortcut characters to different actual commands.
@@ -33,16 +32,22 @@ __SHORTCUT_CHARS = {'+': "add",
 
 
 def transform_subcommand_shortcut(argv, registered_commands):
-    """
+    """Transforms the `argv` invocation with potential shortcut characters to
+    a full invocation.
+
     Envprobe's most important functionality and selling point is the ease of
     operation on getting and setting environmental variables. This is why the
     user having to type `envprobe add PATH /foo/bar` is too verbose. This
     method transforms the given `argv` argument vector (usually
     :function:`sys.argv`) with some common expansions for ease of use.
 
-    :param:`registered_commands` should contain the list of
-    :namespace:`argparse` subcommands. This ensures that resolution to simply
-    getting a variable name that collides with a registered command won't.
+    Parameters
+    ----------
+    registered_comamnds : list(str)
+        The names of commands that are loaded and registered into the system.
+        Any invocation in the form of `ep set` (if `set` is in
+        `registered_commands`) will resolve to the command itself, as opposed
+        to considering `set` as the variable name.
     """
 
     if len(argv) < 2 or (len(argv) == 2 and argv[1] in ['-h', '--help']):

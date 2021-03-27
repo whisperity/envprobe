@@ -176,15 +176,10 @@ def command(args):
     return _handle_setting_variable(tracker, args)
 
 
-def register(argparser, manage_local_config=False):
-    """Registers the 'track' command to the argument parser.
+def register(argparser, shell):
+    manage_local_config = shell.is_envprobe_capable \
+        and shell.manages_environment_variables
 
-    Parameters
-    ----------
-    manage_local_config : bool
-        Whether the environment is capable of managing a Shell-local
-        configuration.
-    """
     parser = argparser.add_parser(
             name=name,
             description=description,

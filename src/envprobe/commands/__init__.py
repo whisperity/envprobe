@@ -15,31 +15,16 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """This package implements the individual user-facing subcommands of
-`envprobe (main)` that are related to interfacing with the environment
-variables.
+`envprobe`.
 """
-from . import add, diff, get, load, remove, save, undefine
-from . import set as set_command
+from .core import get_command, get_module, get_known_commands, load, load_all
+from .shortcuts import transform_subcommand_shortcut
 
-
-def register_envvar_commands(argparser, registered_command_list, shell):
-    """Register commands related to environment variable processing."""
-    if not (shell.is_envprobe_capable and shell.manages_environment_variables):
-        return
-
-    # The order of execution determines the order of commands, so it matters!
-    get.register(argparser, registered_command_list)
-    set_command.register(argparser, registered_command_list)
-    undefine.register(argparser, registered_command_list)
-    add.register(argparser, registered_command_list)
-    remove.register(argparser, registered_command_list)
-
-
-def register_snapshot_commands(argparser, registered_command_list, shell):
-    """Register commands related to saved environment setting snapshots."""
-    # list.
-    if shell.is_envprobe_capable and shell.manages_environment_variables:
-        diff.register(argparser, registered_command_list)
-        load.register(argparser, registered_command_list)
-        save.register(argparser, registered_command_list)
-    # delete.
+__all__ = [
+    'get_command',
+    'get_module',
+    'get_known_commands',
+    'load',
+    'load_all',
+    'transform_subcommand_shortcut'
+]

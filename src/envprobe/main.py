@@ -23,12 +23,13 @@ import argparse
 import os
 import sys
 
-from .commands import register_envvar_commands, register_snapshot_commands
+from .commands import load as load_command
 from .commands.shortcuts import transform_subcommand_shortcut
 from .community_descriptions import CommunityData
-from .config_commands import \
-    register_shell_commands, register_tracking_commands
 from .library import get_shell_and_env_always, get_variable_tracking
+
+
+# -------------------------------- Main mode ---------------------------------
 
 mode_description = \
     """Envprobe is a shell tool that helps you manage your environment
@@ -100,11 +101,22 @@ def __main_mode(argv):
 
     # The order of the commands here also specifies the order they are shown
     # in the user's output!
-    registered_commands = list()
-    register_envvar_commands(subparsers, registered_commands, shell)
-    register_snapshot_commands(subparsers, registered_commands, shell)
+    commands = ["get", "set", "undefine", "add", "remove",
+                # list
+                "diff", "load", "save"
+                # delete
+                ]
+    argv = transform_subcommand_shortcut(argv, commands)
 
-    argv = transform_subcommand_shortcut(argv, registered_commands)
+    if len(argv) > 2 and argv[1] in commands:
+        # If the user directly specified a subcommand to load, load **only**
+        # that.
+        commands = [argv[1]]
+
+    for com in commands:
+        com_impl = load_command(com)
+        com_impl.register(subparsers, shell)
+
     args = parser.parse_args(argv[1:])
     args = __inject_state_to_args(args, shell, env, argv[0])
 
@@ -125,6 +137,8 @@ def __main_mode(argv):
         args = parser.parse_args(argv[1:])
         return 0
 
+
+# ------------------------------- Config mode --------------------------------
 
 config_description = \
     """This command in Envprobe handles the configuration of your user-specific
@@ -156,9 +170,18 @@ def __config_mode(argv):
 
     # The order of the commands here also specifies the order they are shown
     # in the user's output!
-    register_shell_commands(subparsers, shell)
-    register_tracking_commands(subparsers, shell)
+    commands = ["hook",
+                "track"]
     # TODO: vartypes (community?)
+
+    if len(argv) > 2 and argv[1] in commands:
+        # If the user directly specified a subcommand to load, load **only**
+        # that.
+        commands = [argv[1]]
+
+    for com in commands:
+        com_impl = load_command(com)
+        com_impl.register(subparsers, shell)
 
     args = parser.parse_args(argv[1:])
     args = __inject_state_to_args(args, shell, env, argv[0])

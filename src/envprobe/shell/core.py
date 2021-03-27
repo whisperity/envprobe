@@ -14,9 +14,8 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-"""
-Core functions of the shell library, such as the abstract base class `Shell`,
-and the dynamic subclass loading.
+"""Core functions of the shell library, such as the abstract base class
+`Shell`, and the dynamic subclass loading.
 """
 from abc import ABCMeta, abstractmethod
 import importlib
@@ -261,8 +260,8 @@ def get_class(kind):
     kind : str
         The name of the shell, as registered.
 
-    Return
-    ------
+    Returns
+    -------
     class
         The class implementation.
 
@@ -283,8 +282,8 @@ def get_kind(clazz):
     clazz : class
         The implementation `class` object.
 
-    Return
-    ------
+    Returns
+    -------
     str
         The registered name for the implementation.
 
@@ -300,8 +299,8 @@ def get_known_kinds():
     """Get the list of dynamically registered and loaded :py:class:`Shell`
     implementations.
 
-    Return
-    ------
+    Returns
+    -------
     list(str)
         The names.
     """
@@ -364,7 +363,7 @@ def load_all():
         if not (module_name and f.endswith('.py')):
             continue
         try:
-            load(f.split('.')[0])
+            load(module_name)
         except NotImplementedError:
             pass
 

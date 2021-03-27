@@ -118,7 +118,10 @@ def command(args):
             Format.unified(variable, diff[variable])
 
 
-def register(argparser, registered_command_list):
+def register(argparser, shell):
+    if not shell.is_envprobe_capable and shell.manages_environment_variables:
+        return
+
     parser = argparser.add_parser(
             name=name,
             description=description,
@@ -150,4 +153,3 @@ def register(argparser, registered_command_list):
                           "output is needed.")
 
     parser.set_defaults(func=command, output_type=Format.HUMAN_READABLE)
-    registered_command_list.append(name)

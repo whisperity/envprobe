@@ -18,7 +18,7 @@ from argparse import Namespace
 import os
 import pytest
 
-from envprobe.config_commands.track import command, Mode, Scope
+from envprobe.commands.track import command, Mode, Scope
 from envprobe.shell import FakeShell
 
 

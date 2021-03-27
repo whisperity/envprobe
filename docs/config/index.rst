@@ -15,7 +15,6 @@ Calling ``epc`` automatically brings up the argument parser for *config mode*.
     This means that in case the current context does not allow the execution of an action, Envprobe will usually fail with an ``invalid choice`` error.
 
 .. toctree::
-   :maxdepth: 2
 
    hook
    track

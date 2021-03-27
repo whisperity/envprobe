@@ -7,7 +7,6 @@ Handling user configuration
 The :py:mod:`envprobe.settings` package implements classes that deal with handling configuration that is specific to the user, or a particular shell.
 
 .. toctree::
-   :maxdepth: 1
 
    snapshot
    variable_tracking
