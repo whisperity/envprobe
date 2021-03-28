@@ -14,6 +14,7 @@ Envprobe was originally conceived as the tool between [shell `modules`](http://m
 - [Quick user guide](#quick-user-guide)
   - [Managing environment variables](#managing-environment-variables)
   - [Saved snapshots](#saved-snapshots)
+- [Configuring variable handling](#configuring-variable-handling)
 
 ---
 
@@ -74,7 +75,7 @@ The easiest way to do this is to add the hook script at the end of the configura
 
 ## Quick user guide
 
-If Envprobe is successfully [installed and hooked](#installation.hook), the `ep`/`envprobe` and `epc`/`envprobe-config` convenience _functions_ will be defined in the current shell.
+If Envprobe is successfully [installed and hooked](#hook), the `ep`/`envprobe` and `epc`/`envprobe-config` convenience _functions_ will be defined in the current shell.
 If you see something like below, the tool is good to go.
 
 ~~~{.bash}
@@ -155,6 +156,8 @@ For easy access, some of the snapshot management commands are also offered as sh
 | `diff [var1 var2...]`                     | `% [var1 var2...]`              | Show the difference between the current environment and the last saved one (optionally only for the variables named).                                           |
 | `save [--patch] SNAPSHOT [var1 var2...]`  | `}SNAPSHOT [-p] [var1 var2...]` | Save the changes (optionally of only the variables named) to the snapshot named `SNAPSHOT`. If `-p` is given, ask for confirmation of each individual change.   |
 | `load [--patch] SNAPSHOT [var1 var2...]`  | `{SNAPSHOT [-p] [var1 var2...]` | Load the changes (optionally to only the variables names) from the snapshot named `SNAPSHOT`. If `-p` is given, ask for confirmation of each individual change. |
+| `list`                                    |                                 | List the saved snapshots' names.                                                                                                                                |
+| `delete SNAPSHOT`                         |                                 | Delete the snapshot named `SNAPSHOT`.                                                                                                                           |
 
 
 ~~~{.bash}
@@ -189,6 +192,16 @@ Save this change? (y/N) _
 
 
 
+$ ep list
+mypath
+other_vars
+
+$ ep delete mypath
+$ ep list
+other_var
+
+
+
 $ ep load custompaths
 For variable 'PATH' the element '/srv/custom/bin' will be added.
 
@@ -205,6 +218,21 @@ $ ep { foobar -p
 New variable 'FOO' will be created with value 'bar'.
 Load and apply this change? (y/N) _
 ~~~
+
+
+## Configuring variable handling
+
+The `envprobe-config` (or `epc`) command contains various subcommands that can be used to configure Envprobe's behaviour.
+
+
+For a complete overview on the commands available and their usage, you can always call `epc -h` (or `epc track -h`, etc. for each subcommand) to get a quick help.
+The [complete documentation](http://envprobe.readthedocs.io/en/latest/config/index.html) for the user-facing commands is available behind the link.
+
+|  Command   |  Usage                                                                                                       |
+|:-----------|:-------------------------------------------------------------------------------------------------------------|
+| `hook ...`          | Generate the [Shell hook](#hook) that allows Envprobe to interface with the environment.            |
+| `track VARIABLE`    | Configure whether changes to a `VARIABLE` should be managed in [saved snapshots](#saved-snapshots). |
+
 
 ---
 
@@ -245,38 +273,6 @@ After envprobe is installed, you can use it in the shell with the `envprobe`
 or `ep` command. **You should NOT alter `PATH` or use the absolute
 `~/envprobe/envprobe.py` path to access `envprobe`.** The hook executed by
 the lines above enabled `envprobe` for you.
-
-
-
-Usage: Saving and loading environments
---------------------------------------
-
-In this section, the tools for managing variable changes between shells is
-explained. This is *the core* feature of Envprobe, allowing you to quickly
-save environment changes and re-use them later, without the need of manually
-writing shell scripts, configuration files.
-
-(Shortcuts for the long form of actions is presented between `{` and `}`
-on the right side.)
-
-~~~
-list                List the names of saved differences.
-delete              Delete a named save.
-~~~
-
-
-### Listing and deleting differences
-
-The list of saved differences available to your user can be listed with
-`ep list`:
-
-    $ ep list
-    - fancy
-    - my_env
-
-A saved difference can be deleted with the `delete` command:
-
-    ep delete my_env
 
 
 

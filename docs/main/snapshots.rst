@@ -133,7 +133,7 @@ Load a snapshot (``load``, ``{``)
 
         This command is only available if Envprobe has been :ref:`hooked<install_hook>` in the current shell.
 
-    TODO: Text here.
+    Load values from a saved snapshot and apply the changes to the current shell.
 
     :param SNAPSHOT: The name of the snapshot to load from.
     :param VARIABLE: The names of the environment variables which values should be updated.
@@ -171,6 +171,52 @@ Load a snapshot (``load``, ``{``)
             $ ep { foobar -p
             New variable 'FOO' will be created with value 'bar'.
             Load and apply this change? (y/N) _
+
+
+List snapshots (``list``)
+=========================
+
+.. py:function:: list()
+
+    List the names of the snapshots available for the current user.
+
+    :Possible invocations:
+        - ``ep list``
+
+    :Examples:
+        .. code-block:: bash
+
+            $ ep list
+            # No result, no snapshots saved yet.
+
+            $ ep FOO=bar
+            $ ep save FOObar
+            $ ep list
+            FOObar
+
+
+Delete a snapshot (``delete``)
+==============================
+
+.. py:function:: delete(SNAPSHOT)
+
+    Delete *SNAPSHOT*.
+
+    :param SNAPSHOT: The name of the snapshot that is to be deleted.
+
+    :Possible invocations:
+        - ``ep delete SNAPSHOT``
+
+    :Examples:
+        .. code-block:: bash
+
+            $ ep list
+            FOObar
+            other_variables
+
+            $ ep delete FOObar
+            $ ep list
+            other_variables
 
 
 .. _snapshots_tracking:

@@ -16,6 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from ..library import get_snapshot
 
+
 name = 'load'
 description = \
     """Load a previously saved snapshot of environment variables' values from

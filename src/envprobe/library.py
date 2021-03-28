@@ -75,15 +75,12 @@ def get_snapshot(snapshot_name, read_only=True):
         Access to the underlying file is handled automatically through this
         instance.
     """
-    snapshot_name = snapshot_name.lstrip('/')
-    snapshot_name = os.path.normpath(snapshot_name)
-    snapshot_name = snapshot.get_snapshot_file_name(snapshot_name)
-
     basedir = os.path.join(settings.get_configuration_directory(),
                            snapshot.get_snapshot_directory_name())
     return snapshot.Snapshot(
         config_file.ConfigurationFile(
-            os.path.join(basedir, snapshot_name),
+            os.path.join(basedir,
+                         snapshot.get_snapshot_file_name(snapshot_name)),
             snapshot.Snapshot.config_schema,
             read_only=read_only)
     )

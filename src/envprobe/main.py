@@ -102,9 +102,9 @@ def __main_mode(argv):
     # The order of the commands here also specifies the order they are shown
     # in the user's output!
     commands = ["get", "set", "undefine", "add", "remove",
-                # list
-                "diff", "load", "save"
-                # delete
+                "list",
+                "diff", "load", "save",
+                "delete"
                 ]
     argv = transform_subcommand_shortcut(argv, commands)
 
@@ -115,7 +115,7 @@ def __main_mode(argv):
 
     for com in commands:
         com_impl = load_command(com)
-        com_impl.register(subparsers, shell)
+        getattr(com_impl, 'register')(subparsers, shell)
 
     args = parser.parse_args(argv[1:])
     args = __inject_state_to_args(args, shell, env, argv[0])
@@ -182,7 +182,7 @@ def __config_mode(argv):
 
     for com in commands:
         com_impl = load_command(com)
-        com_impl.register(subparsers, shell)
+        getattr(com_impl, 'register')(subparsers, shell)
 
     args = parser.parse_args(argv[1:])
     args = __inject_state_to_args(args, shell, env, argv[0])

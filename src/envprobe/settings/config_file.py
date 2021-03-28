@@ -54,7 +54,7 @@ class LockedFileHandle(AbstractContextManager):
             matter what.
         """
         self._cookie = ''.join([random.choice(string.ascii_lowercase)  # nosec
-                                for i in range(8)]) + '/' + str(os.getpid())
+                                for _ in range(8)]) + '/' + str(os.getpid())
         self._handle = None
         self._lockfd = None
         self._lock_path = path + ".lock"

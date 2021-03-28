@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from copy import deepcopy
+import os
 
 from envprobe.compatibility import nullcontext
 
@@ -39,10 +40,23 @@ def get_snapshot_file_name(snapshot_name):
 
     Warning
     -------
-    This method only returns the **filename** for the snapshot, not its
+    This method only returns the file path component for the snapshot, not its
     location or full path.
     """
-    return snapshot_name + ".json"
+    return os.path.normpath(snapshot_name.lstrip('/')) + ".json"
+
+
+def get_snapshot_name(snapshot_file_name):
+    """Returns the logical name of the snapshot, given it's filename.
+
+    Warning
+    -------
+    This method only returns the name for the filename component.
+    The snapshot directory and its full path should be removed from the path
+    before calling.
+    """
+    split = snapshot_file_name.split(".json")
+    return split[0] if not split[1] else None
 
 
 class Snapshot:
@@ -88,7 +102,7 @@ class Snapshot:
 
         Returns
         -------
-        diff_actions : list((char, str))
+        diff_actions : list(char, str)
             The representation of the diff actions to be taken for the variable
             to have the value in the saved snapshot.
 
@@ -108,7 +122,7 @@ class Snapshot:
         ----------
         variable_name : str
             The name of the variable to set.
-        difference : list((char, str))
+        difference : list(char, str)
             The difference actions to save into the snapshot file.
 
             See :py:meth:`envprobe.vartypes.EnvVar.diff` for the format.

@@ -22,6 +22,7 @@ from ..settings.config_file import ConfigurationFile
 from ..settings.variable_tracking import \
     get_tracking_file_name, VariableTracking
 
+
 name = 'track'
 description = \
     """Configure an environment variable's \"tracking status\".

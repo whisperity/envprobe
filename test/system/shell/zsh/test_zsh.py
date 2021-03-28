@@ -252,6 +252,13 @@ def test_save(sh):
     assert(not result)
 
 
+def test_list(sh):
+    retcode, result = sh.execute_command("ep list", timeout=0.5)
+    assert(not retcode)
+    assert(list(filter(lambda x: x, result.splitlines(False))) ==
+           ["dummy_path"])
+
+
 def test_load(sh):
     retcode, result = sh.execute_command("ep set DUMMY_PATH /", timeout=0.5)
     assert(not retcode)
@@ -270,6 +277,20 @@ def test_load(sh):
     retcode, result = sh.execute_command("ep ^DUMMY_PATH", timeout=0.5)
     assert(not retcode)
     assert(not result)
+
+
+def test_delete(sh):
+    retcode, result = sh.execute_command("ep delete NONEXISTENT", timeout=0.5)
+    assert(retcode == 1)
+    assert(not result)
+
+    retcode, result = sh.execute_command("ep delete dummy_path", timeout=0.5)
+    assert(not retcode)
+    assert(not result)
+
+    retcode, result = sh.execute_command("ep list", timeout=0.5)
+    assert(not retcode)
+    assert(list(filter(lambda x: x, result.splitlines(False))) == [])
 
 
 def test_exit(sh):

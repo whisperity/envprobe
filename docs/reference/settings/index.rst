@@ -15,9 +15,9 @@ The :py:mod:`envprobe.settings` package implements classes that deal with handli
 Abstract configuration files
 ============================
 
-The :py:class:`ConfigurationFile` class allows accessing a *key-value mapping* (:py:class:`dict`) of configuration objects that is saved to the user's file system to a `JSON <http://json.org>`_ file.
-
 .. currentmodule:: envprobe.settings.config_file
+
+The :py:class:`ConfigurationFile` class allows accessing a *key-value mapping* (:py:class:`dict`) of configuration objects that is saved to the user's file system to a `JSON <http://json.org>`_ file.
 
 .. autoclass:: ConfigurationFile
    :members:

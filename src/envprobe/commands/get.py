@@ -20,6 +20,7 @@ import sys
 from ..vartypes import get_kind
 from ..vartypes.array import Array
 
+
 name = 'get'
 description = \
     """Print the value of an environment variable in full.

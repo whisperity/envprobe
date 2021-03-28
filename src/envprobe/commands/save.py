@@ -16,9 +16,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from ..library import get_snapshot
 
+
 name = 'save'
 description = \
-    """Create or updated a named snapshot which will contain the values of
+    """Create or update a named snapshot which will contain the values of
     environment variables.
 
     Alternatively, this command can be used as `envprobe }SNAPSHOT`."""
@@ -119,7 +120,7 @@ def register(argparser, shell):
 
     parser.add_argument('SNAPSHOT',
                         type=str,
-                        help="The name of the snapshot to create.")
+                        help="The name of the snapshot to create or update.")
     parser.add_argument('VARIABLE',
                         type=str,
                         nargs='*',

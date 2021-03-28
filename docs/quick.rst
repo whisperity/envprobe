@@ -100,6 +100,16 @@ This page contains excerpts of Envprobe's usage that detail typical everyday tas
 
 
 
+        $ ep list
+        mypath
+        other_vars
+
+        $ ep delete mypath
+        $ ep list
+        other_var
+
+
+
         $ ep load custompaths
         For variable 'PATH' the element '/srv/custom/bin' will be added.
 

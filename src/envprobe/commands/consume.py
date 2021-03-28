@@ -16,6 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import shutil
 
+
 name = 'consume'
 description = \
     """Print and consume the Envprobe control script for the shell.

@@ -22,6 +22,7 @@ from ..environment import Environment
 from ..settings import get_runtime_directory
 from ..shell import load, load_all, get_known_kinds
 
+
 name = 'hook'
 description = \
     """Generate the shell-executable code snippet that is used to register
