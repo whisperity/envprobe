@@ -9,7 +9,7 @@ The :py:mod:`envprobe.vartypes` package implements the logic that maps different
 .. currentmodule:: envprobe.vartypes
 
 .. autoclass:: EnvVar
-   :members:
+    :members:
 
 Implemented types
 =================
@@ -18,15 +18,15 @@ The list of known variable types in Envprobe are documented in the pages
 accessible from the links below.
 
 .. autosummary::
-   :toctree: generated
-   :nosignatures:
+    :toctree: generated
+    :nosignatures:
 
-   string.String
-   numeric.Numeric
-   array.Array
-   colon_separated.ColonSeparatedArray
-   semi_separated.SemicolonSeparatedArray
-   path.Path
+    string.String
+    numeric.Numeric
+    array.Array
+    colon_separated.ColonSeparatedArray
+    semi_separated.SemicolonSeparatedArray
+    path.Path
 
 Dynamic loading
 ===============

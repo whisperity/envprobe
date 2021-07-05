@@ -13,10 +13,10 @@ Envprobe is implemented as a single Python package, named ``envprobe``.
 
 .. toctree::
 
-   shell/index
-   vartypes/index
-   environment
-   settings/index
+    shell/index
+    vartypes/index
+    environment
+    settings/index
 
 
 Miscellaneous functions

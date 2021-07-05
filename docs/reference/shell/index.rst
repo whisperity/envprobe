@@ -11,7 +11,7 @@ The :py:mod:`envprobe.shell` package implements the logic that allows Envprobe t
 .. autoclass:: CapabilityError
 .. autofunction:: get_current_shell
 .. autoclass:: Shell
-   :members:
+    :members:
 
 
 Dynamic loading

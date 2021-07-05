@@ -18,6 +18,7 @@ Reading (``get``, ``?``)
 ========================
 
 .. py:function:: get(VARIABLE, info=False)
+    :noindex:
 
     Read and print the value of the environment variable ``VARIABLE`` to the standard output in the format ``VARIABLE=value``.
 
@@ -72,6 +73,7 @@ Writing (``set``, ``!``, ``=``)
 ===============================
 
 .. py:function:: set(VARIABLE, VALUE)
+    :noindex:
 
     Set the value of ``VARIABLE`` to the specified ``VALUE``.
 
@@ -83,35 +85,36 @@ Writing (``set``, ``!``, ``=``)
         - ``ep !VARIABLE VALUE``
         - ``ep VARIABLE=VALUE``
 
-   :Examples:
-       .. code-block:: bash
+    :Examples:
+        .. code-block:: bash
 
-           $ echo $SOME_VARIABLE
-           # No result, the variable is not set.
+            $ echo $SOME_VARIABLE
+            # No result, the variable is not set.
 
-           $ ep set SOME_VARIABLE MyValue
+            $ ep set SOME_VARIABLE MyValue
 
-           $ echo $SOME_VARIABLE
-           MyValue
+            $ echo $SOME_VARIABLE
+            MyValue
 
-       .. code-block:: bash
+        .. code-block:: bash
 
-           $ which ls
-           /bin/ls
+            $ which ls
+            /bin/ls
 
-           $ ep PATH
-           PATH=/usr/local/bin:/usr/bin:/sbin:/bin
+            $ ep PATH
+            PATH=/usr/local/bin:/usr/bin:/sbin:/bin
 
-           $ ep PATH="/tmp"
+            $ ep PATH="/tmp"
 
-           $ which ls
-           # No result.
+            $ which ls
+            # No result.
 
 
 Undefining (``undefine``, ``^``)
 ================================
 
 .. py:function:: undefine(VARIABLE)
+    :noindex:
 
     Undefine the ``VARIABLE``.
 
@@ -152,6 +155,7 @@ Adding to arrays (``add``, ``+``)
 Traditionally, extending a variable such as ``PATH`` with your current working directory required executing a lengthy sequence: ``export PATH="$(pwd):${PATH}"``.
 
 .. py:function:: add(VARIABLE, VALUE..., position=0)
+    :noindex:
 
     Add the given ``VALUE`` (or values, can be multiple) to the ``VARIABLE`` array.
     The values will be located starting at the given ``position`` index, while all subsequent elements will be shifted to the right (to higher indices).
@@ -225,6 +229,7 @@ Removing from arrays (``remove``, ``-``)
 ========================================
 
 .. py:function:: remove(VARIABLE, VALUE...)
+    :noindex:
 
     Remove **all occurrences** of ``VALUE`` (or values, can be multiple) from the ``VARIABLE`` array.
 

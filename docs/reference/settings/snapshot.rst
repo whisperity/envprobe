@@ -9,5 +9,5 @@ The :py:class:`Snapshot` class implements the wrapping handler over the configur
 .. currentmodule:: envprobe.settings.snapshot
 
 .. autoclass:: Snapshot
-   :members:
-   :special-members: __getitem__, __setitem__, __delitem__
+    :members:
+    :special-members: __getitem__, __setitem__, __delitem__

@@ -13,7 +13,7 @@ This page contains excerpts of Envprobe's usage that detail typical everyday tas
 
 
 .. rubric:: Managing environment variables in the current shell
-   :name: quick_envvars
+    :name: quick_envvars
 
 (Read the :ref:`full documentation<envvars>` for this section.)
 
@@ -63,7 +63,7 @@ This page contains excerpts of Envprobe's usage that detail typical everyday tas
 
 
 .. rubric:: Saved snapshots
-   :name: quick_snapshots
+    :name: quick_snapshots
 
 (Read the :ref:`full documentation<snapshots>` for this section.)
 

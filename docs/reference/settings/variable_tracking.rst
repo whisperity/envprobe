@@ -10,4 +10,4 @@ A variable that is not tracked will not be handled when :ref:`saved snapshots<sn
 .. currentmodule:: envprobe.settings.variable_tracking
 
 .. autoclass:: VariableTracking
-   :members:
+    :members:

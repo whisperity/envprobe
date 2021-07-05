@@ -35,11 +35,11 @@ Documentation
 
 .. toctree::
 
-   install
-   quick
-   main/index
-   config/index
-   reference/index
+    install
+    quick
+    main/index
+    config/index
+    reference/index
 
 
 Indices and tables

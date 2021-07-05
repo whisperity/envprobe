@@ -6,6 +6,7 @@ Changing the tracking status of variables (``track``)
 
 
 .. py:function:: track(VARIABLE, default=False, mode=query, scope=<...>)
+    :noindex:
 
     Gets or sets the tracking setting for a ``VARIABLE`` (or the default behaviour) in the *local* or *global* ``scope``.
 

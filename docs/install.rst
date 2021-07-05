@@ -97,7 +97,7 @@ Below are the configuration combinations that the `continuous integration testin
 However, due to Envprobe being a straightforward tool, other distributions are expected to work fine.
 
 .. role:: raw-html(raw)
-   :format: html
+    :format: html
 
 +--------------------------------------+-----------------------------------+--------------------------------------------------------------+
 | **Operating system**                 |       **Required dependencies**   | **Shells supported**                                         |

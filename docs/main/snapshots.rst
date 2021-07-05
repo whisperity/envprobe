@@ -20,6 +20,7 @@ Difference of current environment (``diff``, ``%``)
 ===================================================
 
 .. py:function:: diff(VARIABLE..., format="normal")
+    :noindex:
 
     .. note::
 
@@ -94,6 +95,7 @@ Save the values/changes to a snapshot (``save``, ``}``)
 =======================================================
 
 .. py:function:: save(SNAPSHOT, VARIABLE..., patch=False)
+    :noindex:
 
     .. note::
 
@@ -128,6 +130,7 @@ Load a snapshot (``load``, ``{``)
 =================================
 
 .. py:function:: load(SNAPSHOT, VARIABLE..., dry_run=False, patch=False)
+    :noindex:
 
     .. note::
 
@@ -177,6 +180,7 @@ List snapshots (``list``)
 =========================
 
 .. py:function:: list()
+    :noindex:
 
     List the names of the snapshots available for the current user.
 
@@ -199,6 +203,7 @@ Delete a snapshot (``delete``)
 ==============================
 
 .. py:function:: delete(SNAPSHOT)
+    :noindex:
 
     Delete *SNAPSHOT*.
 

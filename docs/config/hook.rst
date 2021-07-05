@@ -5,6 +5,7 @@ Generating the hook (``hook``)
 ==============================
 
 .. py:function:: hook(SHELL, PID)
+    :noindex:
 
     Print the shell script that is used to hook and set up Envprobe to the current shell.
 
