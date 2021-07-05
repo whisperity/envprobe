@@ -17,4 +17,5 @@ Calling ``epc`` automatically brings up the argument parser for *config mode*.
 .. toctree::
 
    hook
+   set
    track

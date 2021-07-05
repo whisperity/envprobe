@@ -8,8 +8,9 @@ The :py:mod:`envprobe.settings` package implements classes that deal with handli
 
 .. toctree::
 
-   snapshot
-   variable_tracking
+    snapshot
+    variable_information
+    variable_tracking
 
 
 Abstract configuration files

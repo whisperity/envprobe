@@ -4,7 +4,7 @@
 Tracking variables
 ==================
 
-Environment variable **tracking** is an integral feature of Envprobe's persistency layer.
+Environment variable **tracking** is an integral feature of Envprobe's persistence layer.
 A variable that is not tracked will not be handled when :ref:`saved snapshots<snapshots>` are accessed.
 
 .. currentmodule:: envprobe.settings.variable_tracking

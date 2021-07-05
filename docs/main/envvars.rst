@@ -56,13 +56,7 @@ Reading (``get``, ``?``)
 
         - The individual elements of the variable in order if it is an *array variable* (:py:class:`Array<envprobe.vartypes.array.Array>`), after the variable name repeated, one per line.
         - The :ref:`type class<impl_vartypes>` of the variable within Envprobe.
-        - TODO: Community data.
-
-..
-   TODO.
-.. hint::
-
-    Community features are yet to be migrated to the new version.
+        - Additional stored information such as a *description* of the variable, based on the :ref:`stored configuration<config_set>`.
 
 .. [1] The shorthand format ``ep VARIABLE`` for ``ep get VARIABLE`` is available only if the given variable name (``"VARIABLE"``) is not "shadowed" by a subcommand name that is valid at the time the command is executed.
     E.g. if ``get`` is an environment variable defined in the shell, saying ``ep get`` will not be resolved as if the user said ``ep get get``, but instead, it will simply call ``ep get`` without a variable name, resulting in an error.

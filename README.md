@@ -228,9 +228,10 @@ The `envprobe-config` (or `epc`) command contains various subcommands that can b
 For a complete overview on the commands available and their usage, you can always call `epc -h` (or `epc track -h`, etc. for each subcommand) to get a quick help.
 The [complete documentation](http://envprobe.readthedocs.io/en/latest/config/index.html) for the user-facing commands is available behind the link.
 
-|  Command   |  Usage                                                                                                       |
-|:-----------|:-------------------------------------------------------------------------------------------------------------|
+|  Command            |  Usage                                                                                              |
+|:--------------------|:----------------------------------------------------------------------------------------------------|
 | `hook ...`          | Generate the [Shell hook](#hook) that allows Envprobe to interface with the environment.            |
+| `set VARIABLE ...`  | Set additional information, such as a *description*, for a variable.                                |
 | `track VARIABLE`    | Configure whether changes to a `VARIABLE` should be managed in [saved snapshots](#saved-snapshots). |
 
 
@@ -316,28 +317,6 @@ be considered what you specified.
 
 To delete a preference, use `-d`: `epc set-type MY_VARIABLE -d`. This will
 revert `MY_VARIABLE` back to the default heuristic.
-
-
-
-Advanced: Describing variables
-------------------------------
-
-Apart from specifying their type, you can also specify a *description* to
-save what a variable describes.
-
-    epc set-description MY_VARIABLE "Very fancy variable"
-
-The description for a variable can be retrieved by specifying `--info` for
-the `get` command:
-
-    $ ep get MY_VARIABLE --info
-    MY_VARIABLE=fancy
-
-    Type: 'string'
-    Description:
-      Very fancy variable
-    Source: local
-
 
 
 Advanced: Obtaining variable types and descriptions from the community

@@ -63,52 +63,6 @@ def get_description(variable_name):
     return description
 
 
-def save_description(variable_name, description=None, local=True):
-    """
-    Save the description parameters for :param:`variable_name`.
-    """
-    first = variable_name[0].lower()
-    second = variable_name[:2].lower() if len(variable_name) >= 2 else \
-        'NULL'
-    third = variable_name[2].lower() if len(variable_name) >= 3 else \
-        'NULL'
-
-    level_folder = os.path.join(get_configuration_folder(),
-                                'descriptions',
-                                first, second)
-    if not os.path.isdir(level_folder):
-        os.makedirs(level_folder)
-
-    save_file = os.path.join(level_folder, third) + \
-        ('-local' if local else '') + '.json'
-
-    d = dict()
-    try:
-        with open(save_file, 'r') as f:
-            d = json.load(f)
-    except (OSError, json.JSONDecodeError):
-        # If not found, ignore the error.
-        pass
-
-    if variable_name not in d:
-        d[variable_name] = dict()
-
-    if description['type']:
-        d[variable_name]['type'] = description['type']
-    if description['description']:
-        d[variable_name]['description'] = description['description']
-    if description['source']:
-        d[variable_name]['source'] = description['source']
-
-    try:
-        with open(save_file, 'w') as f:
-            json.dump(d, f)
-    except (TypeError, ValueError) as e:
-        # If not found, ignore the error.
-        print("Error! Couldn't save the description: %s" % e)
-        sys.exit(1)
-
-
 def extract_csv(filename, handle):
     """
     Read the given CSV file from the description database and transform it

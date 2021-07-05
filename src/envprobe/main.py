@@ -141,8 +141,8 @@ def __main_mode(argv):
 # ------------------------------- Config mode --------------------------------
 
 config_description = \
-    """This command in Envprobe handles the configuration of your user-specific
-    preferences and the current shell's Envprobe-related settings."""
+    """Modify the configuration of your user-specific preferences and the
+    current shell's Envprobe-related settings."""
 config_help = \
     """The config mode is responsible for user and shell-specific configuration
     options."""
@@ -161,19 +161,20 @@ def __config_mode(argv):
     # Create the command-line user interface.
     parser = argparse.ArgumentParser(
             prog="envprobe-config",
-            description=main_description,
-            epilog=main_epilogue
+            description=config_description,
+            epilog=config_epilogue
     )
     subparsers = parser.add_subparsers(
             title="available commands",
-            description=main_subcommands_description)
+            description=config_subcommands_description)
 
     # The order of the commands here also specifies the order they are shown
     # in the user's output!
     commands = ["hook",
+                "consume",
+                "set_variable",  # The Python module name must be used here.
                 "track",
-                "consume"]
-    # TODO: vartypes (community?)
+                ]
 
     if len(argv) > 2 and argv[1] in commands:
         # If the user directly specified a subcommand to load, load **only**

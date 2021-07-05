@@ -28,6 +28,65 @@ __ENVTYPE_CLASSES_TO_NAMES = {}
 __ENVTYPE_NAMES_TO_CLASSES = {}
 
 
+class EnvVarExtendedInformation:
+    """Implements a storage for the extended user-facing knowledge about a
+    variable.
+    """
+    def __init__(self):
+        self._type = None
+        self._description = None
+        self._source = None
+
+    def apply(self, configuration):
+        """Applies the persisted configuration on the current object.
+
+        Parameters
+        ----------
+        configuration : dict
+            The configuration mapping too apply.
+            See
+            :py:meth:`envprobe.settings.variable_information.VariableInformation.__getitem__`
+            for the format generated.
+        """
+        if not configuration:
+            return
+
+        def _apply_one(key):
+            if key in configuration:
+                setattr(self, "_" + key, configuration[key])
+        _apply_one("type")
+        _apply_one("source")
+        _apply_one("description")
+
+    @property
+    def type(self):
+        """The type class identifier (kind) for the current variable."""
+        return self._type
+
+    @property
+    def source(self):
+        """The annotated source repository where the variable's information
+        was obtained from.
+        """
+        return self._source
+
+    @property
+    def description(self):
+        """The human description about the usage of the variable."""
+        return self._description
+
+    @description.setter
+    def description(self, new_value):
+        """Sets the `description` to the given parameter.
+
+        Parameters
+        ----------
+        new_value : str
+            The new `description` to use.
+        """
+        self._description = new_value
+
+
 class EnvVar(metaclass=ABCMeta):
     """Base class for an environment variable type's implementation.
 
@@ -52,11 +111,24 @@ class EnvVar(metaclass=ABCMeta):
             in the operating system.
         """
         self._name = name
+        self._extended = EnvVarExtendedInformation()
 
     @property
     def name(self):
         """The name of the variable."""
         return self._name
+
+    @property
+    def extended_attributes(self):
+        """Returns the object managing the extended attributes (user-facing
+        knowledge) about the variable.
+
+        Returns
+        -------
+        configuration : EnvVarExtendedInformation
+        """
+        self._extended._type = get_kind(type(self))
+        return self._extended
 
     @classmethod
     def type_description(cls):

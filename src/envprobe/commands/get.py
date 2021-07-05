@@ -17,6 +17,7 @@
 import shlex
 import sys
 
+from ..library import get_variable_information_manager
 from ..vartypes import get_kind
 from ..vartypes.array import Array
 
@@ -58,12 +59,15 @@ def command(args):
         except KeyError:
             print("Type: 'unknown' ({0})".format(str(type(env_var))))
 
-        community_data = args.community.get_description(env_var.name)
-        description = community_data.get("description", None)
-        source = community_data.get("source", None)
-        if description:
-            print("Description:\n\t{0}".format(description))
+        xattr = env_var.extended_attributes
+        if xattr:
+            varinfo_manager = get_variable_information_manager(args.VARIABLE)
+            xattr.apply(varinfo_manager[args.VARIABLE])
 
+            description = xattr.description
+            if description:
+                print("Description:\n\t{0}".format(description))
+            source = xattr.source
             if source:
                 print("Source: {0}".format(source))
 

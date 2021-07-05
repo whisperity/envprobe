@@ -28,4 +28,5 @@ The :py:mod:`envprobe.library` module contains some miscellaneous functions that
 
 .. autofunction:: get_shell_and_env_always
 .. autofunction:: get_snapshot
+.. autofunction:: get_variable_information_manager
 .. autofunction:: get_variable_tracking

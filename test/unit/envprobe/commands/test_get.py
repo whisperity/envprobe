@@ -25,6 +25,10 @@ class MockVar:
         self.name = name
         self.value = raw_value
 
+    @property
+    def extended_attributes(self):
+        return None
+
     def raw(self):
         return self.value
 
@@ -84,18 +88,4 @@ def test_info_builtin(capfd, args):
     assert("test_get.MockVar" in stdout)
     assert("Description" not in stdout)
     assert("Source" not in stdout)
-    assert(not stderr)
-
-
-# TODO: Implement this one.
-def TODO_test_info_community(capfd, args):
-    args.VARIABLE = "COMMUNITY"
-    args.info = True
-    command(args)
-
-    stdout, stderr = capfd.readouterr()
-    assert("Type: 'unknown'" in stdout)
-    assert("test_get.MockVar" in stdout)
-    assert("Description" in stdout)
-    assert("Source" in stdout)
     assert(not stderr)

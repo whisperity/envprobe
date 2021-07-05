@@ -12,14 +12,7 @@ from vartypes import *  # Force importing of all possible variable types.
 def __set_type(args):
     descr = community_descriptions.get_description(args.VARIABLE)
     descr['type'] = args.type if not args.delete else None
-    community_descriptions.save_description(args.VARIABLE, descr)
-
-
-def __set_description(args):
-    descr = community_descriptions.get_description(args.VARIABLE)
-    descr['description'] = ' '.join(args.DESCRIPTION) \
-        if args.DESCRIPTION else None
-    community_descriptions.save_description(args.VARIABLE, descr)
+    # community_descriptions.save_description(args.VARIABLE, descr)
 
 
 def __update(args):
@@ -79,30 +72,10 @@ def __create_set_type_subcommand(main_parser):
 
 def __create_set_description_subcommand(main_parser):
     parser = main_parser.add_parser(
-        name='set-description',
-        description="A variable's description can help to understand its "
-                    "use. This command can be used to set a local (on your "
-                    "user) description for the given VARIABLE.",
-        help="Change the local description of a variable.",
         epilog="If you think specifying a description for a variable could "
                "benefit other users, please submit us an issue on GitHub: "
                "http://github.com/whisperity/envprobe-descriptions"
     )
-
-    parser.add_argument(
-        'VARIABLE',
-        type=str,
-        help="The variable name to change the configuration for, e.g. PATH."
-    )
-
-    parser.add_argument('DESCRIPTION',
-                        nargs='*',
-                        help="The description to set. Words of the "
-                             "description will be concatenated. For best "
-                             "results, specify a single string.")
-
-    parser.set_defaults(func=__set_description)
-    global_config.REGISTERED_COMMANDS.append('set-description')
 
 
 def __create_update_subcommand(main_parser):

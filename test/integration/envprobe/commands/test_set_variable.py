@@ -18,74 +18,52 @@ from argparse import Namespace
 import os
 import pytest
 
-from envprobe.commands.get import command
+from envprobe.commands.set_variable import command
 from envprobe.environment import Environment
 from envprobe.library import get_variable_information_manager
 from envprobe.shell import FakeShell
 
 
-class MockExtendedData:
+class FakeShell2(FakeShell):
     @property
-    def type(self):
-        return "string"
-
-    @property
-    def description(self):
-        return "test"
+    def manages_environment_variables(self):
+        return True
 
 
 class PathHeuristic:
     def __call__(self, name, env=None):
-        return 'path'
+        return 'path' if name == "PATH" else 'string'
 
 
 @pytest.fixture
 def args(tmp_path):
     os.environ["XDG_CONFIG_HOME"] = os.path.join(tmp_path, "cfg")
 
-    shell = FakeShell()
-    envdict = {"DUMMY_VAR": "VALUE",
-               "PATH1": "/Foo:/Bar",
-               "PATH_EMPTY": ""
-               }
+    shell = FakeShell2()
+    envdict = {"PATH": "/Foo:/Bar",
+               "FOO": "Foo",
+               "NUM": "8"}
 
     arg = Namespace()
     arg.environment = Environment(shell, envdict, PathHeuristic())
-    arg.shell = shell
-    arg.info = True
 
     yield arg
 
 
-def test_get_path_breakdown(capfd, args):
-    args.VARIABLE = "PATH1"
+def test_set_description(capfd, args):
+    args.VARIABLE = "PATH"
+    args.description = "Test"
+
+    configuration = get_variable_information_manager(args.VARIABLE,
+                                                     read_only=True)
+    assert(configuration[args.VARIABLE] is None)
+
     command(args)
 
     stdout, stderr = capfd.readouterr()
-    assert("PATH1=/Foo:/Bar" in stdout)
-    assert("PATH1:\n\t/Foo\n\t/Bar" in stdout)
+    assert("Set description for 'PATH'." in stdout)
     assert(not stderr)
 
-
-def test_get_path_empty(capfd, args):
-    args.VARIABLE = "PATH_EMPTY"
-    command(args)
-
-    stdout, stderr = capfd.readouterr()
-    assert("PATH_EMPTY=" in stdout)
-    assert("PATH_EMPTY:\n --- empty ---" in stdout)
-    assert(not stderr)
-
-
-def test_get_description_local(capfd, args):
-    manager = get_variable_information_manager("DUMMY_VAR", read_only=False)
-    manager.set("DUMMY_VAR", MockExtendedData(), "test-info")
-
-    args.VARIABLE = "DUMMY_VAR"
-    command(args)
-
-    stdout, stderr = capfd.readouterr()
-    assert("Type: 'path'" in stdout)
-    assert("Description:\n\ttest" in stdout)
-    assert("Source: test-info" in stdout)
-    assert(not stderr)
+    configuration = get_variable_information_manager(args.VARIABLE,
+                                                     read_only=True)
+    assert(configuration[args.VARIABLE]["description"] == "Test")

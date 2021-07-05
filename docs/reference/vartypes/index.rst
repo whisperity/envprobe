@@ -45,3 +45,12 @@ Registering implementations
 ---------------------------
 
 .. autofunction:: register_type
+
+Extended information
+--------------------
+
+The extended information for an environment variable is stored in objects of the following class.
+
+.. currentmodule:: envprobe.vartypes.envvar
+.. autoclass:: EnvVarExtendedInformation
+    :members:

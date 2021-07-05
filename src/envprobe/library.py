@@ -18,7 +18,8 @@ import os
 
 from .environment import Environment
 from .settings import core as settings
-from .settings import config_file, snapshot, variable_tracking
+from .settings import config_file, snapshot, variable_information, \
+    variable_tracking
 from .shell import get_current_shell, FakeShell
 from .vartype_heuristics import standard_vartype_pipeline
 
@@ -82,6 +83,38 @@ def get_snapshot(snapshot_name, read_only=True):
             os.path.join(basedir,
                          snapshot.get_snapshot_file_name(snapshot_name)),
             snapshot.Snapshot.config_schema,
+            read_only=read_only)
+    )
+
+
+def get_variable_information_manager(variable_name, read_only=True):
+    """Creates the extended information attribute manager for environment
+    variables based on the requested variable's name.
+
+    Parameters
+    ----------
+    varable_name : str
+        The name of the variable to configure.
+    read_only : bool
+        If ``True``, the associated file will be opened read-only and not saved
+        at exit.
+
+    Returns
+    -------
+    .settings.variable_information.VariableInformation
+        The configuration handler engine.
+        Access to the underlying file is handled automatically through this
+        instance.
+    """
+    basedir = os.path.join(settings.get_configuration_directory(),
+                           variable_information.get_variable_directory_name())
+
+    return variable_information.VariableInformation(
+        config_file.ConfigurationFile(
+            os.path.join(basedir,
+                         variable_information.get_information_file_name(
+                             variable_name)),
+            variable_information.VariableInformation.config_schema,
             read_only=read_only)
     )
 
