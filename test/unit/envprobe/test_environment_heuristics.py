@@ -18,6 +18,7 @@ import pytest
 
 from envprobe.environment import EnvVarTypeHeuristic, HeuristicStack, \
         create_environment_variable
+from envprobe.vartype_heuristics import ConfigurationResolvedHeuristic
 
 
 def test_default():
@@ -107,3 +108,24 @@ def test_ignore():
 
     with pytest.raises(KeyError):
         create_environment_variable("break", env, p)
+
+
+class MockConfigurationStore:
+    def __init__(self, name):
+        pass
+
+    def __getitem__(self, name):
+        if name == "pathlike":
+            return {'type': "path"}
+        if name == "USER":
+            return {'type': "string"}
+        return None
+
+
+def test_resolving_heuristic():
+    p = HeuristicStack()
+    p += ConfigurationResolvedHeuristic(MockConfigurationStore)
+
+    assert(p("pathlike") == "path")
+    assert(p("USER") == "string")
+    assert(p("foo") is None)

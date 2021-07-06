@@ -50,8 +50,63 @@ def args(tmp_path):
     yield arg
 
 
+def test_set_type(capfd, args):
+    args.VARIABLE = "PATH"
+    args.type = "numeric"
+    args.description = None
+
+    configuration = get_variable_information_manager(args.VARIABLE,
+                                                     read_only=True)
+    assert(configuration[args.VARIABLE] is None)
+
+    command(args)
+
+    stdout, stderr = capfd.readouterr()
+    assert("Set type for 'PATH'." in stdout)
+    assert(not stderr)
+
+    configuration = get_variable_information_manager(args.VARIABLE,
+                                                     read_only=True)
+    assert(configuration[args.VARIABLE]["type"] == "numeric")
+
+
+def test_set_type_invalid_fallback(capfd, args):
+    args.VARIABLE = "PATH"
+    args.type = "numeric"
+    args.description = None
+
+    configuration = get_variable_information_manager(args.VARIABLE,
+                                                     read_only=True)
+    assert(configuration[args.VARIABLE] is None)
+
+    command(args)
+
+    stdout, stderr = capfd.readouterr()
+    assert("Set type for 'PATH'." in stdout)
+    assert(not stderr)
+
+    configuration = get_variable_information_manager(args.VARIABLE,
+                                                     read_only=True)
+    assert(configuration[args.VARIABLE]["type"] == "numeric")
+
+    # Normally, the commands now might fail for the user because PATH clearly
+    # contains a non-numeric value. However, `epc set` should have a fallback
+    # routine.
+    args.type = "path"
+    command(args)
+
+    stdout, stderr = capfd.readouterr()
+    assert("Set type for 'PATH'." in stdout)
+    assert(not stderr)
+
+    configuration = get_variable_information_manager(args.VARIABLE,
+                                                     read_only=True)
+    assert(configuration[args.VARIABLE]["type"] == "path")
+
+
 def test_set_description(capfd, args):
     args.VARIABLE = "PATH"
+    args.type = None
     args.description = "Test"
 
     configuration = get_variable_information_manager(args.VARIABLE,
@@ -67,3 +122,48 @@ def test_set_description(capfd, args):
     configuration = get_variable_information_manager(args.VARIABLE,
                                                      read_only=True)
     assert(configuration[args.VARIABLE]["description"] == "Test")
+
+
+def test_set_multiple(capfd, args):
+    args.VARIABLE = "PATH"
+    args.type = "string"
+    args.description = "Multiple tested."
+
+    configuration = get_variable_information_manager(args.VARIABLE,
+                                                     read_only=True)
+    assert(configuration[args.VARIABLE] is None)
+
+    command(args)
+
+    stdout, stderr = capfd.readouterr()
+    assert("Set type for 'PATH'." in stdout)
+    assert("Set description for 'PATH'." in stdout)
+    assert(not stderr)
+
+    configuration = get_variable_information_manager(args.VARIABLE,
+                                                     read_only=True)
+    assert(configuration[args.VARIABLE]["type"] == "string")
+    assert(configuration[args.VARIABLE]["description"] == "Multiple tested.")
+
+
+def test_delete(capfd, args):
+    args.VARIABLE = "PATH"
+    args.type = "foo"
+    args.description = "Delete test."
+
+    command(args)
+    capfd.readouterr()
+
+    # Reset the configuration to empty.
+    args.type = ""
+    args.description = ""
+
+    command(args)
+    stdout, stderr = capfd.readouterr()
+    assert("Set type for 'PATH'." in stdout)
+    assert("Set description for 'PATH'." in stdout)
+    assert(not stderr)
+
+    configuration = get_variable_information_manager(args.VARIABLE,
+                                                     read_only=True)
+    assert(configuration[args.VARIABLE] is None)

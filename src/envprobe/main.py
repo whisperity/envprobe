@@ -26,31 +26,31 @@ import sys
 from .commands import load as load_command
 from .commands.shortcuts import transform_subcommand_shortcut
 from .community_descriptions import CommunityData
-from .library import get_shell_and_env_always, get_variable_tracking
+from .library import get_shell_and_env_always, \
+    get_variable_information_manager, get_variable_tracking
+from .vartype_heuristics import assemble_standard_type_heuristics_pipeline
 
 
-# -------------------------------- Main mode ---------------------------------
+def __create_global_shell_and_env():
+    """Creates a valid :py:class:`.shell.Shell` and
+    :py:class:`.environment.Environment` instance for the current running
+    system, shell, and configuration, to be used as the basis of injected state
+    by the subcommands.
 
-mode_description = \
-    """Envprobe is a shell tool that helps you manage your environment
-    variables easily. The tool is comprised of multiple "modes" or "facades",
-    that have to be selected to access the functionality.
-
-    You should normally NOT see this help message if your shell is configured
-    properly."""
-
-main_description = \
-    """Envprobe is a shell tool that helps you manage your environment
-    variables easily, removing the need of having to write clunky `export`
-    sequences, or manual loading of configuration files."""
-main_help = \
-    """The main mode is responsible for interfacing with the environment
-    variables."""
-main_epilogue = \
-    """TODO: Epilogue goes here. Get from the refactor!"""
-main_subcommands_description = \
-    """Note that the set of subcommands available is *CONTEXT SENSITIVE*,
-    and is based on your current shell and environment setup."""
+    Returns
+    -------
+    shell : .shell.Shell
+        The current Shell backend implementation.
+    environment : .environment.Environment
+        The handler for environment variable access.
+    """
+    return get_shell_and_env_always(
+        os.environ,
+        assemble_standard_type_heuristics_pipeline(
+            varcfg_user_loader=lambda varname:
+                get_variable_information_manager(varname, read_only=True)
+            )
+    )
 
 
 def __inject_state_to_args(args, shell, environment, argvZero):
@@ -84,10 +84,34 @@ def __inject_state_to_args(args, shell, environment, argvZero):
     return args
 
 
+# -------------------------------- Main mode ---------------------------------
+
+mode_description = \
+    """Envprobe is a shell tool that helps you manage your environment
+    variables easily. The tool is comprised of multiple "modes" or "facades",
+    that have to be selected to access the functionality.
+
+    You should normally NOT see this help message if your shell is configured
+    properly."""
+
+main_description = \
+    """Envprobe is a shell tool that helps you manage your environment
+    variables easily, removing the need of having to write clunky `export`
+    sequences, or manual loading of configuration files."""
+main_help = \
+    """The main mode is responsible for interfacing with the environment
+    variables."""
+main_epilogue = \
+    """TODO: Epilogue goes here. Get from the refactor!"""
+main_subcommands_description = \
+    """Note that the set of subcommands available is *CONTEXT SENSITIVE*,
+    and is based on your current shell and environment setup."""
+
+
 def __main_mode(argv):
     """Implementation of Envprobe's main entry point."""
     # Instantiate the "globals" of Envprobe that interface with the env vars.
-    shell, env = get_shell_and_env_always(os.environ)
+    shell, env = __create_global_shell_and_env()
 
     # Create the command-line user interface.
     parser = argparse.ArgumentParser(
@@ -156,7 +180,7 @@ config_subcommands_description = \
 def __config_mode(argv):
     """Implementation of Envprobe's configuration entry point."""
     # Instantiate the "globals" of Envprobe that interface with the env vars.
-    shell, env = get_shell_and_env_always(os.environ)
+    shell, env = __create_global_shell_and_env()
 
     # Create the command-line user interface.
     parser = argparse.ArgumentParser(

@@ -14,8 +14,9 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+from ..environment import create_environment_variable
 from ..library import get_variable_information_manager
-
+from .. import vartypes
 
 name = 'set'
 description = \
@@ -26,16 +27,32 @@ description = \
     These settings are stored for your user.
     """
 epilog = \
-    """TODO: Something about the community descriptions project!
+    """The meaning of potential options for the '--type' flag are:
+
+    {0}
+
+    TODO: Something about the community descriptions project!
     """
 help = "Change the settings (e.g. description) for a variable."
 
 
 def command(args):
-    env_var, _ = args.environment[args.VARIABLE]
+    try:
+        env_var, _ = args.environment[args.VARIABLE]
+    except Exception:
+        # The environment variable object failed to instantiate. This commonly
+        # happens if the type conflicts with the value in the environment.
+        # To allow the user to continue, we can always fall back using the
+        # default heuristics.
+        env_var = create_environment_variable(
+            args.VARIABLE, args.environment.current_environment)
     varinfo = env_var.extended_attributes
 
     conf_to_apply = dict()
+
+    if args.type is not None:
+        print("Set type for '{0}'.".format(args.VARIABLE))
+        conf_to_apply["type"] = args.type
 
     if args.description is not None:
         print("Set description for '{0}'.".format(args.VARIABLE))
@@ -46,26 +63,55 @@ def command(args):
 
         varinfo_manager = get_variable_information_manager(args.VARIABLE,
                                                            read_only=False)
-        # Save the changes with the hardcoded "local" source tag.
-        varinfo_manager.set(args.VARIABLE, varinfo, "local")
+        if all(not x for x in conf_to_apply.values()):
+            # If all the configuration is gone (reset to empty) for the
+            # variable, delete the entire record.
+            del varinfo_manager[args.VARIABLE]
+        else:
+            # Save the changes with the hardcoded "local" source tag.
+            varinfo_manager.set(args.VARIABLE, varinfo, "local")
 
 
 def register(argparser, shell):
+    # To generate a proper help and list of valid choices for the --type flag,
+    # we need to eagerly load the full implementation.
+    vartypes.load_all()
+    vartype_description_in_epilogue = ""
+    for vartype in sorted(vartypes.get_known_kinds()):
+        vartype_description_in_epilogue += "{0}: {1} ".format(
+            vartype.upper(), vartypes.get_class(vartype).type_description())
+    fmt_epilog = epilog.format(vartype_description_in_epilogue)
+    # TODO: Ignored/disabled type which prohibits access to it completely.
+
     parser = argparser.add_parser(
             name=name,
             description=description,
             help=help,
-            epilog=epilog
+            epilog=fmt_epilog
     )
 
     parser.add_argument('VARIABLE',
                         type=str,
                         help="The variable to configure, e.g. PATH.")
 
-    # behavioural = parser.add_argument_group(
-    #     "behaviour-affecting arguments",
-    #     """Changing these configuration options about a variable alters how
-    #     Envprobe behaves when handling the variable.""")
+    behavioural = parser.add_argument_group(
+        "behaviour-affecting arguments",
+        """Changing these configuration options about a variable alters how
+        Envprobe behaves when handling the variable.""")
+
+    behavioural.add_argument('-t', '--type',
+                             type=str,
+                             choices=[''] + sorted(vartypes.get_known_kinds()),
+                             help="Change the type of the variable from "
+                                  "Envprobe's point of view to the specified "
+                                  "version. This affects how you interact "
+                                  "with the variable in the future! To "
+                                  "disregard additional behaviour, set the "
+                                  "type to 'string'. Set to empty string "
+                                  "(\"\") to delete the stored configuration "
+                                  "and return to defaults. For details on "
+                                  "what each option means, see the end of "
+                                  "the command's help.")
 
     informational = parser.add_argument_group(
         "informational arguments",

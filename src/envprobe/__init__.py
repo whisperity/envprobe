@@ -24,7 +24,7 @@ from . import shell
 from . import vartypes
 from . import vartype_heuristics
 from .library import get_shell_and_env_always, get_snapshot, \
-    get_variable_tracking
+    get_variable_information_manager, get_variable_tracking
 
 __all__ = [
     'community_descriptions',
@@ -35,5 +35,6 @@ __all__ = [
     'vartype_heuristics',
     'get_shell_and_env_always',
     'get_snapshot',
+    'get_variable_information_manager',
     'get_variable_tracking'
     ]

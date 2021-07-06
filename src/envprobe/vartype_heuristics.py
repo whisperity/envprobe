@@ -67,35 +67,69 @@ class NumericalValueEnvVarHeuristic(EnvVarTypeHeuristic):
             return None
 
 
-def assemble_standard_type_heuristics_pipeline():
+class ConfigurationResolvedHeuristic(EnvVarTypeHeuristic):
+    """Implements a heuristic that reads from a
+    :py:class:`.settings.variable_information.VariableInformation`
+    configuration manager, and resolves the type of the variable based on
+    these settings contained therein.
+    """
+    def __init__(self, loader):
+        self.loader = loader
+
+    def __call__(self, name, env=None):
+        varinfo_manager = self.loader(name)
+        if not varinfo_manager:
+            return None
+        varinfo = varinfo_manager[name]
+        if not varinfo:
+            return None
+
+        return varinfo.get("type", None)
+
+
+def assemble_standard_type_heuristics_pipeline(varcfg_user_loader):
+    """Creates the standard :py:class:`.environment.HeuristicStack` pipeline
+    that decides the type for an environment variable.
+
+    This pipeline uses the :ref:`configuration of the user<config_set>` and
+    the community (TODO!) first, and then the heuristics pre-implemented in
+    Envprobe to deduce a *vartype* for an environment variable.
+
+    Parameters
+    ----------
+    varcfg_user_loader : str -> object
+        The function used for the :py:class:`.ConfigurationResolvedHeuristic`
+        internally.
+        This function is called with the name of a variable and should return
+        an object similar to
+        :py:class:`.settings.variable_information.VariableInformation` in which
+        the type can be looked up.
+
+    Note
+    ----
+        **TODO:** Some of the features (such as community data) are not
+        implemented yet!
+    """
     p = HeuristicStack()
 
     # By default everything is a string.
     p += EnvVarTypeHeuristic()
+
     # If the value or the name feels numbery, make it a number.
     p += NumericalValueEnvVarHeuristic()
     p += NumericalNameEnvVarHeuristic()
+
     # If the variable looks like a path, use path.
     p += PathEnvVarHeuristic()
+
     # Community-sourced descriptions available to the user trump the rest.
     p += CommunityTypeHeuristic()
+
+    # The user's own configuration should be respected highly, though.
+    p += ConfigurationResolvedHeuristic(varcfg_user_loader)
+
     # But ignoring own variables and hidden stuff trumps some more.
     p += EnvprobeEnvVarHeuristic()
     p += HiddenEnvVarHeuristic()
 
     return p
-
-
-standard_vartype_pipeline = assemble_standard_type_heuristics_pipeline()
-"""The standard :py:class:`.environment.HeuristicStack` pipeline that decides
-the type for an environment variable.
-
-This pipeline uses the configuration of the user (TODO: make this a URL!) and
-the community (TODO!) first, and then the heuristics pre-implemented in
-Envprobe to deduce a *vartype* for an environment variable.
-
-.. hint::
-
-    **TODO:** Some of the features (such as user configuration or community
-    data) are not implemented yet!
-"""

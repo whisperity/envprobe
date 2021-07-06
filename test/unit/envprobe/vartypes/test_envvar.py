@@ -62,24 +62,17 @@ def test_mock_registers_and_loads():
     assert(vartypes.load("fake") == MockVariable)
 
 
-def test_mock_extended_info_type():
-    assert(vartypes.get_class("fake")().extended_attributes.type == "fake")
-
-
 def test_mock_apply_configuration():
     xattr = vartypes.get_class("fake")().extended_attributes
-    assert(xattr.type == "fake")
     assert(xattr.source is None)
     assert(xattr.description is None)
 
     conf = {"description": "Some description."}
     xattr.apply(conf)
 
-    assert(xattr.type == "fake")
     assert(xattr.source is None)
     assert(xattr.description == "Some description.")
 
     xattr.apply(None)
-    assert(xattr.type == "fake")
     assert(xattr.source is None)
     assert(xattr.description == "Some description.")

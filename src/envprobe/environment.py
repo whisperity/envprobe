@@ -144,6 +144,9 @@ class HeuristicStack:
 default_heuristic = HeuristicStack()
 """Provides the default :py:class:`EnvVarTypeHeuristic` added to an
 instantiated :py:class:`HeuristicStack`.
+
+The default heuristic maps every variable to a pure
+:py:class:`.vartypes.string.String`.
 """
 default_heuristic += EnvVarTypeHeuristic()
 

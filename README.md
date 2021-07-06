@@ -14,6 +14,7 @@ Envprobe was originally conceived as the tool between [shell `modules`](http://m
 - [Quick user guide](#quick-user-guide)
   - [Managing environment variables](#managing-environment-variables)
   - [Saved snapshots](#saved-snapshots)
+  - [Type-safe access](#type-safe-access)
 - [Configuring variable handling](#configuring-variable-handling)
 
 ---
@@ -219,6 +220,27 @@ New variable 'FOO' will be created with value 'bar'.
 Load and apply this change? (y/N) _
 ~~~
 
+### Saved snapshots
+
+Envprobe offers type safety when accessing environment variables, such as prohibiting assigning a textual value to a `_PID` variable.
+The type of a variable is decided based on several heuristics by default, and can be [configured by the user](#configuring-variable-handling).
+
+~~~{.bash}
+$ echo $SSH_AGENT_PID
+12345
+
+$ export SSH_AGENT_PID="invalid-value"
+# The above example works, even though a "_PID" variable should only
+# contain numbers.
+
+$ ep SSH_AGENT_PID=98765
+$ ep SSH_AGENT_PID="foo"
+[ERROR] Failed to execute: could not convert string to number.
+
+$ ep SSH_AGENT_PID
+SSH_AGENT_PID=98765
+~~~
+
 
 ## Configuring variable handling
 
@@ -247,14 +269,6 @@ The [complete documentation](http://envprobe.readthedocs.io/en/latest/config/ind
 Why?
 ----
 
-Currently for developers to set up their environments, a lot of configuration
-files, aliases and the like need to be set up. Conventionally, you can use
-bare `export`-like commands for that. Sometimes, `direnv` can do the job, if
-your configuration has to apply to a certain subtree in the filesystem. When
-you need things loaded into your shell, Modules is &ndash; at least
-allegedly &ndash; the way to go. Alternatively, one can use
-[Docker](http://docker.com/) to run environments within containers.
-
 However, there is a use case on which all of the aforementioned tools fall
 short, or are hard to configure. **`envprobe`** &mdash; the name idea came
 from [`modprobe`](http://enwp.org/Modprobe), but for environments &mdash;
@@ -280,20 +294,6 @@ the lines above enabled `envprobe` for you.
 Advanced: Configuring type of variables
 ---------------------------------------
 
-Conventionally shells store every environment variable as a string, and only
-when needed try to interpret them as numbers, arrays, etc. However, to provide
-a marginally safer experience, Envprobe defines its own types and uses them
-when the user accesses a variable.
-
-These types are as follows. (Please see the help at `epc set-type --help` for
-the list of types that are loaded into the current running Envprobe instance.)
-
- * `string`: This is the basic type, the variable is represented as a string.
- * `number`: Either integer or floating-point numbers.
- * `colon-separated` and `semi-separated`: Array of strings, separated by `:`
-   or `;`.
- * `path`: A special `:`-separated array which contains files or folder
-   directives.
  * `ignored`: Remove the variable from Envprobe's allowed and managed
    variables.
 
@@ -303,20 +303,6 @@ variable is not visible to the `diff`, `save`, `load`, ... commands, but
 the variable can still be managed locally, in an ad-hoc fashion. A variable
 with `ignored` type will result in Envprobe rejecting every access (`get`,
 `set`) on that variable.
-
-Envprobe contains built-in heuristics to figure out the type of a variable, but
-in case you know your environment better, you can specify Envprobe not to stand
-in your way, with the `epc set-type` command:
-
-    epc set-type MY_VARIABLE -t path
-
-The above example sets the type &mdash; this is your user's configuration
-saved locally &mdash; of `MY_VARIABLE` to `path`. In your shells, your
-configuration overrides the built-in heuristics, and the variable will always
-be considered what you specified.
-
-To delete a preference, use `-d`: `epc set-type MY_VARIABLE -d`. This will
-revert `MY_VARIABLE` back to the default heuristic.
 
 
 Advanced: Obtaining variable types and descriptions from the community

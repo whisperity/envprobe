@@ -10,6 +10,7 @@ This page contains excerpts of Envprobe's usage that detail typical everyday tas
 
 - :ref:`Managing environment variables in the current shell<quick_envvars>`
 - :ref:`Saved snapshots<quick_snapshots>`
+- :ref:`Type-safe access<quick_vartypes>`
 
 
 .. rubric:: Managing environment variables in the current shell
@@ -125,3 +126,36 @@ This page contains excerpts of Envprobe's usage that detail typical everyday tas
         $ ep { foobar -p
         New variable 'FOO' will be created with value 'bar'.
         Load and apply this change? (y/N) _
+
+.. rubric:: Type-safe access
+    :name: quick_vartypes
+
+(Read the :ref:`full documentation<vartype_safety>` for this section.)
+
+    .. code-block:: bash
+        :caption: Prohibit passing non-numbers to number-expecting variables.
+
+        $ echo $SSH_AGENT_PID
+        12345
+
+        $ export SSH_AGENT_PID="invalid-value"
+        # The above example works, even though a "_PID" variable should only
+        # contain numbers.
+
+        $ ep SSH_AGENT_PID=98765
+        $ ep SSH_AGENT_PID="foo"
+        [ERROR] Failed to execute: could not convert string to number.
+
+        $ ep SSH_AGENT_PID
+        SSH_AGENT_PID=98765
+
+    .. code-block:: bash
+        :caption: Convenient handling of array-like environment variables (e.g. ``PATH``).
+
+        $ ep add USER foo
+        [ERROR] Failed to execute: 'add' can not be called on non-arrays.
+
+        $ ep add PATH /foo
+
+        $ ep PATH
+        PATH=/foo:/bin:/sbin

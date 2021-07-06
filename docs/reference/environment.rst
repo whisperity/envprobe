@@ -62,11 +62,11 @@ All these classes are subclasses of :py:class:`EnvVarTypeHeuristic<envprobe.envi
 .. autosummary::
     :nosignatures:
 
+    ConfigurationResolvedHeuristic
     EnvprobeEnvVarHeuristic
     HiddenEnvVarHeuristic
-    PathEnvVarHeuristic
     NumericalNameEnvVarHeuristic
     NumericalValueEnvVarHeuristic
+    PathEnvVarHeuristic
 
-.. autodata:: standard_vartype_pipeline
-    :no-value:
+.. autofunction:: assemble_standard_type_heuristics_pipeline

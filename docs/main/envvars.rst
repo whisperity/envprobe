@@ -142,6 +142,7 @@ Undefining (``undefine``, ``^``)
            $ echo $HOME/bin
            /bin
 
+.. _envvars_add:
 
 Adding to arrays (``add``, ``+``)
 =================================
@@ -212,12 +213,9 @@ Traditionally, extending a variable such as ``PATH`` with your current working d
 
     .. note::
         The ``add`` command only works with environment variables that are :py:class:`Array<envprobe.vartypes.array.Array>`.
-        In case Envprobe did not correctly resolve the type of the variable, see TODO: ... on how to set the type.
+        In case Envprobe did not correctly resolve the type of the variable, :ref:`you can configure it yourself<config_set>`.
 
-        .. hint::
-
-            Configuration management is yet to be migrated to the new version.
-
+.. _envvars_remove:
 
 Removing from arrays (``remove``, ``-``)
 ========================================
@@ -263,8 +261,4 @@ Removing from arrays (``remove``, ``-``)
 
     .. note::
         The ``remove`` command only works with environment variables that are :py:class:`Array<envprobe.vartypes.array.Array>`.
-        In case Envprobe did not correctly resolve the type of the variable, see TODO: ... on how to set the type.
-
-        .. hint::
-
-            Configuration management is yet to be migrated to the new version.
+        In case Envprobe did not correctly resolve the type of the variable, :ref:`you can configure it yourself<config_set>`.

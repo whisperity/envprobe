@@ -30,6 +30,8 @@ Backwards incompatible and other game-breaking changes :warning:
  * The `epc track` and `epc default-tracking` commands have been merged together into the `epc track` command.
    Setting the *default behaviour* (previously through `epc default-tracking`) is done by giving the `--default` flag.
    Resetting a particular variable's behaviour to the default (previously done by `epc track --default`) is done by using `epc track --reset`.
+ * The `epc set-type` and `epc set-description` commands have been merged together into the `epc set` command.
+   The individual properties of the variable to be set can be specified with `--type` and `--description`, respectively.
  * Envprobe's user-level configuration files have been moved to `~/.config/envprobe` by default.
  * The internals of the implementation have been almost completely reworked, which means everything that relied upon Envprobe on the Python scripting level is surely broken!
  * The format of the user configuration files have changed in an incompatible way, too.

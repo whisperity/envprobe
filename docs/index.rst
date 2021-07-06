@@ -39,6 +39,7 @@ Documentation
     quick
     main/index
     config/index
+    vartype_safety
     reference/index
 
 

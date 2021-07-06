@@ -127,7 +127,6 @@ class EnvVar(metaclass=ABCMeta):
         -------
         configuration : EnvVarExtendedInformation
         """
-        self._extended._type = get_kind(type(self))
         return self._extended
 
     @classmethod

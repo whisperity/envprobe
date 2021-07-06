@@ -16,15 +16,14 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import os
 
-from .environment import Environment
+from .environment import Environment, default_heuristic
 from .settings import core as settings
 from .settings import config_file, snapshot, variable_information, \
     variable_tracking
 from .shell import get_current_shell, FakeShell
-from .vartype_heuristics import standard_vartype_pipeline
 
 
-def get_shell_and_env_always(env_dict=None):
+def get_shell_and_env_always(env_dict=None, vartype_pipeline=None):
     """Return an :py:class:`environment.Environment` and
     :py:class:`shell.Shell`, no matter what.
 
@@ -33,6 +32,10 @@ def get_shell_and_env_always(env_dict=None):
     env_dict : dict, optional
         The raw mapping of environment variables to their values, as in
         :py:data:`os.environ`.
+    vartype_pipeline : envprobe.environment.HeuristicStack, optional
+        The type resolution heuristics pipeline to use.
+        If not specified, the :py:data:`.environment.default_heuristic` will
+        be used.
 
     Returns
     -------
@@ -48,13 +51,15 @@ def get_shell_and_env_always(env_dict=None):
     """
     if not env_dict:
         env_dict = os.environ
+    if not vartype_pipeline:
+        vartype_pipeline = default_heuristic
 
     try:
         sh = get_current_shell(env_dict)
     except KeyError:
         sh = FakeShell()
 
-    env = Environment(sh, env_dict, standard_vartype_pipeline)
+    env = Environment(sh, env_dict, vartype_pipeline)
 
     return sh, env
 
