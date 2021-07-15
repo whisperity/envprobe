@@ -22,9 +22,9 @@ def get_configuration_directory():
     """Returns the location where Envprobe's user-specific configuration files
     are stored.
 
-    This method uses `XDG_CONFIG_HOME` as per FreeDesktop specifications, if
+    This method uses ``$XDG_CONFIG_HOME`` as per FreeDesktop specifications, if
     exists.
-    Otherwise, the `.config` directory under the user's HOME will be used.
+    Otherwise, the ``.config`` directory under the user's `HOME` will be used.
     """
     basedir = os.environ.get("XDG_CONFIG_HOME",
                              os.path.join(os.path.expanduser('~'),
@@ -35,9 +35,10 @@ def get_configuration_directory():
 def get_data_directory():
     """Returns the location where Envprobe's user-specific changing data is.
 
-    This method uses `XDG_DATA_HOME` as per FreeDesktop specifications, if
+    This method uses ``$XDG_DATA_HOME`` as per FreeDesktop specifications, if
     exists.
-    Otherwise, the `.local/share` directory under the user's HOME will be used.
+    Otherwise, the ``.local/share`` directory under the user's HOME will be
+    used.
     """
     basedir = os.environ.get("XDG_DATA_HOME",
                              os.path.join(os.path.expanduser('~'),
@@ -50,9 +51,10 @@ def get_runtime_directory(user_id):
     """Returns a temporary directory where session-specific files can be
     stored.
 
-    This method uses `XDG_RUNTIME_DIR` as per FreeDesktop specifications, if
+    This method uses ``$XDG_RUNTIME_DIR`` as per FreeDesktop specifications, if
     exists.
     Otherwise, the system-specific temporary directory will be used.
+    See :py:func:`tempfile.gettempdir` for further information.
     """
     try:
         rootdir = os.environ["XDG_RUNTIME_DIR"]

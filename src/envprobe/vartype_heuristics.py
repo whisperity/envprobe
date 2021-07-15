@@ -14,7 +14,6 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-from .community_descriptions import CommunityTypeHeuristic
 from .environment import EnvVarTypeHeuristic, HeuristicStack
 
 
@@ -123,7 +122,8 @@ def assemble_standard_type_heuristics_pipeline(varcfg_user_loader):
     p += PathEnvVarHeuristic()
 
     # Community-sourced descriptions available to the user trump the rest.
-    p += CommunityTypeHeuristic()
+    # TODO: Implement this properly.
+    # p += CommunityTypeHeuristic()
 
     # The user's own configuration should be respected highly, though.
     p += ConfigurationResolvedHeuristic(varcfg_user_loader)

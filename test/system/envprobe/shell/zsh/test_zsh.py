@@ -18,13 +18,13 @@ from glob import glob
 import os
 import pytest
 
-from .helper import bash_shell
+from .helper import zsh_shell
 from libtest.envprobe import envprobe_location
 
 
 @pytest.fixture(scope='module')
 def sh():
-    with bash_shell() as sh:
+    with zsh_shell() as sh:
         yield sh
 
 
@@ -32,16 +32,17 @@ def test_envprobe_loaded(sh, tmp_path):
     retcode, _ = sh.execute_command("export XDG_DATA_HOME=\"{0}/data\" "
                                     "XDG_CONFIG_HOME=\"{0}/config\" "
                                     "XDG_RUNTIME_DIR=\"{0}/runtime\""
-                                    .format(os.path.dirname(tmp_path)))
+                                    .format(os.path.dirname(tmp_path)),
+                                    timeout=1)
     assert(not retcode)
 
-    retcode, _ = sh.execute_command("envprobe --help", timeout=1)
+    retcode, _ = sh.execute_command("envprobe --help", timeout=5)
     assert(not retcode)
 
-    _, hook_text = sh.execute_command("envprobe config hook bash $$",
+    _, hook_text = sh.execute_command("envprobe config hook zsh $$",
                                       timeout=2)
     assert("envprobe" in hook_text)
-    assert("PROMPT_COMMAND" in hook_text)
+    assert("precmd_functions" in hook_text)
 
     sh.execute_command("""_HOOK=$(cat <<'EOF'
 {0}
@@ -53,9 +54,9 @@ EOF
 
 
 def test_alias(sh):
-    _, result = sh.execute_command("alias")
-    assert("alias ep='envprobe'" in result)
-    assert("alias epc='envprobe-config'" in result)
+    _, result = sh.execute_command("alias", timeout=5)
+    assert("ep=envprobe" in result)
+    assert("epc=envprobe-config" in result)
 
 
 def test_get_variable(sh):
@@ -75,124 +76,125 @@ def test_get_variable(sh):
     assert(not retcode)
     assert(result.startswith("PATH={0}".format(envprobe_location())))
 
-    retcode, result = sh.execute_command("ep \'?PATH\'", timeout=0.5)
+    retcode, result = sh.execute_command("ep \'?PATH\'", timeout=1)
     assert(not retcode)
     assert(result.startswith("PATH={0}".format(envprobe_location())))
 
 
 def test_set_variable(sh):
-    retcode, _ = sh.execute_command("envprobe set SOMETHING", timeout=0.5)
+    retcode, _ = sh.execute_command("envprobe set SOMETHING", timeout=1)
     assert(retcode == 2)
 
-    _, result = sh.execute_command("echo $DUMMY_VAR $DUMMY_PATH")
+    _, result = sh.execute_command("echo $DUMMY_VAR $DUMMY_PATH", timeout=1)
     assert(not result)
 
     retcode, result = sh.execute_command("envprobe set DUMMY_VAR test",
-                                         timeout=0.5)
+                                         timeout=1)
     assert(not retcode)
     assert(not result)
-    _, result = sh.execute_command("echo $DUMMY_VAR")
+    _, result = sh.execute_command("echo $DUMMY_VAR", timeout=1)
     assert(result == "test")
 
     retcode, result = sh.execute_command("envprobe set DUMMY_PATH /mnt",
-                                         timeout=0.5)
+                                         timeout=1)
     assert(not retcode)
     assert(not result)
-    _, result = sh.execute_command("echo $DUMMY_PATH")
+    _, result = sh.execute_command("echo $DUMMY_PATH", timeout=1)
     assert(result == "/mnt")
 
-    retcode, result = sh.execute_command("ep DUMMY_VAR=system", timeout=0.5)
+    retcode, result = sh.execute_command("ep DUMMY_VAR=system", timeout=1)
     assert(not retcode)
     assert(not result)
-    _, result = sh.execute_command("echo $DUMMY_VAR")
+    _, result = sh.execute_command("echo $DUMMY_VAR", timeout=1)
     assert(result == "system")
 
     retcode, result = sh.execute_command("ep \'!DUMMY_VAR\' shortcut",
-                                         timeout=0.5)
+                                         timeout=1)
     assert(not retcode)
     assert(not result)
-    _, result = sh.execute_command("echo $DUMMY_VAR")
+    _, result = sh.execute_command("echo $DUMMY_VAR", timeout=1)
     assert(result == "shortcut")
 
 
 def test_undefine_variable(sh):
     retcode, result = sh.execute_command("envprobe undefine NON_EXISTING_VAR",
-                                         timeout=0.5)
+                                         timeout=1)
     assert(not retcode)
     assert(not result)
 
-    _, result = sh.execute_command("echo $DUMMY_VAR")
+    _, result = sh.execute_command("echo $DUMMY_VAR", timeout=1)
     assert(result == "shortcut")
 
-    retcode, result = sh.execute_command("ep undefine DUMMY_VAR", timeout=0.5)
+    retcode, result = sh.execute_command("ep undefine DUMMY_VAR", timeout=1)
     assert(not retcode)
     assert(not result)
-    _, result = sh.execute_command("echo $DUMMY_VAR")
+    _, result = sh.execute_command("echo $DUMMY_VAR", timeout=1)
     assert(not result)
 
-    retcode, result = sh.execute_command("ep ^DUMMY_PATH", timeout=0.5)
+    retcode, result = sh.execute_command("ep ^DUMMY_PATH", timeout=1)
     assert(not retcode)
     assert(not result)
-    _, result = sh.execute_command("echo $DUMMY_PATH")
+    _, result = sh.execute_command("echo $DUMMY_PATH", timeout=1)
     assert(not result)
 
 
 def test_add_and_remove(sh, tmp_path):
-    retcode, result = sh.execute_command("pwd")
+    retcode, result = sh.execute_command("pwd", timeout=1)
     assert(not retcode)
     old_wd = result
-    retcode, _ = sh.execute_command("cd \"{0}\"".format(tmp_path))
+    retcode, _ = sh.execute_command("cd \"{0}\"".format(tmp_path), timeout=1)
     assert(not retcode)
-    retcode, _ = sh.execute_command("mkdir dummy")
+    retcode, _ = sh.execute_command("mkdir dummy", timeout=1)
     assert(not retcode)
-    retcode, _ = sh.execute_command("echo 'echo \"Hello\"' > dummy/exe")
+    retcode, _ = sh.execute_command("echo 'echo \"Hello\"' > dummy/exe",
+                                    timeout=1)
     assert(not retcode)
     retcode, _ = sh.execute_command("chmod +x dummy/exe")
     assert(not retcode)
 
     retcode, result = sh.execute_command("which exe")
     assert(retcode == 1)
-    assert(not result)
+    assert(result == "exe not found")
 
     retcode, result = sh.execute_command("ep +PATH dummy", timeout=0.5)
     assert(not retcode)
     assert(not result)
-    retcode, result = sh.execute_command("which exe")
+    retcode, result = sh.execute_command("which exe", timeout=1)
     assert(not retcode)
     assert(result == os.path.join(tmp_path, "dummy/exe"))
 
-    retcode, result = sh.execute_command("ep remove PATH dummy", timeout=0.5)
+    retcode, result = sh.execute_command("ep remove PATH dummy", timeout=1)
     assert(not retcode)
     assert(not result)
-    retcode, result = sh.execute_command("which exe")
+    retcode, result = sh.execute_command("which exe", timeout=1)
     assert(retcode == 1)
-    assert(not result)
+    assert(result == "exe not found")
 
-    retcode, _ = sh.execute_command("cd \"{0}\"".format(old_wd))
+    retcode, _ = sh.execute_command("cd \"{0}\"".format(old_wd), timeout=1)
     assert(not retcode)
 
 
 def test_diff(sh):
-    retcode, result = sh.execute_command("envprobe diff", timeout=0.5)
+    retcode, result = sh.execute_command("envprobe diff", timeout=2)
     assert(not retcode)
     assert(result)
-    retcode, result = sh.execute_command("ep %", timeout=0.5)
+    retcode, result = sh.execute_command("ep %", timeout=2)
     assert(not retcode)
     assert(result)
 
-    retcode, result = sh.execute_command("ep FOOBAR=xyz", timeout=0.5)
+    retcode, result = sh.execute_command("ep FOOBAR=xyz", timeout=1)
     assert(not retcode)
     assert(not result)
-    retcode, result = sh.execute_command("ep +DUMMY_PATH .", timeout=0.5)
+    retcode, result = sh.execute_command("ep +DUMMY_PATH .", timeout=1)
     assert(not retcode)
     assert(not result)
 
-    retcode, result = sh.execute_command("pwd")
+    retcode, result = sh.execute_command("pwd", timeout=1)
     assert(not retcode)
     pwd = result
 
     retcode, result = sh.execute_command("ep % FOOBAR DUMMY_PATH NOT_CHANGED",
-                                         timeout=0.5)
+                                         timeout=2)
     assert(not retcode)
     expected = ["(+) Added:       DUMMY_PATH",
                 "\tdefined value: ['{0}']".format(pwd),
@@ -202,99 +204,99 @@ def test_diff(sh):
     assert(result)
     assert(list(filter(lambda x: x, result.splitlines(False))) == expected)
 
-    retcode, result = sh.execute_command("ep ^FOOBAR", timeout=0.5)
+    retcode, result = sh.execute_command("ep ^FOOBAR", timeout=1)
     assert(not retcode)
     assert(not result)
-    retcode, result = sh.execute_command("ep ^DUMMY_PATH", timeout=0.5)
+    retcode, result = sh.execute_command("ep ^DUMMY_PATH", timeout=1)
     assert(not retcode)
     assert(not result)
 
     retcode, result = sh.execute_command("ep % FOOBAR DUMMY_PATH NOT_CHANGED",
-                                         timeout=0.5)
+                                         timeout=2)
     assert(not retcode)
     assert(list(filter(lambda x: x, result.splitlines(False))) == [])
 
 
 def test_save(sh):
-    retcode, result = sh.execute_command("pwd")
+    retcode, result = sh.execute_command("pwd", timeout=1)
     assert(not retcode)
     old_wd = result
-    retcode, _ = sh.execute_command("cd /")
+    retcode, _ = sh.execute_command("cd /", timeout=1)
     assert(not retcode)
 
-    retcode, result = sh.execute_command("ep +DUMMY_PATH Foo", timeout=0.5)
+    retcode, result = sh.execute_command("ep +DUMMY_PATH Foo", timeout=1)
     assert(not retcode)
     assert(not result)
 
     retcode, result = sh.execute_command("ep save dummy_path DUMMY_PATH",
-                                         timeout=0.5)
+                                         timeout=2)
     assert(not retcode)
     assert(list(filter(lambda x: x, result.splitlines(False))) ==
            ["New variable 'DUMMY_PATH' with value '['/Foo']'."])
 
-    retcode, result = sh.execute_command("ep +DUMMY_PATH Bar", timeout=0.5)
+    retcode, result = sh.execute_command("ep +DUMMY_PATH Bar", timeout=1)
     assert(not retcode)
     assert(not result)
 
     # Simulate oversaving. This will save both /Foo and /Bar to the save file,
     # hopefully. Testing this will happen with the testing of load().
     retcode, result = sh.execute_command("ep save dummy_path DUMMY_PATH",
-                                         timeout=0.5)
+                                         timeout=2)
     assert(not retcode)
     assert(list(filter(lambda x: x, result.splitlines(False))) ==
            ["For variable 'DUMMY_PATH' the element '/Bar' was added."])
 
-    retcode, _ = sh.execute_command("cd \"{0}\"".format(old_wd))
+    retcode, _ = sh.execute_command("cd \"{0}\"".format(old_wd), timeout=1)
     assert(not retcode)
 
-    retcode, result = sh.execute_command("ep ^DUMMY_PATH", timeout=0.5)
+    retcode, result = sh.execute_command("ep ^DUMMY_PATH", timeout=1)
     assert(not retcode)
     assert(not result)
 
 
 def test_list(sh):
-    retcode, result = sh.execute_command("ep list", timeout=0.5)
+    retcode, result = sh.execute_command("ep list", timeout=1)
     assert(not retcode)
     assert(list(filter(lambda x: x, result.splitlines(False))) ==
            ["dummy_path"])
 
 
 def test_load(sh):
-    retcode, result = sh.execute_command("ep set DUMMY_PATH /", timeout=0.5)
+    retcode, result = sh.execute_command("ep set DUMMY_PATH /", timeout=1)
     assert(not retcode)
     assert(not result)
 
-    retcode, result = sh.execute_command("ep load dummy_path", timeout=0.5)
+    retcode, result = sh.execute_command("ep load dummy_path", timeout=2)
     assert(not retcode)
     assert(list(filter(lambda x: x, result.splitlines(False))) ==
            ["For variable 'DUMMY_PATH' the element '/Foo' will be added.",
             "For variable 'DUMMY_PATH' the element '/Bar' will be added."])
 
-    retcode, result = sh.execute_command("ep ?DUMMY_PATH", timeout=0.5)
+    retcode, result = sh.execute_command("ep \'?DUMMY_PATH\'", timeout=2)
     assert(not retcode)
     assert(result == "DUMMY_PATH=/Foo:/Bar:/")
 
-    retcode, result = sh.execute_command("ep ^DUMMY_PATH", timeout=0.5)
+    retcode, result = sh.execute_command("ep ^DUMMY_PATH", timeout=2)
     assert(not retcode)
     assert(not result)
 
 
 def test_delete(sh):
-    retcode, result = sh.execute_command("ep delete NONEXISTENT", timeout=0.5)
+    retcode, result = sh.execute_command("ep delete NONEXISTENT", timeout=2)
     assert(retcode == 1)
     assert(not result)
 
-    retcode, result = sh.execute_command("ep delete dummy_path", timeout=0.5)
+    retcode, result = sh.execute_command("ep delete dummy_path", timeout=2)
     assert(not retcode)
     assert(not result)
 
-    retcode, result = sh.execute_command("ep list", timeout=0.5)
+    retcode, result = sh.execute_command("ep list", timeout=2)
     assert(not retcode)
     assert(list(filter(lambda x: x, result.splitlines(False))) == [])
 
 
 def test_exit(sh):
-    retcode, result = sh.execute_command("echo $XDG_RUNTIME_DIR")
+    retcode, result = sh.execute_command("echo $XDG_RUNTIME_DIR", timeout=1)
     assert(not retcode)
     tempdir = result
 

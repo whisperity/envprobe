@@ -84,7 +84,7 @@ class VariableInformation:
         config : dict
             The configuration mapping associated with the variable.
             This can be used to instantiate an
-            :py:class:`envprobe.vartypes.EnvVarExtendedInformation`.
+            :py:class:`envprobe.vartypes.envvar.EnvVarExtendedInformation`.
         """
         with self._config as conf:
             if variable_name in conf[K_VARIABLES]:

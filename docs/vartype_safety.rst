@@ -65,6 +65,5 @@ Apart from the built-in heuristics, you can **set the type of a variable** yours
     $ ep add USER foo
     [ERROR] Failed to execute: 'add' can not be called on non-arrays.
 
-.. note::
 
-    **TODO** Write about the Community project?
+Information about environment variables that are useful for others can be obtained from the :ref:`community knowledge-base project<community_descriptions>`.

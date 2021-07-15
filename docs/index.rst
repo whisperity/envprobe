@@ -40,6 +40,7 @@ Documentation
     main/index
     config/index
     vartype_safety
+    community_descriptions
     reference/index
 
 

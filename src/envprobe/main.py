@@ -25,7 +25,6 @@ import sys
 
 from .commands import load as load_command
 from .commands.shortcuts import transform_subcommand_shortcut
-from .community_descriptions import CommunityData
 from .library import get_shell_and_env_always, \
     get_variable_information_manager, get_variable_tracking
 from .vartype_heuristics import assemble_standard_type_heuristics_pipeline
@@ -75,7 +74,6 @@ def __inject_state_to_args(args, shell, environment, argvZero):
         The parsed command-line arguments, extended with the Envprobe library
         globals.
     """
-    args.community = CommunityData()  # TODO.
     args.environment = environment
     args.envprobe_root = argvZero.replace("/__envprobe", "")
     args.shell = shell
@@ -198,6 +196,7 @@ def __config_mode(argv):
                 "consume",
                 "set_variable",  # The Python module name must be used here.
                 "track",
+                "descriptions"
                 ]
 
     if len(argv) > 2 and argv[1] in commands:

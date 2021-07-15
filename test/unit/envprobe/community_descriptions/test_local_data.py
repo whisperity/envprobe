@@ -14,17 +14,30 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-from .envvar import EnvVar, EnvVarExtendedInformation, \
-    get_class, get_kind, get_known_kinds, \
-    load, load_all, register_type
+import pytest
 
-__all__ = [
-    'EnvVar',
-    'EnvVarExtendedInformation',
-    'get_class',
-    'get_kind',
-    'get_known_kinds',
-    'load',
-    'load_all',
-    'register_type'
-    ]
+from envprobe.community_descriptions.local_data import MetaConfiguration
+
+
+def test_setup():
+    i = MetaConfiguration()
+    assert(i.version == '0' * 41)
+
+
+def test_set_and_get():
+    i = MetaConfiguration()
+    i.set_comment_for("foo", "bar")
+    assert(i.get_comment_for("foo") == "bar")
+
+
+def test_delete():
+    i = MetaConfiguration()
+    i.set_comment_for("foo", "bar")
+    i.set_comment_for("baz", "qux")
+
+    i.delete_source("foo")
+
+    assert(i.get_comment_for("baz") == "qux")
+
+    with pytest.raises(KeyError):
+        i.get_comment_for("foo")

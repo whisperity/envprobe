@@ -40,8 +40,6 @@ def test_set_and_get():
     i = VariableInformation()
     i.set("FOO", MockExtendedData(), "test")
 
-    print(i["FOO"])
-
     assert(i["FOO"]["description"] == MOCK_DESCRIPTION)
     assert(i["FOO"]["type"] == "mock")
     assert(i["FOO"]["source"] == "test")

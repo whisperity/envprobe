@@ -14,17 +14,15 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-from .envvar import EnvVar, EnvVarExtendedInformation, \
-    get_class, get_kind, get_known_kinds, \
-    load, load_all, register_type
+"""This package contains the routines that allow Envprobe to interface with the
+"Envprobe Variable Descriptions Knowledge Base" project.
+
+This sister project of Envprobe allows sharing type, description, and usage
+information with the users for variables that are common across systems.
+"""
+from . import downloader, local_data
 
 __all__ = [
-    'EnvVar',
-    'EnvVarExtendedInformation',
-    'get_class',
-    'get_kind',
-    'get_known_kinds',
-    'load',
-    'load_all',
-    'register_type'
-    ]
+    'downloader',
+    'local_data'
+]

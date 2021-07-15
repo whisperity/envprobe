@@ -16,6 +16,7 @@ Envprobe was originally conceived as the tool between [shell `modules`](http://m
   - [Saved snapshots](#saved-snapshots)
   - [Type-safe access](#type-safe-access)
 - [Configuring variable handling](#configuring-variable-handling)
+  - [Obtaining variable type descriptions](#obtaining-variable-type-descriptions)
 
 ---
 
@@ -250,12 +251,24 @@ The `envprobe-config` (or `epc`) command contains various subcommands that can b
 For a complete overview on the commands available and their usage, you can always call `epc -h` (or `epc track -h`, etc. for each subcommand) to get a quick help.
 The [complete documentation](http://envprobe.readthedocs.io/en/latest/config/index.html) for the user-facing commands is available behind the link.
 
-|  Command            |  Usage                                                                                              |
-|:--------------------|:----------------------------------------------------------------------------------------------------|
-| `hook ...`          | Generate the [Shell hook](#hook) that allows Envprobe to interface with the environment.            |
-| `set VARIABLE ...`  | Set additional information, such as a *description*, for a variable.                                |
-| `track VARIABLE`    | Configure whether changes to a `VARIABLE` should be managed in [saved snapshots](#saved-snapshots). |
+|  Command              |  Usage                                                                                                   |
+|:----------------------|:---------------------------------------------------------------------------------------------------------|
+| `hook ...`            | Generate the [Shell hook](#hook) that allows Envprobe to interface with the environment.                 |
+| `set VARIABLE ...`    | Set additional information, such as a *description*, for a variable.                                     |
+| `track VARIABLE`      | Configure whether changes to a `VARIABLE` should be managed in [saved snapshots](#saved-snapshots).      |
+| `descriptions update` | Download the [variable descriptions](http://github.com/whisperity/Envprobe-Descriptions) to use locally. |
 
+
+### Obtaining variable type descriptions
+
+Envprobe is managed with a sister project, the *[Envprobe Variable Descriptions Knowledge Base](http://github.com/whisperity/Envprobe-Descriptions)* which contains a curated list of environment variable descriptions and types.
+This database is used together with other heuristics to provide type-safe access to variables.
+The description of a variable, when queried, may come from a local copy of this database too.
+[Read more about this feature.](http://envprobe.readthedocs.io/en/latest/community_descriptions.html)
+
+To initially download, or subsequently update, the description database, execute:
+
+    epc descriptions update
 
 ---
 
@@ -304,31 +317,6 @@ the variable can still be managed locally, in an ad-hoc fashion. A variable
 with `ignored` type will result in Envprobe rejecting every access (`get`,
 `set`) on that variable.
 
-
-Advanced: Obtaining variable types and descriptions from the community
-----------------------------------------------------------------------
-
-> **Note:** This is the **only** part in Envprobe which communicates with
-> a remote server. No personal data is transmitted &mdash; at least directly
-> by Envprobe &mdash;. The network transaction only downloads a single file
-> *from GitHub* to fetch the knowledge-base.
-
-A sister project for *Envprobe* exists, with the title
-[*Envprobe: Descriptions*](http://github.com/whisperity/envprobe-descriptions)
-. This project is aimed at collecting knowledge about environment variables,
-which includes their proper type and description, usage.
-
-Envprobe supports automatically fetching the knowledge base and store it for
-your user. This database is used to get *type* and *description* metadata
-for environment variables &mdash; unless you locally override these details.
-
-To update the download of the description database, execute:
-
-    epc update-community
-
-*Note:* Depending on the size of the knowledgebase and the available Internet
-connection, the download could take up some time, and also use data. To
-conserve your resources, we advise *NOT* to update on metered connections!
 
 
 Extreme: Resetting or hacking *Envprobe*

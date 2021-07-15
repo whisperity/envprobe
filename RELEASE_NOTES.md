@@ -32,6 +32,8 @@ Backwards incompatible and other game-breaking changes :warning:
    Resetting a particular variable's behaviour to the default (previously done by `epc track --default`) is done by using `epc track --reset`.
  * The `epc set-type` and `epc set-description` commands have been merged together into the `epc set` command.
    The individual properties of the variable to be set can be specified with `--type` and `--description`, respectively.
+ * The `epc update-community` command was moved to `epc descriptions update`.
+   The format of the datafiles were changed for clarity, and are backwards incompatible.
  * Envprobe's user-level configuration files have been moved to `~/.config/envprobe` by default.
  * The internals of the implementation have been almost completely reworked, which means everything that relied upon Envprobe on the Python scripting level is surely broken!
  * The format of the user configuration files have changed in an incompatible way, too.

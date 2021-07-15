@@ -53,7 +53,7 @@ class Shell(AbstractContextManager):
         # has to happen BEFORE this timeout is hit, but a large timeout would
         # also mean waiting a lot for small commands, so this has to be
         # balanced carefully.
-        self._capture = Capture(timeout=0.1, buffer_size=-1)
+        self._capture = Capture(timeout=0.5, buffer_size=-1)
         self._command = Command(shell_binary + ' ' + shell_argstr,
                                 stdout=self._capture)
         self._echo = return_code_echo_command + command_separator
@@ -173,18 +173,20 @@ class Shell(AbstractContextManager):
         lost, while a too big one will result in every command waiting for
         a considerable time.
         """
-        cmd = cmd + self._separator
-        print("[Shell '{0}'] Running command: {1}".format(self._binary, cmd),
+        cmd = cmd + self._separator + self._echo
+        print("[Shell '{0}'] Running command:\n{1}\n"
+              .format(self._binary,
+                      '\n'.join(list(map(lambda l: "    > " + l,
+                                         cmd.split('\n'))))),
               file=sys.stderr)
 
         self._command.stdin.write(cmd.encode('utf-8'))
-        self._command.stdin.write(self._echo.encode('utf-8'))
         self._command.stdin.flush()
 
         stdout = self._capture.read(timeout=timeout)
         parts = stdout.decode().rstrip().split('\n')
         result, returncode = '\n'.join(parts[:-1]).rstrip(), parts[-1].rstrip()
 
-        print("[Shell '{0}'] Command result {1}:\n{2}".
+        print("[Shell '{0}'] Command result #{1}:\n{2}".
               format(self._binary, returncode, result), file=sys.stderr)
         return int(returncode), result

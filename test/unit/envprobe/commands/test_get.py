@@ -33,11 +33,6 @@ class MockVar:
         return self.value
 
 
-class MockCommunity:
-    def get_description(self, var_name):
-        return dict()
-
-
 class MockEnv:
     def __init__(self):
         self.vars = {"TEST": MockVar("TEST", "Foo"),
@@ -52,7 +47,6 @@ class MockEnv:
 @pytest.fixture
 def args():
     arg = Namespace()
-    arg.community = MockCommunity()
     arg.environment = MockEnv()
 
     yield arg

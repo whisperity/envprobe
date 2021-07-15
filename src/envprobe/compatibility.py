@@ -35,3 +35,53 @@ except ImportError:
         ``__enter__``, but otherwise does nothing.
         """
         return _ContextWrapper(enter_result)
+
+
+class Version:
+    """A basic class of program versions epxressed in the two-part `M.m`
+    (major, minor) format.
+
+    Note
+    ----
+        This class is implemented so that Envprobe does not need to depend on
+        the **setuptools** package.
+    """
+    def __init__(self, val):
+        """Initialises a version by parsing the string representation."""
+        if val is None:
+            val = "0.0"
+
+        parts = val.split('.')
+        self.major = int(parts[0]) if len(parts) >= 1 else 0
+        self.minor = int(parts[1]) if len(parts) >= 2 else 0
+
+    @property
+    def components(self):
+        """Returns the tuple of the version's components."""
+        return (self.major, self.minor)
+
+    def __str__(self):
+        return "{}.{}".format(*self.components)
+
+    def __repr__(self):
+        return str(self)
+
+    def __eq__(self, other):
+        return self.major == other.major and self.minor == other.minor
+
+    def __ne__(self, other):
+        return not self == other
+
+    def __lt__(self, other):
+        return self.major < other.major or \
+            (self.major == other.major and self.minor < other.minor)
+
+    def __ge__(self, other):
+        return not self < other
+
+    def __gt__(self, other):
+        return self.major > other.major or \
+            (self.major == other.major and self.minor > other.minor)
+
+    def __le__(self, other):
+        return not self > other

@@ -125,8 +125,8 @@ def get_variable_information_manager(variable_name, read_only=True):
 
 
 def get_variable_tracking(shell=None):
-    """Creates a read-only tracking manager for the standard global and local
-    configuration files.
+    """Creates a **read-only** tracking manager for the standard global and
+    local configuration files.
 
     Parameters
     ----------

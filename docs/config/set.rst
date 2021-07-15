@@ -61,3 +61,5 @@ Setting additional information for variables (``set``)
                     "The user's name."
             Source: local
 
+    .. note::
+        When both the :ref:`community description knowledge-base<community_descriptions>` and the user's local settings contain someting for a ``VARIABLE``, the local settings take priority.

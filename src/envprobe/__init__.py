@@ -17,7 +17,6 @@
 """Envprobe: Easy environment variable manager with saved states on a per-shell
 basis.
 """
-from . import community_descriptions
 from . import environment
 from . import main
 from . import shell
@@ -27,7 +26,6 @@ from .library import get_shell_and_env_always, get_snapshot, \
     get_variable_information_manager, get_variable_tracking
 
 __all__ = [
-    'community_descriptions',
     'environment',
     'main',
     'shell',

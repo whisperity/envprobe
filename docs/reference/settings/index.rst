@@ -6,6 +6,11 @@ Handling user configuration
 
 The :py:mod:`envprobe.settings` package implements classes that deal with handling configuration that is specific to the user, or a particular shell.
 
+Configuration files are put under the modifying persistent configuration directory of the user, as given by the following function.
+
+.. currentmodule:: envprobe.settings
+.. autofunction:: get_configuration_directory
+
 .. toctree::
 
     snapshot

@@ -19,3 +19,4 @@ Calling ``epc`` automatically brings up the argument parser for *config mode*.
    hook
    set
    track
+   descriptions

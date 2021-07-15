@@ -17,6 +17,7 @@ Envprobe is implemented as a single Python package, named ``envprobe``.
     vartypes/index
     environment
     settings/index
+    community_descriptions/index
 
 
 Miscellaneous functions

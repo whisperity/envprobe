@@ -31,9 +31,11 @@ epilog = \
 
     {0}
 
-    TODO: Something about the community descriptions project!
+    If you believe the new settings of the variable is useful for others,
+    please submit us an issue on the "variable descriptions" project at
+    http://github.com/whisperity/Envprobe-Descriptions
     """
-help = "Change the settings (e.g. description) for a variable."
+help = "Change the settings (e.g. type, or description) for a variable."
 
 
 def command(args):
