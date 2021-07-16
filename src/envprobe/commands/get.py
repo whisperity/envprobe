@@ -17,7 +17,6 @@
 import shlex
 import sys
 
-from ..library import get_variable_information_manager
 from ..vartypes import get_kind
 from ..vartypes.array import Array
 
@@ -29,6 +28,30 @@ description = \
     Alternatively, this command can be accessed by calling
     `envprobe ?VARIABLE`."""
 help = "{?VARIABLE} Print the value of an environment variable."
+
+
+def _get_extra_information_from_configuration_storages(env_var):
+    """Returns the extended attributes of the variable after looking it up
+    in the configuration stores.
+    """
+    from ..community_descriptions.local_data \
+        import get_variable_information_manager as data_mgr
+    from ..library import get_variable_information_manager as user_cfg_mgr
+
+    xattr = env_var.extended_attributes
+    if xattr:
+        # Look up the extended attributes for the variable from the user's
+        # local configuration.
+        user_cfg_info = user_cfg_mgr(env_var.name)[env_var.name]
+        if user_cfg_info:
+            xattr.apply(user_cfg_info)
+        else:
+            # Look up the extended information for the variable from the
+            # "community descriptions" project.
+            data_info = data_mgr(env_var.name)[env_var.name]
+            if data_info:
+                xattr.apply(data_info)
+    return xattr
 
 
 def command(args):
@@ -59,11 +82,8 @@ def command(args):
         except KeyError:
             print("Type: 'unknown' ({0})".format(str(type(env_var))))
 
-        xattr = env_var.extended_attributes
+        xattr = _get_extra_information_from_configuration_storages(env_var)
         if xattr:
-            varinfo_manager = get_variable_information_manager(args.VARIABLE)
-            xattr.apply(varinfo_manager[args.VARIABLE])
-
             description = xattr.description
             if description:
                 print("Description:\n\t{0}".format(description))

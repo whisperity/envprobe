@@ -28,8 +28,8 @@ from envprobe.compatibility import Version
 from envprobe.settings import variable_information as vi
 
 
-# Note: Please leave these as strings! This is unfortunately needed so that the
-# documentation generates correctly.
+# Note: Please leave these as strings!
+# This is unfortunately needed so that the documentation generates correctly.
 
 MIN_SUPPORTED_FORMAT = "1.0"
 """The minimum version of description releases that is supported by the

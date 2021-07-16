@@ -32,7 +32,7 @@ class HiddenEnvVarHeuristic(EnvVarTypeHeuristic):
             return False
 
 
-class PathEnvVarHeuristic(EnvVarTypeHeuristic):
+class PathNameEnvVarHeuristic(EnvVarTypeHeuristic):
     """Regard ``PATH`` and variables that end with ``_PATH`` as
     :py:class:`.vartypes.path.Path`.
     """
@@ -73,6 +73,15 @@ class ConfigurationResolvedHeuristic(EnvVarTypeHeuristic):
     these settings contained therein.
     """
     def __init__(self, loader):
+        """
+        Parameters
+        ----------
+        loader : str -> object
+            This function is called with the name of a variable and should
+            return an object similar to
+            :py:class:`.settings.variable_information.VariableInformation` in
+            which the type can be looked up.
+        """
         self.loader = loader
 
     def __call__(self, name, env=None):
@@ -86,7 +95,8 @@ class ConfigurationResolvedHeuristic(EnvVarTypeHeuristic):
         return varinfo.get("type", None)
 
 
-def assemble_standard_type_heuristics_pipeline(varcfg_user_loader):
+def assemble_standard_type_heuristics_pipeline(varcfg_user_loader,
+                                               varcfg_description_loader):
     """Creates the standard :py:class:`.environment.HeuristicStack` pipeline
     that decides the type for an environment variable.
 
@@ -103,15 +113,19 @@ def assemble_standard_type_heuristics_pipeline(varcfg_user_loader):
         an object similar to
         :py:class:`.settings.variable_information.VariableInformation` in which
         the type can be looked up.
-
-    Note
-    ----
-        **TODO:** Some of the features (such as community data) are not
-        implemented yet!
+    varcfg_description_loader : str -> object
+        The function used for the :py:class:`.ConfigurationResolvedHeuristic`
+        internally.
+        This function is called with the name of a variable and should return
+        an object similar to
+        :py:class:`.settings.variable_information.VariableInformation` in which
+        the type can be looked up.
     """
     p = HeuristicStack()
+    # (This is a **stack**, the execution is bottom to top in the order of
+    # adding heuristics!)
 
-    # By default everything is a string.
+    # By default everything is a string, to conform with POSIX.
     p += EnvVarTypeHeuristic()
 
     # If the value or the name feels numbery, make it a number.
@@ -119,16 +133,16 @@ def assemble_standard_type_heuristics_pipeline(varcfg_user_loader):
     p += NumericalNameEnvVarHeuristic()
 
     # If the variable looks like a path, use path.
-    p += PathEnvVarHeuristic()
+    p += PathNameEnvVarHeuristic()
+    # TODO: Create a builtin heuristic like NumericalValue for PATH-like stuff?
 
-    # Community-sourced descriptions available to the user trump the rest.
-    # TODO: Implement this properly.
-    # p += CommunityTypeHeuristic()
+    # If the built-in heuristics fail, try to use the description database.
+    p += ConfigurationResolvedHeuristic(varcfg_description_loader)
 
     # The user's own configuration should be respected highly, though.
     p += ConfigurationResolvedHeuristic(varcfg_user_loader)
 
-    # But ignoring own variables and hidden stuff trumps some more.
+    # Ignoring critical variables is number one priority.
     p += EnvprobeEnvVarHeuristic()
     p += HiddenEnvVarHeuristic()
 

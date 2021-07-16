@@ -6,7 +6,6 @@ import argparse
 import sys
 
 from commands import get_common_epilogue_or_die
-from shell import *  # Keep this import, this registers the known shells.
 
 
 def __main():
@@ -21,10 +20,6 @@ def __main():
                     "editing configuration files and loading them manually.",
         epilog=epilogue
     )
-    subparsers = parser.add_subparsers(title="available commands")
-
-    # The ordering of the commands here specifies in which order they are
-    # shown on the output!
 
     args = parser.parse_args(sys.argv[1:])  # Cut the shell command's name.
     if 'func' in args:

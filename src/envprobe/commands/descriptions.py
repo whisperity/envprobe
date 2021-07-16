@@ -78,6 +78,7 @@ def update_command(args):
                       file=sys.stderr)
                 continue
 
+            storage_cfg.set_comment_for(source.name, source.comment)
             set_vars = 0
             for variable in source:
                 information = EnvVarExtendedInformation()
@@ -114,9 +115,7 @@ def update_command(args):
                   file=sys.stderr)
     print("\tcleaned up {} records.".format(set_vars))
 
-    print("TODO: Write version", new_version)
-    # TODO: Enable this.
-    # storage_cfg.version = new_version
+    storage_cfg.version = new_version
 
 
 def register_update(argparser):

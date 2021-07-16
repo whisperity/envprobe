@@ -22,7 +22,7 @@ from .helper import zsh_shell
 from libtest.envprobe import envprobe_location
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope="module")
 def sh():
     with zsh_shell() as sh:
         yield sh

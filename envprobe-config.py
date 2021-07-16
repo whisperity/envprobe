@@ -10,7 +10,6 @@ import argparse
 import sys
 
 from commands import get_common_epilogue_or_die
-from commands import vartypes as vartypes_command
 
 
 def __main():
@@ -19,16 +18,8 @@ def __main():
     """
     epilogue = get_common_epilogue_or_die()
     parser = argparse.ArgumentParser(
-        prog='envprobe-config',
-        description="Handles the configuration of your user's and the current "
-                    "shell's Envprobe-related settings.",
         epilog=epilogue
     )
-    subparsers = parser.add_subparsers(title="available commands")
-
-    # The ordering of the commands here specifies in which order they are
-    # shown on the output!
-    vartypes_command.create_subcommand_parser(subparsers)
 
     args = parser.parse_args(sys.argv[1:])  # Cut the shell command's name.
     if 'func' in args:

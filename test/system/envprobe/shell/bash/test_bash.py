@@ -22,7 +22,7 @@ from .helper import bash_shell
 from libtest.envprobe import envprobe_location
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope="module")
 def sh():
     with bash_shell() as sh:
         yield sh

@@ -25,6 +25,9 @@ import sys
 
 from .commands import load as load_command
 from .commands.shortcuts import transform_subcommand_shortcut
+from .community_descriptions.local_data \
+    import get_variable_information_manager as \
+    get_community_variable_information_manager
 from .library import get_shell_and_env_always, \
     get_variable_information_manager, get_variable_tracking
 from .vartype_heuristics import assemble_standard_type_heuristics_pipeline
@@ -47,7 +50,10 @@ def __create_global_shell_and_env():
         os.environ,
         assemble_standard_type_heuristics_pipeline(
             varcfg_user_loader=lambda varname:
-                get_variable_information_manager(varname, read_only=True)
+                get_variable_information_manager(varname, read_only=True),
+            varcfg_description_loader=lambda varname:
+                get_community_variable_information_manager(varname,
+                                                           read_only=True)
             )
     )
 

@@ -56,7 +56,7 @@ def _register_mock_shell(rand):
 
 
 @pytest.fixture
-def mock_shell(scope='module'):
+def mock_shell(scope="module"):
     """Generate a randomly named `MockShell` and register it."""
     rand_str = ''.join(random.choice(string.ascii_lowercase) for _ in range(8))
     _register_mock_shell(rand_str)
@@ -106,7 +106,7 @@ def _register_mock_variable(rand):
 
 
 @pytest.fixture
-def mock_envvar(scope='module'):
+def mock_envvar(scope="module"):
     """Generate a randomly named `MockVariable` and the appropriate heuristics,
     and register it.
     """

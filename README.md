@@ -247,7 +247,6 @@ SSH_AGENT_PID=98765
 
 The `envprobe-config` (or `epc`) command contains various subcommands that can be used to configure Envprobe's behaviour.
 
-
 For a complete overview on the commands available and their usage, you can always call `epc -h` (or `epc track -h`, etc. for each subcommand) to get a quick help.
 The [complete documentation](http://envprobe.readthedocs.io/en/latest/config/index.html) for the user-facing commands is available behind the link.
 
@@ -269,6 +268,7 @@ The description of a variable, when queried, may come from a local copy of this 
 To initially download, or subsequently update, the description database, execute:
 
     epc descriptions update
+
 
 ---
 
