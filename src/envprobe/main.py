@@ -23,14 +23,15 @@ import argparse
 import os
 import sys
 
-from .commands import load as load_command
-from .commands.shortcuts import transform_subcommand_shortcut
-from .community_descriptions.local_data \
+from envprobe.commands import load as load_command
+from envprobe.commands.shortcuts import transform_subcommand_shortcut
+from envprobe.community_descriptions.local_data \
     import get_variable_information_manager as \
     get_community_variable_information_manager
-from .library import get_shell_and_env_always, \
+from envprobe.library import get_shell_and_env_always, \
     get_variable_information_manager, get_variable_tracking
-from .vartype_heuristics import assemble_standard_type_heuristics_pipeline
+from envprobe.vartype_heuristics import \
+    assemble_standard_type_heuristics_pipeline
 
 
 def __create_global_shell_and_env():
@@ -106,7 +107,7 @@ main_help = \
     """The main mode is responsible for interfacing with the environment
     variables."""
 main_epilogue = \
-    """TODO: Epilogue goes here. Get from the refactor!"""
+    """"""
 main_subcommands_description = \
     """Note that the set of subcommands available is *CONTEXT SENSITIVE*,
     and is based on your current shell and environment setup."""
@@ -160,7 +161,6 @@ def __main_mode(argv):
             traceback.print_exc()
             return 1
     else:
-        print("Epilogue goes here.")
         argv.append("--help")
         args = parser.parse_args(argv[1:])
         return 0
@@ -175,7 +175,7 @@ config_help = \
     """The config mode is responsible for user and shell-specific configuration
     options."""
 config_epilogue = \
-    """TODO: Something here?"""
+    """"""
 config_subcommands_description = \
     """Note that the set of subcommands available is *CONTEXT SENSITIVE*,
     and is based on your current shell and environment setup."""
@@ -229,7 +229,6 @@ def __config_mode(argv):
             traceback.print_exc()
             return 1
     else:
-        print("Epilogue goes here.")
         argv.append("--help")
         args = parser.parse_args(argv[1:])
         return 0

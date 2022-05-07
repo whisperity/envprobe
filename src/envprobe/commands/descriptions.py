@@ -17,8 +17,8 @@
 import sys
 import tempfile
 
-from ..community_descriptions import downloader, local_data
-from ..vartypes import EnvVarExtendedInformation
+from envprobe.community_descriptions import downloader, local_data
+from envprobe.vartypes import EnvVarExtendedInformation
 
 
 name = 'descriptions'

@@ -17,8 +17,8 @@
 import os
 import sys
 
-from ..settings import get_configuration_directory
-from ..settings.snapshot import get_snapshot_directory_name, \
+from envprobe.settings import get_configuration_directory
+from envprobe.settings.snapshot import get_snapshot_directory_name, \
     get_snapshot_file_name
 
 

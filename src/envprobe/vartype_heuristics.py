@@ -14,7 +14,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-from .environment import EnvVarTypeHeuristic, HeuristicStack
+from envprobe.environment import EnvVarTypeHeuristic, HeuristicStack
 
 
 class EnvprobeEnvVarHeuristic(EnvVarTypeHeuristic):
@@ -101,8 +101,8 @@ def assemble_standard_type_heuristics_pipeline(varcfg_user_loader,
     that decides the type for an environment variable.
 
     This pipeline uses the :ref:`configuration of the user<config_set>` and
-    the community (TODO!) first, and then the heuristics pre-implemented in
-    Envprobe to deduce a *vartype* for an environment variable.
+    the community first, and then the heuristics pre-implemented in Envprobe
+    to deduce a *vartype* for an environment variable.
 
     Parameters
     ----------

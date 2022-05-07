@@ -17,9 +17,9 @@
 from enum import Enum
 import os
 
-from ..settings import get_configuration_directory
-from ..settings.config_file import ConfigurationFile
-from ..settings.variable_tracking import \
+from envprobe.settings import get_configuration_directory
+from envprobe.settings.config_file import ConfigurationFile
+from envprobe.settings.variable_tracking import \
     get_tracking_file_name, VariableTracking
 
 

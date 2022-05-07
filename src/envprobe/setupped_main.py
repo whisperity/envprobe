@@ -14,21 +14,33 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-from envprobe.vartypes.array import Array
-from envprobe.vartypes.envvar import register_type
+"""
+Entrypoint wrappers for Envprobe when run from an install done via `pip`.
+"""
+import os
+import sys
+
+from envprobe.main import handle_mode
 
 
-class SemicolonSeparatedArray(Array):
-    """A helper class that binds the array's :py:attr:`separator` to ``;``."""
-
-    def __init__(self, name, raw_value=""):
-        """"""
-        super().__init__(name, ';', raw_value)
-
-    @classmethod
-    def type_description(cls):
-        """A list of strings in an array, separated by ;"""
-        return "A list of strings in an array, separated by ;"
+def main():
+    """Entry point for the `envprobe` handler when ran from an installed
+    package.
+    """
+    return handle_mode(os.path.dirname(sys.argv[0]))
 
 
-register_type('semi_separated', SemicolonSeparatedArray)
+def main_mode():
+    """Entry point for the `envprobe main` handler when ran from an installed
+    package.
+    """
+    sys.argv.insert(1, "main")
+    return main()
+
+
+def config_mode():
+    """Entry point for the `envprobe config` handler when ran from an insatlled
+    package.
+    """
+    sys.argv.insert(1, "config")
+    return main()

@@ -20,9 +20,12 @@ The entry point if Envprobe is run as `python(3?) -m envprobe`.
 import os
 import sys
 
-from .main import handle_mode
+abs_path = os.path.dirname(os.path.abspath(__file__))  # .../src/envprobe
+envprobe_root = os.path.dirname(abs_path)  # .../src
+sys.path.insert(0, envprobe_root)  # .../src/envprobe is the package's main.
+
+from envprobe import main  # noqa
 
 if __name__ == '__main__':
-    abs_path = os.path.dirname(os.path.abspath(__file__))  # .../src/envprobe
-    ret = handle_mode(os.path.dirname(abs_path))  # .../src
+    ret = main.handle_mode(os.path.dirname(envprobe_root))
     sys.exit(ret)

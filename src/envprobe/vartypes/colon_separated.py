@@ -14,8 +14,8 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-from .array import Array
-from .envvar import register_type
+from envprobe.vartypes.array import Array
+from envprobe.vartypes.envvar import register_type
 
 
 class ColonSeparatedArray(Array):

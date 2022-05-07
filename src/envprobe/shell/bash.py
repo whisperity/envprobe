@@ -14,8 +14,8 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-from .bash_like import BashLike
-from .core import register_type
+from envprobe.shell.bash_like import BashLike
+from envprobe.shell.core import register_type
 
 
 class Bash(BashLike):
@@ -25,7 +25,6 @@ class Bash(BashLike):
         super().__init__(pid, config_dir, "control.sh")
 
     def get_shell_hook(self, envprobe_callback_location):
-        # TODO: Make the calls work without setting PYTHONPATH!
         return """
 # If Envprobe isn't registered already.
 if [[ ! "$PROMPT_COMMAND" =~ "__envprobe" ]];
@@ -41,15 +40,13 @@ then
 
     envprobe()
     {{
-        PYTHONPATH="{LOCATION}" \
-            python3 -m envprobe \
+        python3 "{LOCATION}/envprobe" \
             main "$@";
     }};
 
     envprobe-config()
     {{
-        PYTHONPATH="{LOCATION}" \
-            python3 -m envprobe \
+        python3 "{LOCATION}/envprobe" \
             config "$@";
     }};
 
@@ -57,10 +54,8 @@ then
     __envprobe()
     {{
         local original_retcode="$?";
-        echo "[Debug] Executing Envprobe Bash hook..." >&2;
 
         local CONTROL="$(envprobe-config consume)";
-        echo "$CONTROL" >&2;
         eval "$CONTROL";
 
         return $original_retcode;
@@ -86,7 +81,6 @@ then
     trap __envprobe__kill EXIT;
 
     # Register the hook.
-    echo "Envprobe loaded successfully. :)";
     PROMPT_COMMAND="__envprobe;$PROMPT_COMMAND";
 fi
 """.format(PID=self.shell_pid,
@@ -116,7 +110,6 @@ then
     unset -f __envprobe__kill;
 
     # Unregister the prompt hook.
-    echo "Envprobe unloaded successfully. Bye! :(";
     PROMPT_COMMAND=${{PROMPT_COMMAND//__envprobe;/}}
 fi
 """.format()

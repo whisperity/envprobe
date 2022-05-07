@@ -22,7 +22,7 @@ from enum import Enum
 import os
 import pickle  # nosec: pickle has some issues, we will get back to it later.
 
-from . import vartypes
+from envprobe import vartypes
 
 
 class EnvVarTypeHeuristic:

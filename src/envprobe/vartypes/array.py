@@ -16,7 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from difflib import ndiff
 
-from .envvar import EnvVar
+from envprobe.vartypes.envvar import EnvVar
 
 
 class Array(EnvVar):

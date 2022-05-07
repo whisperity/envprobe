@@ -7,11 +7,11 @@ import os
 import sys
 
 abs_path = os.path.dirname(os.path.abspath(__file__))  # .../
-envprobe_root = os.path.join(abs_path, "src")
-sys.path.insert(0, envprobe_root)
+envprobe_root = os.path.join(abs_path, "src")  # .../src
+sys.path.insert(0, envprobe_root)  # .../src/envprobe is the package's main.
 
 from envprobe import main  # noqa
 
 if __name__ == '__main__':
-    ret = main.handle_mode(envprobe_root)
+    ret = main.handle_mode(os.path.dirname(envprobe_root))
     sys.exit(ret)

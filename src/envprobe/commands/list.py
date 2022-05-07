@@ -16,8 +16,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import os
 
-from ..settings import get_configuration_directory
-from ..settings.snapshot import get_snapshot_directory_name, get_snapshot_name
+from envprobe.settings import get_configuration_directory
+from envprobe.settings.snapshot import get_snapshot_directory_name, \
+    get_snapshot_name
 
 
 name = 'list'

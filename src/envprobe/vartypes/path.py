@@ -19,8 +19,8 @@ Implementation of PATH-like arrays.
 """
 import os
 
-from . import register_type
-from .colon_separated import ColonSeparatedArray
+from envprobe.vartypes.envvar import register_type
+from envprobe.vartypes.colon_separated import ColonSeparatedArray
 
 
 class Path(ColonSeparatedArray):

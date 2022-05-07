@@ -16,11 +16,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import os
 
-from .environment import Environment, default_heuristic
-from .settings import core as settings
-from .settings import config_file, snapshot, variable_information, \
+from envprobe.environment import Environment, default_heuristic
+from envprobe.settings import core as settings
+from envprobe.settings import config_file, snapshot, variable_information, \
     variable_tracking
-from .shell import get_current_shell, FakeShell
+from envprobe.shell import get_current_shell, FakeShell
 
 
 def get_shell_and_env_always(env_dict=None, vartype_pipeline=None):

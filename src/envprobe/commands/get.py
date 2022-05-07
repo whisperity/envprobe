@@ -17,8 +17,8 @@
 import shlex
 import sys
 
-from ..vartypes import get_kind
-from ..vartypes.array import Array
+from envprobe.vartypes import get_kind
+from envprobe.vartypes.array import Array
 
 
 name = 'get'

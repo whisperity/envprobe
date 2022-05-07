@@ -18,9 +18,9 @@ import os
 import stat
 import tempfile
 
-from ..environment import Environment
-from ..settings import get_runtime_directory
-from ..shell import load, load_all, get_known_kinds
+from envprobe.environment import Environment
+from envprobe.settings import get_runtime_directory
+from envprobe.shell import load, load_all, get_known_kinds
 
 
 name = 'hook'

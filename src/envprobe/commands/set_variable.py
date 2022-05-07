@@ -14,9 +14,9 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-from ..environment import create_environment_variable
-from ..library import get_variable_information_manager
-from .. import vartypes
+from envprobe.environment import create_environment_variable
+from envprobe.library import get_variable_information_manager
+from envprobe import vartypes
 
 name = 'set'
 description = \

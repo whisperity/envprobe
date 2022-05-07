@@ -16,7 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import shlex
 
-from .core import Shell
+from envprobe.shell.core import Shell
 
 
 class BashLike(Shell):
