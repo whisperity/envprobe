@@ -58,7 +58,6 @@ then
 
         local CONTROL="";
         envprobe-config consume | IFS= read -rd '' CONTROL;
-        echo "$CONTROL" >&2;
         eval "$CONTROL";
 
         return $original_retcode;
