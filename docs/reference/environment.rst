@@ -67,6 +67,6 @@ All these classes are subclasses of :py:class:`EnvVarTypeHeuristic<envprobe.envi
     HiddenEnvVarHeuristic
     NumericalNameEnvVarHeuristic
     NumericalValueEnvVarHeuristic
-    PathEnvVarHeuristic
+    PathNameEnvVarHeuristic
 
 .. autofunction:: assemble_standard_type_heuristics_pipeline

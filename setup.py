@@ -39,7 +39,7 @@ try:
     version = version.decode().strip()
     if version[0] == "v":
         version = version[1:]
-    version = version.replace("-dirty", "dev")
+    version = version.replace("\"-dirty\"", "dev")
     version_parts = version.split("-")
     if len(version_parts) == 1:
         version = version_parts[0]
@@ -65,7 +65,7 @@ setup(
     license="GPLv3+",
     keywords="shell environment environment-variables bash zsh",
     classifiers=[
-        "Development Status :: 3 - Alpha",
+        "Development Status :: 5 - Production/Stable",
         "Environment :: Console",
         "Intended Audience :: End Users/Desktop",
         "Intended Audience :: Information Technology",

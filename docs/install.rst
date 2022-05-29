@@ -10,8 +10,18 @@ Apart from Python and one of the supported POSIX-compatible shells, there are no
 Obtaining Envprobe
 ==================
 
+You can download Envprobe's official releases from `PyPI <http://pypi.org/project/envprobe>`_.
+``pip`` will automatically install *Envprobe* to an appropriate location for your local user.
+
+.. code-block:: bash
+
+    pip install envprobe
+
+
+From GitHub
+-----------
 You can download Envprobe from the `official repository <http://github.com/whisperity/Envprobe>`_, either using `Git <http://git-scm.org>`_ or a ``tar`` download.
-Extract the downloaded files to any location comfortable.
+Extract the downloaded archive to any location comfortable.
 In the documentation, we will use ``~/envprobe`` as the location where Envprobe is installed to.
 
 .. code-block:: bash
@@ -50,6 +60,10 @@ Put the following code as-is (including quotes, etc.) at the end of ``~/.bashrc`
 
 .. code-block:: bash
 
+    # If obtained from PyPI:
+    eval "$(envprobe config hook bash $$)";
+
+    # If obtained from GitHub:
     eval "$(~/envprobe/envprobe config hook bash $$)";
 
 Zsh
@@ -62,6 +76,10 @@ Put the following code as-is (including quotes, etc.) at the end of ``~/.zshrc``
 
 .. code-block:: bash
 
+    # If obtained from PyPI:
+    eval "$(envprobe config hook zsh $$)";
+
+    # If obtained from GitHub:
     eval "$(~/envprobe/envprobe config hook zsh $$)";
 
 
@@ -72,6 +90,10 @@ If you are using `Oh-My-Zsh <http://ohmyz.sh>`_ to manage your Zsh, create a new
 
 .. code-block:: bash
 
+    # If obtained from PyPI:
+    eval "$(envprobe config hook zsh $$)";
+
+    # If obtained from GitHub:
     eval "$(~/envprobe/envprobe config hook zsh $$)";
 
 

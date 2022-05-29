@@ -41,9 +41,18 @@ These are the configurations that the [CI](http://github.com/whisperity/Envprobe
 
 ### Download
 
-You can grab Envprobe from the GitHub repository, either via `git` or in a tarball form.
-Download the project anywhere you please.
-In this example, we'll use `~/envprobe`.
+You can download Envprobe's official releases from [PyPI](http://pypi.org/project/envprobe).
+
+~~~{.sh}
+pip install envprobe
+~~~
+
+
+#### From GitHub
+
+You can also download Envprobe from the GitHub repository, either via `git` or in a tarball form.
+Download the project anywhere you please, and extract the archive.
+In this example, we'll use `~/envprobe` as the location.
 
 ~~~{.sh}
 git clone http://github.com/whisperity/envprobe.git ~/envprobe \
@@ -68,11 +77,11 @@ The easiest way to do this is to add the hook script at the end of the configura
 
 > **:warning: Note!** If you are using other custom shell extensions, it is **well-advised** for the best experience to load Envprobe **last**.
 
-| Shell                              |             Configuration file (usually)              |                     Code to add                      |
-|:-----------------------------------|:-----------------------------------------------------:|:----------------------------------------------------:|
-| Bash                               |                   `~/.bashrc`                         | `eval "$(~/envprobe/envprobe config hook bash $$)";` |
-| Zsh (stock)                        | `~/.zshrc`                                            | `eval "$(~/envprobe/envprobe config hook zsh $$)";`  |
-| Zsh ([Oh My Zsh](http://ohmyz.sh)) | `~/.oh-my-zsh/custom/zzzzzz_envprobe.zsh` (new file!) | `eval "$(~/envprobe/envprobe config hook zsh $$)";`  |
+| Shell                              |             Configuration file (usually)              |                Code to add                |
+|:-----------------------------------|:-----------------------------------------------------:|:-----------------------------------------:|
+| Bash                               |                   `~/.bashrc`                         | `eval "$(envprobe config hook bash $$)";` |
+| Zsh (stock)                        | `~/.zshrc`                                            | `eval "$(envprobe config hook zsh $$)";`  |
+| Zsh ([Oh My Zsh](http://ohmyz.sh)) | `~/.oh-my-zsh/custom/zzzzzz_envprobe.zsh` (new file!) | `eval "$(envprobe config hook zsh $$)";`  |
 
 
 ## Quick user guide
@@ -268,72 +277,3 @@ The description of a variable, when queried, may come from a local copy of this 
 To initially download, or subsequently update, the description database, execute:
 
     epc descriptions update
-
-
----
-
----
-
-# :warning: OLD DOCUMENTATION
-
-> :loudspeaker: Below follows the documentation for the **previous version** of Envprobe that is being rewritten.
-> Some of the parts might no longer or not yet apply!
-
-Why?
-----
-
-However, there is a use case on which all of the aforementioned tools fall
-short, or are hard to configure. **`envprobe`** &mdash; the name idea came
-from [`modprobe`](http://enwp.org/Modprobe), but for environments &mdash;
-was born out of this personal necessity, to give the ability to easily
-configure your shell, without the need of actually writing tedious
-configuration files, to either of these mentioned systems.
-
-
-
-How to Install?
----------------
-
-
-### Invoking *Envprobe*
-
-After envprobe is installed, you can use it in the shell with the `envprobe`
-or `ep` command. **You should NOT alter `PATH` or use the absolute
-`~/envprobe/envprobe.py` path to access `envprobe`.** The hook executed by
-the lines above enabled `envprobe` for you.
-
-
-
-Advanced: Configuring type of variables
----------------------------------------
-
- * `ignored`: Remove the variable from Envprobe's allowed and managed
-   variables.
-
-*Note:* Setting a variable's *type* to `ignored` is not the same as
-*"tracking ignoring"* a variable. "Tracking ignore" means that changes of the
-variable is not visible to the `diff`, `save`, `load`, ... commands, but
-the variable can still be managed locally, in an ad-hoc fashion. A variable
-with `ignored` type will result in Envprobe rejecting every access (`get`,
-`set`) on that variable.
-
-
-
-Extreme: Resetting or hacking *Envprobe*
-----------------------------------------
-
-We share the philosophy of small individual commands and easily readable
-configuration files in this project. Your local configuration is saved under
-`~/.local/share/envprobe` in the form of JSON files. Adventurous and power
-users are welcome to tinker their configuration through these files, but be
-advised that we cannot provide any help in case a mess-up happens.
-
-To make Envprobe *completely **and irrevocably** forget* all configuration,
-along with **all your saved states!**, simply delete the aforementioned folder,
-and then restart your Terminal.
-
-**Warning!** Data and configuration specific to a running shell session is
-saved to a temporary folder and might include binary files and files with
-ephemeral lifespan. These files are not meant to be altered manually apart
-from development or debugging purposes. Altering these files can make your
-running shell irrevocably broken!
